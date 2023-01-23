@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<HTML>
+        <meta charset="utf-8">
+<HTML>
+<HEAD>
+<TITLE>Strike Force One</TITLE>
+<STYLE type="text/css">
+<!--
+body {background-color:silver; color:black}
+img.piece  {position:absolute; left:20px; top:20px; width:150px; height:150px; border-style:solid; border-width:4px; border-color:gray}
+img.touched  {position:absolute; left:50px; top:50px; width:150px; height:150px; border-style:solid; border-width:4px; border-color:yellow}
+
+img.back {left:0px; top:0px; margin-left:0px; margin-top:0px;}
+table.mover {position:absolute; z-index:-2; border: 2px solid #000000; color:black; font-size:12pt; font-weight: bold; background-color:cyan; border-style:outset; border-width:2px;  width:100px; height:100px}
+td.button {border: 2px solid #000000; border-style: outset; text-align:center;}
+td.button6 {border: 2px solid #000000; border-style: outset; text-align:center; font-size:16pt; background-color:ivory;}
+td.button1 {border: 2px solid #000000; border-style: outset; text-align:center; font-size:10pt;}
+
+b.old {width:200px; margin-right:200px; border-width:5px; border-style:outset;}
+b {display:block; font-size:14pt; text-align:center; width:4cm}
+
+a {display:block; width:200px; margin-right:20px; border-width:4px; border-style:outset; background-color:cyan; color:black; text-align:center}
+a.aiw {background-color:ivory}
+a.mca {background-color:blue}
+a.neut {background-color:silver; color:black}
+.pol {background-color:orange; color:black;}
+.rus {background-color:black; color:white;}
+.neut {background-color:yellow; color:gray;}
+-->
+</STYLE>
+
+<script language="Javascript"></script>
+<script src="javascripts/units SF1 newJS.js"></script>
+<script src="javascripts/numbers SF1 newJS.js"></script>
+<script src="javascripts/SF1 windows code.js" type="text/javascript"></script>
+<script src="javascripts/SF1 changeFunctions.js" type="text/javascript"></script>
+<script src="javascripts/SF1 newJS.js"></script>
+<script src="javascripts/SF1 cookie scripts.js" type="text/javascript"></script>
+<script src="javascripts/cityListTest.js"></script>
+<script src="javascripts/cityListData SF1.js"></script>
+
+</head>
+<body id="backdrop" leftmargin="0" topmargin="0" onLoad="placePics()" ondrop="drop(event)" ondragover="allowDrop(event)">
+
+<img class="back" id="board" src="boards/SF1_board.jpg">
+
+
+<table class="mover" id="keyPressTable">
+<tr>
+<td class="button" onclick="virtualKey(1)">M</td>
+<td class="button" onclick="virtualKey(11)">^</td>
+<td class="button" onclick="virtualKey(5)">*</td>
+</tr>
+<tr>
+<td class="button" onclick="virtualKey(13)">&lt;</td>
+<td class="button6" onclick="virtualKey(3)" id="diceResult">d6</td>
+<td class="button" onclick="virtualKey(14)">&gt;</td>
+</tr>
+<tr>
+<td class="button" onclick="virtualKey(2)">X</td>
+<td class="button1" onclick="virtualKey(12)">v</td>
+<td class="button" onclick="virtualKey(6)">S</td>
+</tr>
+<tr>
+<td class="button1" colspan=5 id="hopText" onclick="virtualKey(1000)"></td>
+</tr></table>
+
+<table id="bigTable" cellpadding="2" cellspacing="0" bgcolor="gray"><tr id="pbrow">
+<td>&nbsp;&nbsp;<a href="javascript:crt_window()"  id="btn5"  >Combat Results Table</a></td>
+<td>&nbsp;&nbsp;<a class="neut" href="javascript:d6_window()"  id="btn6"  >Six Sided Die</a></td>
+<td>&nbsp;&nbsp;<a class="aiw" href="javascript:unmarkAll()"  id="btn11"  >unmark all units</a></td></td>
+</tr>
+
+<tr id="neutrow">
+<td>&nbsp;&nbsp;<a class="neut" href="javascript:pdfRules_window()"  id="btn8"  >PDF rules</a></td>
+<td>&nbsp;&nbsp;<a class="neut" href="javascript:d100_window()"  id="btn21"  >D100</a></td>
+<td>&nbsp;&nbsp;<a class="neut" href="javascript:victoryPoints()"  id="btn20"  >Victory Points</a></td>
+
+</tr>
+
+<tr id="mcarow">
+<td>&nbsp;&nbsp;<a class="aiw" href="javascript:reloadSetup()"  id="btn4"  >SETUP GAME</a></td>
+<td>&nbsp;&nbsp;<a class="aiw" href="javascript:getCookie()"  id="btn20"  >RELOAD GAME</a></td>
+<td>&nbsp;&nbsp;<a class="aiw" href="javascript:reloadReset()"  id="btn22"  >RESET GAME</a></td>
+
+</tr>
+
+</table>
+
+<table BORDER="2" id="saveTable" bgcolor="silver">
+<tr align="center">
+
+<td><h1 style="width:600px">SAVING AND LOADING GAMES</H1></td>
+<td> <h1 id="vplist">Victory Point Hexes...</h1></td></tr>
+
+<tr><td>
+<table style="margin-left:0" cellspacing="20">
+<tr align="center"><td id="nameOfA"></td><td id="nameOfB"></td></tr>
+<tr align="right"><td>
+<table><tr align="center"><td>Turn Now is...</td></tr>
+<tr align="center"><td id="turnBox" style="font-size:1cm; color:red; background-color:white">A00</td></tr>
+<tr align="center"><td><input type="button" id="turnNow" value="press for next turn..." onClick="nextTurn()"></td></tr>
+</table></td><td>
+
+</td></tr>
+<tr><td colspan="2" align="center">&nbsp;&nbsp;<a class="save" style="color:green" href="javascript:saveWindow()"  id="btn10">create save-data</a></td></tr>
+<tr><td rowspan="3"><textarea rows=15 columns=120 name="box" id="textbox1"></textarea></td>
+<td colspan="2" align="left"><b>1) Paste 'saved data' into the box...</b> <br>&nbsp;&nbsp;2) Choose type of movement...<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;visible<input id="vis" type=radio onClick="fogOfWar(1)" checked> hidden<input id="hid" type=radio onClick="fogOfWar(2)">
+</td></tr>
+<tr><td colspan="2" align="left">3) <input type=button style="color:red" value="PRESS TO LOAD" onClick="reload()"></td></tr>
+<tr> <td colspan="2"><input type=button value="press to clear box" onClick="clearBox()"></td></tr>
+<tr> <td colspan="2" align="center">&nbsp;&nbsp;<a class="save" href="javascript:help2_window()"  id="btn2"  >Saving and loading help</a></td>
+</table>
+</td><td valign=top>
+
+<TABLE >
+<TR valign=top><TD>
+<table  id="cityList">
+</table>
+</TD>
+</TABLE>
+
+</td></tr>
+</table>
+
+</body>
+</html>
