@@ -1466,6 +1466,8 @@ function plotActualPict(){
       data3s = data3.toFixed(0)+" deg";
       var data32s = data32.toFixed(0)+" deg";
       data7 = Math.abs(reflAngle*180/Math.PI-90);//reflAngle*180/Math.PI-Math.PI/2;
+      tirFlag=false;
+      if(data7>90){data7=180-data7; tirFlag=true;}
       data7s = data7.toFixed(1)+" deg";
       data6 = Math.abs(incAngle*180/Math.PI);
       if(data3>0){data6=Math.abs(data6-180);}
@@ -1477,8 +1479,10 @@ function plotActualPict(){
       //testing
       data6b = Math.abs(rayAngle*180/Math.PI);
       data7b = Math.abs(reflAngle*180/Math.PI);
-      data6s = data6.toFixed(2)+" deg"+" "+data6b.toFixed(2)+" deg";
-      data7s = data7.toFixed(2)+" deg"+" "+data7b.toFixed(2)+" deg";
+      //data6s = data6.toFixed(2)+" deg"+" "+data6b.toFixed(2)+" deg";
+      //data7s = data7.toFixed(2)+" deg"+" "+data7b.toFixed(2)+" deg";
+      data6s = data6.toFixed(2)+" deg";//+" "+data6b.toFixed(2)+" deg";
+      data7s = data7.toFixed(2)+" deg";//+" "+data7b.toFixed(2)+" deg";
 
 
       //document.getElementById("dummy2").innerHTML="angle of mirror<br>to the horizontal<br>="+data3s;
