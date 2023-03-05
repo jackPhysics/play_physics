@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <Title>Law of Reflection</title>
+    <Title>Image Formation</title>
       <style>
           canvas {
               border: 0px solid black;
@@ -11,7 +11,7 @@
               color: #474747;
               background: White;
           }
-          body {background: Aqua;}
+          body {background: PaleGreen;}
           td {text-align: center;}
           td.fig {width: 710px;text-align: right;}
           textarea {width: 4em; height: 1em; resize: none;}
@@ -19,16 +19,16 @@
       <script src="events.js">
       </script>
 
-    <script src="lightRefl_v25projNosv2.js" type="text/javascript"></script>
+    <script src="lightRefl_v25objNImgv2.js" type="text/javascript"></script>
 
   </head>
   <body style="margin-left: 80px;">
-    <br>
+    <p>Unlock.
+    &nbsp;&nbsp;&nbsp;&nbsp;Then touch the mirror in the centre to get started...</p>
 
-    <p></p>
-
-<table border="0"><tr>
-  <td><input class="button" id="dragB" type="button" value="move mirror" onClick="changeDrag();"></td>
+<table border="1"><tr>
+  <td><input class="button" id="dragB" type="button" value="LOCKED" onClick="changeDrag();">
+  <p id="instrucText">press to<br>release</p></td>
   <td rowspan="3" class="fig"><canvas id="myCanvas" width="600" height="630" style="margin-left: -60px;" style="border:1px solid #ffffff;">
     </canvas></td>
     <td>&nbsp;&nbsp;</td>

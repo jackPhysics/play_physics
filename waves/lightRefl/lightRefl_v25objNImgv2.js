@@ -1,271 +1,10 @@
-<!DOCTYPE HTML>
-<html>
-  <head>
-    <title>Fermat's Principle</title>
-      <style>
-          canvas {
-              border: 0px solid black;
-              font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
-              font-size: 13px;
-              line-height: 1.5;
-              color: #474747;
-              background: White;
-          }
-          body {background: PeachPuff;}
-          td {text-align: center;}
-          td.fig {width: 710px;text-align: right;}
-          textarea {width: 4em; height: 1em; resize: none;}
-      </style>
 
-<script type="text/javascript">
-var Events = function(canvasId){
-    this.canvas = document.getElementById(canvasId);
-    this.context = this.canvas.getContext("2d");
-    this.stage = undefined;
-    this.listening = false;
-
-    // desktop flags
-    this.mousePos = null;
-    this.mouseDown = false;
-    this.mouseUp = false;
-    this.mouseOver = false;
-    this.mouseMove = false;
-
-    // mobile flags
-    this.touchPos = null;
-    this.touchStart = false;
-    this.touchMove = false;
-    this.touchEnd = false;
-
-    // Region Events
-    this.currentRegion = null;
-    this.regionIndex = 0;
-    this.lastRegionIndex = -1;
-    this.mouseOverRegionIndex = -1;
-};
-
-// ======================================= GENERAL =======================================
-
-Events.prototype.getContext = function(){
-    return this.context;
-};
-
-Events.prototype.getCanvas = function(){
-    return this.canvas;
-};
-
-Events.prototype.clear = function(){
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-};
-
-Events.prototype.getCanvasPos = function(){
-    var obj = this.getCanvas();
-    var top = 0;
-    var left = 0;
-    while (obj.tagName != "BODY") {
-        top += obj.offsetTop;
-        left += obj.offsetLeft;
-        obj = obj.offsetParent;
-    }
-    return {
-        top: top,
-        left: left
-    };
-};
-
-Events.prototype.setStage = function(func){
-    this.stage = func;
-    this.listen();
-};
-
-// ======================================= CANVAS EVENTS =======================================
-
-Events.prototype.reset = function(evt){
-    if (!evt) {
-        evt = window.event;
-    }
-
-    this.setMousePosition(evt);
-    this.setTouchPosition(evt);
-    this.regionIndex = 0;
-
-    if (this.stage !== undefined) {
-        this.stage();
-    }
-
-    // desktop flags
-    this.mouseOver = false;
-    this.mouseMove = false;
-    this.mouseDown = false;
-    this.mouseUp = false;
-
-    // mobile touch flags
-    this.touchStart = false;
-    this.touchMove = false;
-    this.touchEnd = false;
-};
-
-Events.prototype.listen = function(){
-    var that = this;
-
-    if (this.stage !== undefined) {
-        this.stage();
-    }
-
-    // desktop events
-    this.canvas.addEventListener("mousedown", function(evt){
-        that.mouseDown = true;
-        that.reset(evt);
-    }, false);
-
-    this.canvas.addEventListener("mousemove", function(evt){
-        that.reset(evt);
-    }, false);
-
-    this.canvas.addEventListener("mouseup", function(evt){
-        that.mouseUp = true;
-        that.reset(evt);
-    }, false);
-
-    this.canvas.addEventListener("mouseover", function(evt){
-        that.reset(evt);
-    }, false);
-
-    this.canvas.addEventListener("mouseout", function(evt){
-        that.mousePos = null;
-    }, false);
-
-    // mobile events
-    this.canvas.addEventListener("touchstart", function(evt){
-        evt.preventDefault();
-        that.touchStart = true;
-        that.reset(evt);
-    }, false);
-
-    this.canvas.addEventListener("touchmove", function(evt){
-        evt.preventDefault();
-        that.reset(evt);
-    }, false);
-
-    this.canvas.addEventListener("touchend", function(evt){
-        evt.preventDefault();
-        that.touchEnd = true;
-        that.reset(evt);
-    }, false);
-};
-
-Events.prototype.getMousePos = function(evt){
-    return this.mousePos;
-};
-
-Events.prototype.getTouchPos = function(evt){
-    return this.touchPos;
-};
-
-Events.prototype.setMousePosition = function(evt){
-    var mouseX = evt.clientX - this.getCanvasPos().left + window.pageXOffset;
-    var mouseY = evt.clientY - this.getCanvasPos().top + window.pageYOffset;
-    this.mousePos = {
-        x: mouseX,
-        y: mouseY
-    };
-};
-
-Events.prototype.setTouchPosition = function(evt){
-    if (evt.touches !== undefined && evt.touches.length == 1) { // Only deal with one finger
-        var touch = evt.touches[0]; // Get the information for finger #1
-        var touchX = touch.pageX - this.getCanvasPos().left + window.pageXOffset;
-        var touchY = touch.pageY - this.getCanvasPos().top + window.pageYOffset;
-
-        this.touchPos = {
-            x: touchX,
-            y: touchY
-        };
-    }
-};
-
-// ======================================= REGION EVENTS =======================================
-
-Events.prototype.beginRegion = function(){
-    this.currentRegion = {};
-    this.regionIndex++;
-};
-
-Events.prototype.addRegionEventListener = function(type, func){
-    var event = (type.indexOf('touch') == -1) ? 'on' + type : type;
-    this.currentRegion[event] = func;
-};
-
-Events.prototype.closeRegion = function(){
-    var pos = this.touchPos || this.mousePos;
-
-    if (pos !== null && this.context.isPointInPath(pos.x, pos.y)) {
-        if (this.lastRegionIndex != this.regionIndex) {
-            this.lastRegionIndex = this.regionIndex;
-        }
-
-        // handle onmousedown
-        if (this.mouseDown && this.currentRegion.onmousedown !== undefined) {
-            this.currentRegion.onmousedown();
-            this.mouseDown = false;
-        }
-
-        // handle onmouseup
-        else if (this.mouseUp && this.currentRegion.onmouseup !== undefined) {
-            this.currentRegion.onmouseup();
-            this.mouseUp = false;
-        }
-
-        // handle onmouseover
-        else if (!this.mouseOver && this.regionIndex != this.mouseOverRegionIndex && this.currentRegion.onmouseover !== undefined) {
-            this.currentRegion.onmouseover();
-            this.mouseOver = true;
-            this.mouseOverRegionIndex = this.regionIndex;
-        }
-
-        // handle onmousemove
-        else if (!this.mouseMove && this.currentRegion.onmousemove !== undefined) {
-            this.currentRegion.onmousemove();
-            this.mouseMove = true;
-        }
-
-        // handle touchstart
-        if (this.touchStart && this.currentRegion.touchstart !== undefined) {
-            this.currentRegion.touchstart();
-            this.touchStart = false;
-        }
-
-        // handle touchend
-        if (this.touchEnd && this.currentRegion.touchend !== undefined) {
-            this.currentRegion.touchend();
-            this.touchEnd = false;
-        }
-
-        // handle touchmove
-        if (!this.touchMove && this.currentRegion.touchmove !== undefined) {
-            this.currentRegion.touchmove();
-            this.touchMove = true;
-        }
-
-    }
-    else if (this.regionIndex == this.lastRegionIndex) {
-        this.lastRegionIndex = -1;
-        this.mouseOverRegionIndex = -1;
-
-        // handle mouseout condition
-        if (this.currentRegion.onmouseout !== undefined) {
-            this.currentRegion.onmouseout();
-        }
-    }
-};
-
-
-var canvW=760;
-var canvH=560;
-var edge = 60;
-var xmin = edge;
+var canvW=700;
+var canvH=500;
+var edge = 30;
+var xmin = 30;
 var xmax = canvW-xmin;
-var ymin = edge;
+var ymin = 30;
 var ymax = canvH-ymin/2;
 var midValX = (xmin+xmax)/2;
 var midValY = (ymin+ymax)/2;
@@ -281,7 +20,7 @@ var oldQflag = false;//trying to move an old charge
 var oldQchosen = -1;
 var moveMirror = false;//true;
 var moveF = true;
-var moveRay = true;//false;
+var moveRay = false;
 var arrXA = new Array();//hold x pos of arrow centre
 var arrYA = new Array();
 var noOfArr = 0;
@@ -290,44 +29,38 @@ var arrFYA = new Array();
 var arrAngle = new Array();//hold angle of arrow
 var arrLength = 10;//half length of arrow
 var arrNewLength = new Array();
-var mirrorLX = edge;
+var mirrorLX = 30;
 var mirrorLY = canvH-120;
-var mirrorRX = canvW-edge;
+var mirrorRX = canvW-30;
 var mirrorRY = canvH-120;
-var mirrorMX = canvW/2;//canvH-edge + edge /2
+var mirrorMX = canvW/2;//canvH-30 + 30 /2
 var mirrorMY = canvH-120;
 var mirrorTX = mirrorLX+25;//position of mirror Text
 var mirrorTY = mirrorLY+25;
 var touchRadius = 20;
 var touchFlag = "no";
-var minX = edge;
-var minY = edge;
-var maxX = canvW-edge;
-var maxY = canvH-edge;
+var minX = 30;
+var minY = 30;
+var maxX = canvW-30;
+var maxY = canvH-30;
 var changeX = false;//moving mirror along top or bottom if TRUE
 var mirrorAngle = 0;
-var mirrorDX = canvW-edge*2;
+var mirrorDX = canvW-60;
 var mirrorDY = 0;
 var mirrorGrad = 0;
 var mirrorC = mirrorLY;
-var posAX = 50*3+minX;
-var posAY = 50*2.8+minY;
-var posBX = 50*9+minX;
-var posBY = 50*2.8+minY;
-var distAM = 0;
-var distBM = 0;
-var distTot = 0;
-var angleA = 0;
-var angleB = 0;
-var sigFig = 2;//sf of the distance measures
-var sigFig2 = 0;//sf of the angle measures
-var physicsFlag = false;
-var rayLX = posAX;
-var rayLY = posAY;
-var rayRX = 50*3+minX;
+var rayLX = 140;
+var rayLY = minY;
+var rayRX = 140;
 var rayRY = canvH-120;
-var rayMX = 140;//canvH-edge + edge /2
+var rayMX = 140;//canvH-30 + 30 /2
 var rayMY = minY;
+var rayLX2 = 140;
+var rayLY2 = minY;
+var rayRX2 = 140;
+var rayRY2 = canvH-120;
+var rayMX2 = 140;//canvH-30 + 30 /2
+var rayMY2 = minY;
 var rayTX = rayLX+25;//position of mirror Text
 var rayTY = rayLY+25;
 var touchRadiusRay = 20;
@@ -354,19 +87,30 @@ var normDX = 0;
 var normDY = 0;
 var normGrad = 0;
 var normC = 0;
-var normL = 10;//half-length of normal;
-var reflLX = rayRX;
-var reflLY = rayRY;
-var reflRX = posBX;
-var reflRY = posBY;
+var normL = 50;//half-length of normal;
+var reflLX = 0;
+var reflLY = 0;
+var reflRX = 0;
+var reflRY = 0;
 var reflMX = 0;//
-var reflMY = 0;
+var reflMY2 = 0;
+var reflLX2 = 0;
+var reflLY2 = 0;
+var reflRX2 = 0;
+var reflRY2 = 0;
+var reflMX2 = 0;//
+var reflMY2 = 0;
+var reflLXI = 0;
+var reflLYI = 0;
+var reflRXI = 0;
+var reflRYI = 0;
 var reflTX = reflLX+25;//position of mirror Text
 var reflTY = reflLY+25;
 var touchRadiusRefl = 20;
 var touchFlagRefl = "no";
 var changeXRefl = false;//moving mirror along top or bottom if TRUE
 var reflAngle = Math.PI;
+var reflAngle2 = Math.PI;
 var reflDX = 0;
 var reflDY = 0;
 var reflGrad = 0;
@@ -390,7 +134,6 @@ var littleD = Math.abs(rayRX-maxX);
 var projX =0;
 var projY = 0;
 var projAng = 0;
-var angleFlag = false;
 
 window.onload = function(){
     var events = new Events("myCanvas");
@@ -399,6 +142,9 @@ window.onload = function(){
     var isMouseDown = false;
     var canvasImg = getCanvasImg(canvas);
     var points = [];
+    //etElementById(myCanvas).width=canvW;
+    //getElementById(myCanvas).height=canvH;
+    //findVector();
 
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -408,36 +154,121 @@ window.onload = function(){
     ctx.beginPath();
     ctx.lineWidth = "1";
     ctx.strokeStyle = "black";
-    ctx.rect(edge, edge, canvW-edge*2, canvH-edge*2);
+    ctx.rect(30, 30, canvW-60, canvH-60);
     ctx.stroke();
 
-    rayLX = posAX;
-    rayLY = posAY;
-    reflRX = posBX;
-    reflRY = posBY;
-
           ctx.lineWidth = "1";
-          ctx.font = "10px Arial";
           //top ridge
-          ctx.moveTo(posAX, minY);
-          ctx.lineTo(posAX, minY-14);
-          var posAXs = ((posAX-minX)/50).toFixed(2);
-          ctx.fillText(""+posAXs, posAX-5, minY-20);
-          ctx.moveTo(posBX, minY);
-          ctx.lineTo(posBX, minY-14);
-          var posBXs = ((posBX-minX)/50).toFixed(2);
-          ctx.fillText(""+posBXs, posBX-5, minY-20);
+          ctx.moveTo(minX, minY);
+          ctx.lineTo(minX, minY-14);
+          for(e=xmin; e<xmax;e=e+10){
+          ctx.moveTo(e, minY);
+          ctx.lineTo(e, minY-6);
+          ctx.stroke();}
+          for(e=xmin; e<xmax;e=e+50){
+          ctx.moveTo(e, minY);
+          ctx.lineTo(e, minY-10);
+          ctx.stroke();}
+          //bottom ridge
+        /*  ctx.moveTo(minX, maxY);
+          ctx.lineTo(minX, maxY+14);
+          for(e=xmin; e<xmax+1;e=e+10){
+          ctx.moveTo(e, maxY);
+          ctx.lineTo(e, maxY+6);
+          ctx.stroke();}
+          for(e=xmin; e<xmax;e=e+50){
+          ctx.moveTo(e, maxY);
+          ctx.lineTo(e, maxY+10);
+          ctx.stroke();}*/
+
+
           //left ridge
-          ctx.moveTo(minX, posAY);
-          ctx.lineTo(minX-14, posAY);
-          var posAYs = ((posAY-minY)/50).toFixed(2);
-          ctx.fillText(""+posAYs, minX-37, posAY+4);
+          ctx.moveTo(minX, minY);
+          ctx.lineTo(minX-14, minY);
+          for(e=minY; e<maxY;e=e+10){
+          ctx.moveTo(minX, e);
+          ctx.lineTo(minX-6, e);
+          ctx.stroke();}
+          for(e=minY; e<maxY-10;e=e+50){
+          ctx.moveTo(minX, e);
+          ctx.lineTo(minX-10, e);
+          ctx.stroke();}
 
           //right ridge
-          ctx.moveTo(maxX, posBY);
-          ctx.lineTo(maxX+14, posBY);
-          var posBYs = ((posBY-minY)/50).toFixed(2);
-          ctx.fillText(""+posBYs, maxX+18, posBY+4);
+
+          ctx.font = "10px Arial";
+          bigD = Math.abs(rayRY-minY);
+          littleD = Math.abs(rayRX-maxX);
+          var f=12.6;
+          while(f<61){
+            if(f<15){f=f+0.2;}
+            else if(f<18){f=f+0.5}
+            else if(f>=20&&f<30){f=f+2;}
+            else if(f>=30&&f<39){ f=f+5;}
+            else if(f>=40&&f<60){ f=f+10;}
+            else if(f>=60){ f=f+20;}
+            else{f++;}
+            actualD=f*50-rayRX+minX;
+            //projAng = Math.atan(actualD/bigD);
+            projX = actualD - littleD;
+            projY = projX*bigD/actualD;
+            //ctx.moveTo(maxX, minY+projY);
+            //ctx.lineTo(maxX+10, minY+projY);
+            f = Math.round(f*10)/10;
+            var testF = f % 1;
+            //alert(""+testF);
+            if(testF==0){
+            ctx.moveTo(maxX, minY+projY);
+            ctx.lineTo(maxX+10, minY+projY);
+            ctx.fillText(""+f,maxX+18, minY+projY+4);}
+            else{
+              ctx.moveTo(maxX, minY+projY);
+              ctx.lineTo(maxX+6, minY+projY);
+            }
+          }
+          /*
+          ctx.moveTo(maxX, maxY);
+          ctx.lineTo(maxX+14, maxY);
+          for(e=maxY; e>ymin;e=e-10){
+          ctx.moveTo(maxX, e);
+          ctx.lineTo(maxX+6, e);
+          ctx.stroke();}
+          for(e=maxY; e>ymin;e=e-50){
+          ctx.moveTo(maxX, e);
+          ctx.lineTo(maxX+10, e);
+          ctx.stroke();}*/
+
+          //add numbers to edges
+          ctx.font = "10px Arial";
+          //ctx.fillText("0",minX-3, minY-20);
+          //ctx.fillText("0",minX-3, maxY+25);
+          //ctx.fillText("0",minX-22, minY+4);
+          //ctx.fillText("0",maxX+18, minY+4);
+          var ridgeCount = 0;
+          for(e=minX; e<xmax;e=e+50){
+          ctx.fillText(""+ridgeCount,e-3, minY-20);
+          ridgeCount++;}
+
+          //left ridge
+          ridgeCount = 0;
+          for(e=minY; e<ymax-10;e=e+50){
+          ctx.fillText(""+ridgeCount,minX-22, e+4);
+          ridgeCount++;}
+          //bottom ridge
+        /*  ridgeCount = 0;
+          for(e=minX; e<xmax;e=e+50){
+          ctx.fillText(""+ridgeCount,e-3, maxY+25);
+          ridgeCount++;}
+          //left ridge
+          ridgeCount = 0;
+          for(e=maxY; e>ymin;e=e-50){
+          ctx.fillText(""+ridgeCount,minX-22, e+4);
+          ridgeCount++;}
+          //right ridge
+          ridgeCount = 0;
+          for(e=maxY; e>ymin;e=e-50){
+          ctx.fillText(""+ridgeCount,maxX+18, e+4);
+          ridgeCount++;}*/
 
           //markings on mirror line
           ctx.moveTo((mirrorLX+mirrorRX)/2, (mirrorLY+mirrorRY)/2);
@@ -467,38 +298,16 @@ window.onload = function(){
     ctx.strokeStyle = "black";
     ctx.moveTo(mirrorLX, mirrorLY);
     ctx.lineTo(mirrorRX, mirrorRY);
-    //ctx.moveTo(edge, canvH-120);
-    //ctx.lineTo(canvW-edge*2, canvH-120);
+    //ctx.moveTo(30, canvH-120);
+    //ctx.lineTo(canvW-60, canvH-120);
     ctx.stroke();
     //ctx.setLineDash([]);/*stop dashes*/
 
     ctx.beginPath();
-    ctx.font = "edgepx Arial";
+    ctx.font = "30px Arial";
     ctx.fillText("M",mirrorTX, mirrorTY);
     ctx.fillStyle = "black";
     //ctx.fillText("M",40, canvH-95 )
-
-        ctx.beginPath();
-        ctx.lineWidth = "3";
-        ctx.strokeStyle = "black";
-        ctx.beginPath();
-        ctx.arc(posAX, posAY, 2, 0, 2*Math.PI);
-        ctx.stroke();
-            ctx.beginPath();
-            ctx.font = "20px serif";
-            ctx.fillStyle = "black";
-            ctx.fillText("A", posAX-10, posAY-20);
-
-        ctx.beginPath();
-        ctx.lineWidth = "3";
-        ctx.strokeStyle = "black";
-        ctx.beginPath();
-        ctx.arc(posBX, posBY, 2, 0, 2*Math.PI);
-        ctx.stroke();
-            ctx.beginPath();
-            ctx.font = "20px serif";
-            ctx.fillStyle = "black";
-            ctx.fillText("B", posBX-10, posBY-20);
 
     ctx.beginPath();
     ctx.lineWidth = "1";
@@ -506,18 +315,14 @@ window.onload = function(){
     ctx.moveTo(rayLX, rayLY);
     ctx.lineTo(rayRX, rayRY);
     ctx.stroke();
-    ctx.moveTo(reflLX, reflLY);
-    ctx.lineTo(reflRX, reflRY);
-    ctx.stroke();
 
-/*
     if(textFlag){
     ctx.beginPath();
-    ctx.font = "edgepx serif";
+    ctx.font = "30px serif";
     ctx.fillStyle = "blue";
     ctx.fillText("I", rayTX, rayTY);
     }
-*/
+
     data3 = Math.PI-mirrorAngle;
     data3 = data3*180/Math.PI;
     if(data3>90){data3=data3-180;}
@@ -529,17 +334,17 @@ window.onload = function(){
     data6s = data6.toFixed(0)+" deg";
 
 
-    //document.getElementById("dummy2").innerHTML="angle of mirror<br>to the horizontal<br>="+data3s;
-    //document.getElementById("dummy1").innerHTML="angle of incidence<br>="+data6s+"<br><br>angle of reflection<br>="+data6s;
-    //document.getElementById("dummy3").innerHTML="angle of normal<br>to the vertical<br>="+data32s;
+    document.getElementById("dummy2").innerHTML="angle of mirror<br>to the horizontal<br>="+data3s;
+    document.getElementById("dummy1").innerHTML="angle of incidence<br>="+data6s+"<br><br>angle of reflection<br>="+data6s;
+    document.getElementById("dummy3").innerHTML="angle of normal<br>to the vertical<br>="+data32s;
 
   /*      ctx.beginPath();
         ctx.lineWidth = "1";
         ctx.strokeStyle = "blue";
         ctx.moveTo(rayLX, rayLY);
         ctx.lineTo(rayRX, rayRY);
-        //ctx.moveTo(edge, canvH-120);
-        //ctx.lineTo(canvW-edge*2, canvH-120);
+        //ctx.moveTo(30, canvH-120);
+        //ctx.lineTo(canvW-60, canvH-120);
         ctx.stroke();
 
         ctx.beginPath();
@@ -600,7 +405,7 @@ window.onload = function(){
                 ctx.stroke();
 
                 ctx.beginPath();
-                ctx.font = "edgepx Arial";
+                ctx.font = "30px Arial";
                 ctx.fillText("M",mirrorLX+25, mirrorLY+25);
                 ctx.fillStyle = "black";
 
@@ -675,7 +480,6 @@ window.onload = function(){
             }
         }
     });
-    plotNewMoveQ();
 };
 
 function getCanvasImg(canvas){
@@ -760,51 +564,19 @@ function moveQ(events, points){
                     plotNewMoveQ();
                     //else{newQflag==false}
                   }
-                  else if(Qy<posAY+touchRadiusRay && Qy>posAY-touchRadiusRay && Qx<posAX+touchRadiusRay && Qx>posAX-touchRadiusRay){//check if touching point A
-                    posAX = Qx;
-                    posAY = Qy;
+                  else if(Qy<rayLY+touchRadiusRay && Qy>rayLY-touchRadiusRay && Qx<rayLX+touchRadiusRay && Qx>rayLX-touchRadiusRay){//check if touching ray top
+                    rayLX = Qx;
                     //changeX = false;
+                      rayLX = Qx;
                       if(Qx>=maxX){
-                        posAX = maxX;
+                        rayLX = maxX;
                         changeXRay = true;}
                       else if(Qx<=minX){
-                        posAX = minX;
+                        rayLX = minX;
                         changeXRay = true;}
-                          if(Qy>=maxY){
-                            posAY = maxY;
-                            changeXRay = true;}
-                          else if(Qy<=minY){
-                            posAY = minY;
-                            changeXRay = true;}
                       if(Qx<maxX-5&&Qx>minX+5){changeXRay = false;}
-                      //rayTX = rayLX - 25;
-                    touchFlagRay = "posA";
-                      rayLX = posAX;
-                      rayLY = posAY;
-                    plotNewMoveQ();
-                    //else{newQflag==false}
-                  }
-                  else if(Qy<posBY+touchRadiusRay && Qy>posBY-touchRadiusRay && Qx<posBX+touchRadiusRay && Qx>posBX-touchRadiusRay){//check if touching point B
-                    posBX = Qx;
-                    posBY = Qy;
-                    //changeX = false;
-                      if(Qx>=maxX){
-                        posBX = maxX;
-                        changeXRay = true;}
-                      else if(Qx<=minX){
-                        posBX = minX;
-                        changeXRay = true;}
-                          if(Qy>=maxY){
-                            posBY = maxY;
-                            changeXRay = true;}
-                          else if(Qy<=minY){
-                            posBY = minY;
-                            changeXRay = true;}
-                      if(Qx<maxX-5&&Qx>minX+5){changeXRay = false;}
-                      //rayTX = rayLX - 25;
-                    touchFlagRay = "posB";
-                      reflRX = posBX;
-                      reflRY = posBY;
+                      rayTX = rayLX - 25;
+                    touchFlagRay = "top";
                     plotNewMoveQ();
                     //else{newQflag==false}
                   }
@@ -832,16 +604,16 @@ function plotNewMoveQ(){
       var c = document.getElementById("myCanvas");
       var ctx = c.getContext("2d");
 
-      ctx.clearRect(0, 0, canvW, canvH);//ctx.clearRect(edge, edge, canvW-edge*2, canvH-edge*2);//
+      ctx.clearRect(0, 0, canvW, canvH);//ctx.clearRect(30, 30, canvW-60, canvH-60);//
 
       // Green rectangle
       ctx.beginPath();
       ctx.lineWidth = "1";
       ctx.strokeStyle = "black";
-      ctx.rect(edge, edge, canvW-edge*2, canvH-edge*2);
+      ctx.rect(30, 30, canvW-60, canvH-60);
       ctx.stroke();
 
-if(touchFlagRay=="top"){
+if(touchFlagRay=="top"&&!moveMirror){
               if(changeXRay){
                 rayLY = Qy;
                 if(Qy>maxY){rayLY = maxY;}
@@ -849,7 +621,7 @@ if(touchFlagRay=="top"){
               }
               else{
                 rayLX = Qx;
-                rayLY = minY;
+                rayLY = Qy;
               }
             //if(Qy<maxY-2&&Qy>minY+2){mirrorRX = maxX;}
         }
@@ -917,7 +689,6 @@ else{
     mirrorAngle = Math.PI/2;
   }
   //if(rayLY<rayRY){
-
   if((rayRX-rayLX)!=0){
   rayAngle = Math.atan((rayRY-rayLY)/(rayRX-rayLX));
   if(rayLY>rayRY){rayAngle = Math.PI+rayAngle;}
@@ -940,12 +711,10 @@ if(true){
 
 }*/
 
-var arrowDir = 1;
-if(rayRY<rayLY&&rayRX>rayLX){arrowDir = -1};//-1*arrowDir;}
 
-  angle2[0] = rayAngle+arrowDir*3*Math.PI/4;
+  angle2[0] = rayAngle+3*Math.PI/4;
   if(angle2[0]>Math.PI){angle2[0]=angle2[0]-(2*Math.PI);}
-  angle3[0] = rayAngle-arrowDir*3*Math.PI/4
+  angle3[0] = rayAngle-3*Math.PI/4
   if(angle3[0]<-Math.PI){angle3[0]=angle3[0]+(2*Math.PI);}
   sin2[0] = headL*Math.sin(angle2[0]);
   sin3[0] = headL*Math.sin(angle3[0]);
@@ -971,8 +740,6 @@ if(rayRY<rayLY&&rayRX>rayLX){arrowDir = -1};//-1*arrowDir;}
   if(rayAngle!=Math.PI/2&&true){
   rayGrad = - Math.tan(-rayAngle);
   rayC = rayLY - rayGrad*rayLX;
-
-
   if(rayGrad!=mirrorGrad){
   rayRX = (mirrorC-rayC)/(rayGrad-mirrorGrad);
   rayRY = rayGrad*rayRX+rayC;}
@@ -1003,8 +770,6 @@ if(rayRY<rayLY&&rayRX>rayLX){arrowDir = -1};//-1*arrowDir;}
   normTY = normMY + Math.abs(angCos*normL/2)+5;
   reflLX = rayRX;
   reflLY = rayRY;
-
-  if(physicsFlag){
   //code R1***
   if(reflAngle!=Math.PI/2&&true){
   reflGrad = - Math.tan(-reflAngle);
@@ -1034,36 +799,20 @@ if(rayRY<rayLY&&rayRX>rayLX){arrowDir = -1};//-1*arrowDir;}
     reflRY = reflGrad*reflRX+reflC;
   }
   else{}
-  }
-  else{
-    reflRX = posBX;
-    reflRY = posBY;
-    if((reflRX-reflLX)!=0){
-    reflAngle = Math.atan((reflRY-reflLY)/(reflRX-reflLX));
-    if(reflLY>reflRY){reflAngle = Math.PI+reflAngle;}
-    if(reflAngle<0){reflAngle=Math.PI+reflAngle;}
-    }
-    else{
-      reflAngle = Math.PI/2;
-    }
-  }
 
-  //if(reflRX>canvW-edge*2){reflRX=canvW-edge*2;}
-  //if(reflRX<edge){reflRX=edge;}
-  //if(reflRY>canvH-edge){reflRY=canvH-edge;}
-  //if(reflRY<edge){reflRY=edge;}
+
+  //if(reflRX>canvW-60){reflRX=canvW-60;}
+  //if(reflRX<30){reflRX=30;}
+  //if(reflRY>canvH-30){reflRY=canvH-30;}
+  //if(reflRY<30){reflRY=30;}
   rayTX = (rayLX+rayRX)/2-25;//position of ray Text
   rayTY = (rayLY+rayRY)/2-25;
   reflTX = (reflLX+reflRX)/2-25;//position of refl Text
   reflTY = (reflLY+reflRY)/2-25;
 
-arrowDir = -1;
-if(reflRX<reflLX){arrowDir = 1};//-1*arrowDir;}
-if(reflRY>reflLY){arrowDir = 1};//-1*arrowDir;}
-
-    angle2[1] = reflAngle+arrowDir*3*Math.PI/4;
+    angle2[1] = reflAngle+3*Math.PI/4;
     if(angle2[1]>Math.PI){angle2[1]=angle2[1]-(2*Math.PI);}
-    angle3[1] = reflAngle-arrowDir*3*Math.PI/4
+    angle3[1] = reflAngle-3*Math.PI/4
     if(angle3[1]<-Math.PI){angle3[1]=angle3[1]+(2*Math.PI);}
     sin2[1] = headL*Math.sin(angle2[1]);
     sin3[1] = headL*Math.sin(angle3[1]);
@@ -1073,34 +822,126 @@ if(reflRY>reflLY){arrowDir = 1};//-1*arrowDir;}
       reflMX = (reflLX+reflRX)/2;
       reflMY = (reflLY+reflRY)/2;
 
-var alphaDelX = rayRX-rayLX;
-var betaDelX = reflRX-rayRX;
-var alphaDelY = rayRY-rayLY;
-var betaDelY = rayRY-reflRY;
-
-if(rayRX>rayLX){
-angleA = Math.atan(alphaDelY/alphaDelX);}
-else if(rayRX<rayLX){
-angleA = Math.atan(alphaDelY/alphaDelX)+Math.PI;}
-else{
-  angleA = Math.PI;
+//***************************************************
+//2nd RAY
+  rayLX2 = rayLX;
+  rayLY2 = rayLY;
+rayRX2 = mirrorMX;
+if((rayRX2-rayLX2)!=0){
+rayAngle2 = Math.atan((rayRY2-rayLY2)/(rayRX2-rayLX2));
+if(rayLY2>rayRY2){rayAngle2 = Math.PI+rayAngle2;}
+if(rayAngle2<0){rayAngle2=Math.PI+rayAngle2;}
 }
-if(reflRX>rayRX){
-angleB = Math.atan(betaDelY/betaDelX);}
-else if(reflRX<rayRX){
-angleB = Math.atan(betaDelY/betaDelX)+Math.PI;}
 else{
-  angleB = Math.PI;
+  rayAngle2 = Math.PI/2;
 }
-    //angleA = Math.atan(alphaDelY/alphaDelX);
-    //angleB = Math.atan(betaDelY/betaDelX);
 
-    distAM = (rayRX-rayLX)**2+(rayRY-rayLY)**2;
-    distAM = Math.pow(distAM, 0.5);
-    distBM = (rayRX-reflRX)**2+(rayRY-reflRY)**2;
-    distBM = Math.pow(distBM, 0.5);
-    distTot = distAM + distBM;
-touchFlagRay = "blank";
+angle2[2] = rayAngle2+3*Math.PI/4;
+if(angle2[2]>Math.PI){angle2[2]=angle2[2]-(2*Math.PI);}
+angle3[2] = rayAngle2-3*Math.PI/4
+if(angle3[2]<-Math.PI){angle3[2]=angle3[2]+(2*Math.PI);}
+sin2[2] = headL*Math.sin(angle2[2]);
+sin3[2] = headL*Math.sin(angle3[2]);
+cos2[2] = headL*Math.cos(angle2[2]);
+cos3[2] = headL*Math.cos(angle3[2]);
+
+
+meetAngle = rayAngle2-mirrorAngle;
+incAngle = meetAngle - Math.PI/2;
+
+reflAngle2 = mirrorAngle - (Math.PI - meetAngle) - 2*incAngle;
+
+mirrorGrad = -((mirrorLY-mirrorRY)/(mirrorRX-mirrorLX));
+mirrorC = mirrorRY-mirrorGrad*mirrorRX;
+if(rayAngle2!=Math.PI/2&&true){
+rayGrad = - Math.tan(-rayAngle2);
+rayC = rayLY2 - rayGrad*rayLX2;
+if(rayGrad!=mirrorGrad){
+rayRX2 = (mirrorC-rayC)/(rayGrad-mirrorGrad);
+rayRY2 = rayGrad*rayRX2+rayC;}
+}
+else{
+  var delX = (rayLX2-mirrorLX);
+var delY = mirrorGrad*delX;
+rayRY2 = mirrorLY + delY;}
+
+rayMX2 = (rayLX2+rayRX2)/2;
+rayMY2 = (rayLY2+rayRY2)/2;
+
+
+var angCos = Math.cos(mirrorAngle);
+var angSin = Math.sin(mirrorAngle);
+
+normLX = rayRX - angSin*normL;//rayRX = normMX
+normRX = rayRX + angSin*normL;
+normLY = rayRY + angCos*normL;
+normRY = rayRY - angCos*normL;
+normTX = normMX - Math.abs(angSin*normL/2)-5;
+normTY = normMY + Math.abs(angCos*normL/2)+5;
+reflLX2 = rayRX2;
+reflLY2 = rayRY2;
+//code R1***
+if(reflAngle2!=Math.PI/2&&true){
+reflGrad = - Math.tan(-reflAngle2);
+reflC = reflLY2 - reflGrad*reflLX2;
+}
+
+reflRX2 = reflLX2+reflL*Math.cos(reflAngle2);
+reflRY2 = reflLY2+reflL*Math.sin(reflAngle2);
+if(reflRY2<minY){
+  reflRY2=minY;
+  reflRX2 = (reflRY2-reflC)/reflGrad;
+}
+else if(reflRY2>maxY){
+  reflRY2=maxY;
+  reflRX2 = (reflRY2-reflC)/reflGrad;
+}
+else{}
+if(reflRX2<minX){
+  reflRX2=minX;
+  reflRY2 = reflGrad*reflRX2+reflC;
+}
+else if(reflRX2>maxX){
+  reflRX2=maxX;
+  reflRY2 = reflGrad*reflRX2+reflC;
+}
+else{}
+
+rayTX = (rayLX+rayRX)/2-25;//position of ray Text
+rayTY = (rayLY+rayRY)/2-25;
+reflTX = (reflLX+reflRX)/2-25;//position of refl Text
+reflTY = (reflLY+reflRY)/2-25;
+
+  angle2[3] = reflAngle2+3*Math.PI/4;
+  if(angle2[3]>Math.PI){angle2[3]=angle2[3]-(2*Math.PI);}
+  angle3[3] = reflAngle2-3*Math.PI/4
+  if(angle3[3]<-Math.PI){angle3[3]=angle3[3]+(2*Math.PI);}
+  sin2[3] = headL*Math.sin(angle2[3]);
+  sin3[3] = headL*Math.sin(angle3[3]);
+  cos2[3] = headL*Math.cos(angle2[3]);
+  cos3[3] = headL*Math.cos(angle3[3]);
+
+    reflMX2 = (reflLX2+reflRX2)/2;
+    reflMY2 = (reflLY2+reflRY2)/2;
+
+//finding image point - with flat mirror
+reflLXI = reflLX;
+reflLYI = reflLY;
+reflRXI = rayLX;
+reflRYI = 2*mirrorMY-rayLY;
+
+//finding image in any mirror
+var p1 = rayLX;
+var q1 = rayLY;
+var a1 = 1;
+var b1 = -1*mirrorGrad;
+var c1 = -1*mirrorC;
+var imgX = p1-2*b1*(b1*p1+a1*q1+c1)/(a1*a1+b1*b1);
+var imgY = q1-2*a1*(b1*p1+a1*q1+c1)/(a1*a1+b1*b1);
+reflRXI = imgX;
+reflRYI = imgY;
+
+//***************************************************
 plotActualPict();
 }
 
@@ -1119,12 +960,12 @@ function plotActualPict(){
                 mirrorTX = mirrorLX+25;
                 mirrorTY = (9*mirrorLY+mirrorRY)/10+25;//mirrorLY+25;//
 
-          /*        if(textFlag){
-                ctx.beginPath();
-                ctx.font = "edgepx Arial";
+                  if(textFlag){
+                ctx.beginPath();//draw mirror
+                ctx.font = "30px Arial";
                 ctx.fillStyle = "black";
                 ctx.fillText("M", mirrorTX, mirrorTY);
-              }*/
+                }
 
                 mirrorMX = (mirrorLX+mirrorRX)/2;
                 mirrorMY = (mirrorLY+mirrorRY)/2;
@@ -1137,14 +978,14 @@ function plotActualPict(){
                 ctx.fill();
 */
 
-                        ctx.beginPath();
+                        ctx.beginPath();//draw I ray
                         ctx.lineWidth = "1";
                         ctx.strokeStyle = "blue";
                         ctx.moveTo(rayLX, rayLY);
                         ctx.lineTo(rayRX, rayRY);
                         ctx.stroke();
 
-                              ctx.beginPath();
+                              ctx.beginPath();//draw arrows
                               ctx.moveTo(rayMX, rayMY);
                               ctx.lineTo(rayMX-sin2[0], rayMY+cos2[0]);
                               ctx.stroke();
@@ -1154,13 +995,51 @@ function plotActualPict(){
                               ctx.lineTo(rayMX+sin3[0], rayMY-cos3[0]);
                               ctx.stroke();
 
-                        /*if(textFlag){
-                        ctx.beginPath();
-                        ctx.font = "edgepx serif";
-                        ctx.fillStyle = "blue";
-                        ctx.fillText("I", rayTX, rayTY);
-                      }*/
+                        ctx.beginPath();//draw 2nd I ray from object
+                        ctx.lineWidth = "1";
+                        ctx.strokeStyle = "green";
+                        ctx.moveTo(rayLX2, rayLY2);
+                        ctx.lineTo(rayRX2, rayRY2);//mirrorMX
+                        ctx.stroke();
 
+                                      ctx.beginPath();//draw arrows
+                                      ctx.moveTo(rayMX2, rayMY2);
+                                      ctx.lineTo(rayMX2-sin2[2], rayMY2+cos2[2]);
+                                      ctx.stroke();
+
+                                      ctx.beginPath();
+                                      ctx.moveTo(rayMX2, rayMY2);
+                                      ctx.lineTo(rayMX2+sin3[2], rayMY2-cos3[2]);
+                                      ctx.stroke();
+
+                        if(textFlag){
+                        ctx.beginPath();
+                        ctx.font = "30px serif";
+                        ctx.fillStyle = "blue";
+                        ctx.fillText("O", rayLX, rayLY);
+                        }
+                         ctx.beginPath();
+                         ctx.lineWidth = "1";
+                         ctx.arc(rayLX, rayLY, 2, 0, 2 * Math.PI);//(x, y, r, start arc, end arc)
+                         ctx.stroke();
+                         ctx.fillStyle = "black";
+                         ctx.fill();
+
+
+                        ctx.setLineDash([5, 5]);/*dashes are 5px and spaces are 3px*/
+                        ctx.beginPath();
+                        ctx.lineWidth = "1";
+                        ctx.strokeStyle = "black";
+                        ctx.moveTo(rayRX, rayRY);
+                        ctx.lineTo(normLX, normLY);
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.lineWidth = "1";
+                        ctx.strokeStyle = "black";
+                        ctx.moveTo(rayRX, rayRY);
+                        ctx.lineTo(normRX, normRY);
+                        ctx.stroke();
+                        ctx.setLineDash([]);/*stop dashes*/
 
 //plot norm N text after calc mirror inclination
                         /*ctx.beginPath();
@@ -1170,7 +1049,7 @@ function plotActualPict(){
                         ctx.fillText("N", rayRX-3, rayRY+50);
                         */
 
-                        ctx.beginPath();
+                        ctx.beginPath();//1st reflected ray
                         ctx.lineWidth = "1";
                         ctx.strokeStyle = "blue";
                         ctx.moveTo(reflLX, reflLY);
@@ -1186,87 +1065,185 @@ function plotActualPict(){
                                         ctx.moveTo(reflMX, reflMY);
                                         ctx.lineTo(reflMX+sin3[1], reflMY-cos3[1]);
                                         ctx.stroke();
-                        /*if(textFlag){//
+
+                        ctx.beginPath();//2nd reflected ray
+                        ctx.lineWidth = "1";
+                        ctx.strokeStyle = "green";
+                        ctx.moveTo(reflLX2, reflLY2);
+                        ctx.lineTo(reflRX2, reflRY2);
+                        ctx.stroke();
+
+                                        ctx.beginPath();
+                                        ctx.moveTo(reflMX2, reflMY2);
+                                        ctx.lineTo(reflMX2-sin2[3], reflMY2+cos2[3]);
+                                        ctx.stroke();
+
+                                        ctx.beginPath();
+                                        ctx.moveTo(reflMX2, reflMY2);
+                                        ctx.lineTo(reflMX2+sin3[3], reflMY2-cos3[3]);
+                                        ctx.stroke();
+
+
+                        ctx.beginPath();//1st projected ray
+                        ctx.lineWidth = "1";
+                        ctx.strokeStyle = "red";
+                        ctx.moveTo(reflLX, reflLY);
+                        ctx.lineTo(reflRXI, reflRYI);
+                        ctx.stroke();
+
+                        ctx.beginPath();//2nd projected ray
+                        ctx.lineWidth = "1";
+                        ctx.strokeStyle = "red";
+                        ctx.moveTo(reflLX2, reflLY2);
+                        ctx.lineTo(reflRXI, reflRYI);
+                        ctx.stroke();
+
+
+                        if(textFlag){
                         ctx.beginPath();
-                        ctx.font = "edgepx serif";
+                        ctx.font = "30px serif";
+                        ctx.fillStyle = "red";
+                        ctx.fillText("I", reflRXI-13, reflRYI+23);
+                        }
+
+                         ctx.beginPath();
+                         ctx.lineWidth = "1";
+                         ctx.arc(reflRXI, reflRYI, 2, 0, 2 * Math.PI);//(x, y, r, start arc, end arc)
+                         ctx.stroke();
+                         ctx.fillStyle = "black";
+                         ctx.fill();
+                      /*  if(textFlag){
+                        ctx.beginPath();
+                        ctx.font = "30px serif";
                         ctx.fillStyle = "blue";
                         ctx.fillText("R", reflTX, reflTY);
                       }*/
 
+                        ctx.beginPath();
                         ctx.strokeStyle = "black";//colour of lines
                         ctx.fillStyle = "black";//colour of text
-                            //rayLX = posAX;
-                            //rayLY = posAY;
-                            //reflRX = posBX;
-                            //reflRY = posBY;
+                        ctx.lineWidth = "1";
+                        ctx.lineWidth = "1";
+                        //top ridge
+                        ctx.moveTo(minX, minY);
+                        ctx.lineTo(minX, minY-14);
+                        for(e=xmin; e<xmax;e=e+10){
+                        ctx.moveTo(e, minY);
+                        ctx.lineTo(e, minY-6);
+                        ctx.stroke();}
+                        for(e=xmin; e<xmax;e=e+50){
+                        ctx.moveTo(e, minY);
+                        ctx.lineTo(e, minY-10);
+                        ctx.stroke();}
+                        //bottom ridge
+                      /*  ctx.moveTo(minX, maxY);
+                        ctx.lineTo(minX, maxY+14);
+                        for(e=xmin; e<xmax+1;e=e+10){
+                        ctx.moveTo(e, maxY);
+                        ctx.lineTo(e, maxY+6);
+                        ctx.stroke();}
+                        for(e=xmin; e<xmax;e=e+50){
+                        ctx.moveTo(e, maxY);
+                        ctx.lineTo(e, maxY+10);
+                        ctx.stroke();}*/
 
-                                  ctx.lineWidth = "1";
-                                  ctx.font = "12px Arial";
-                                  //top ridge
-                                  ctx.moveTo(posAX, minY);
-                                  ctx.lineTo(posAX, minY-14);
-                                  ctx.stroke();
-                                  var posAXs = ((posAX-minX)/50).toFixed(2);
-                                  ctx.fillText(""+posAXs, posAX-5, minY-20);
-                                  ctx.moveTo(posBX, minY);
-                                  ctx.lineTo(posBX, minY-14);
-                                  ctx.stroke();
-                                  var posBXs = ((posBX-minX)/50).toFixed(2);
-                                  ctx.fillText(""+posBXs, posBX-5, minY-20);
-                                  //left ridge
-                                  ctx.moveTo(minX, posAY);
-                                  ctx.lineTo(minX-14, posAY);
-                                  ctx.stroke();
-                                  var posAYs = ((maxY-posAY)/50).toFixed(2);//((posAY-minY)/50).toFixed(2);
-                                  ctx.fillText(""+posAYs, minX-37, posAY+4);
+                        //left ridge - EMPTY
+                        ctx.moveTo(minX, minY);
+                        ctx.lineTo(minX-14, minY);
+                        for(e=minY; e<maxY;e=e+10){
+                        ctx.moveTo(minX, e);
+                        ctx.lineTo(minX-6, e);
+                        ctx.stroke();}
+                        for(e=minY; e<maxY;e=e+50){
+                        ctx.moveTo(minX, e);
+                        ctx.lineTo(minX-10, e);
+                        ctx.stroke();}
+                        //right ridge
 
-                                  //right ridge
-                                  ctx.moveTo(maxX, posBY);
-                                  ctx.lineTo(maxX+14, posBY);
-                                  ctx.stroke();
-                                  var posBYs = ((maxY-posBY)/50).toFixed(2);
-                                  ctx.fillText(""+posBYs, maxX+18, posBY+4);
+                        ctx.font = "10px Arial";
+                        bigD = Math.abs(rayRY-minY);
+                        littleD = Math.abs(rayRX-maxX);
+                        var f=12.6;
+                        while(f<61){
+                          if(f<15&&mirrorLY>=5*50+minY){f=f+0.2;}
+                          else if(f<13&&mirrorLY<5*50+minY){f=f+0.4;}
+                          else if(f<18&&mirrorLY>=5*50+minY){f=f+0.5;}
+                          else if(f<18&&mirrorLY<5*50+minY){f++;}
+                          //if(rayRX>8*50+minX)
+                          else if(f>=20&&f<30&&rayRX<=8*50+minX){f=f+2;}
+                          else if(f>=20&&f<30&&rayRX>8*50+minX){f=f+5;}
+                          else if(f>=30&&mirrorLY<3*50+minY){ f=f+10;}
+                          else if(f>=30&&f<39&&rayRX<=8*50+minX){ f=f+5;}
+                          else if(f>=30&&f<39&&rayRX>8*50+minX){ f=f+10;}
+                          else if(f>=30&&mirrorLY<3*50+minY){ f=f+10;}
+                          else if(f>=40&&f<59&&rayRX<=8*50+minX){ f=f+10;}
+                          else if(f>=40&&f<59&&rayRX>8*50+minX){ f=f+20;}
+                          else if(f>=60){ f=f+20;}
+                          else{f++;}
+                          actualD=f*50-rayRX+minX;
+                          //projAng = Math.atan(actualD/bigD);
+                          projX = actualD - littleD;
+                          projY = projX*bigD/actualD;
+                          //ctx.moveTo(maxX, minY+projY);
+                          //ctx.lineTo(maxX+10, minY+projY);
+                          f = Math.round(f*10)/10;
+                          var testF = f % 1;
+                          //if(mirrorLY<5*50+minY){alert(""+f+" "+testF);}
+                          if(testF==0){
+                          ctx.moveTo(maxX, minY+projY);
+                          ctx.lineTo(maxX+10, minY+projY);
+                          ctx.fillText(""+f,maxX+18, minY+projY+4);}
+                          else{
+                            ctx.moveTo(maxX, minY+projY);
+                            ctx.lineTo(maxX+6, minY+projY);
+                          }
+                        }
+                        /*
+                        ctx.moveTo(maxX, maxY);
+                        ctx.lineTo(maxX+14, maxY);
+                        for(e=maxY; e>ymin;e=e-10){
+                        ctx.moveTo(maxX, e);
+                        ctx.lineTo(maxX+6, e);
+                        ctx.stroke();}
+                        for(e=maxY; e>ymin;e=e-50){
+                        ctx.moveTo(maxX, e);
+                        ctx.lineTo(maxX+10, e);
+                        ctx.stroke();}*/
 
+                        //add numbers to edges
+                        ctx.font = "10px Arial";
+                        //ctx.fillText("0",minX-3, minY-20);
+                        //ctx.fillText("0",minX-3, maxY+25);
+                        //ctx.fillText("0",minX-22, minY+4);
+                        //ctx.fillText("0",maxX+18, minY+4);
+                        var ridgeCount = 0;
+                        for(e=minX; e<xmax;e=e+50){
+                        ctx.fillText(""+ridgeCount,e-3, minY-20);
+                        ridgeCount++;}
 
-                                          ctx.beginPath();
-                                          ctx.lineWidth = "3";
-                                          ctx.strokeStyle = "black";
-                                          ctx.beginPath();
-                                          ctx.arc(posAX, posAY, 2, 0, 2*Math.PI);
-                                          ctx.stroke();
-                                              ctx.beginPath();
-                                              ctx.font = "20px serif";
-                                              ctx.fillStyle = "black";
-                                              ctx.fillText("A", posAX-10, posAY-20);
+                        //left ridge
+                        ridgeCount = 0;
+                        for(e=minY; e<ymax-10;e=e+50){
+                        ctx.fillText(""+ridgeCount,minX-22, e+4);
+                        ridgeCount++;}
+                        //bottom ridge
+                      /*  ridgeCount = 0;
+                        for(e=minX; e<xmax;e=e+50){
+                        ctx.fillText(""+ridgeCount,e-3, maxY+25);
+                        ridgeCount++;}
+                        //left ridge
+                        ridgeCount = 0;
+                        for(e=maxY; e>ymin;e=e-50){
+                        ctx.fillText(""+ridgeCount,minX-22, e+4);
+                        ridgeCount++;}
+                        //right ridge
+                        ridgeCount = 0;
+                        for(e=maxY; e>ymin;e=e-50){
+                        ctx.fillText(""+ridgeCount,maxX+18, e+4);
+                        ridgeCount++;}*/
 
-                                          ctx.beginPath();
-                                          ctx.lineWidth = "3";
-                                          ctx.strokeStyle = "black";
-                                          ctx.beginPath();
-                                          ctx.arc(posBX, posBY, 2, 0, 2*Math.PI);
-                                          ctx.stroke();
-                                              ctx.beginPath();
-                                              ctx.font = "20px serif";
-                                              ctx.fillStyle = "black";
-                                              ctx.fillText("B", posBX-10, posBY-20);
-var posAlpha = (rayLX+3*rayRX)/4-25;
-if(rayRX<=rayLX){posAlpha = rayRX-25;}
-var posBeta = (reflRX+3*rayRX)/4+10;
-if(rayRX>=reflRX){posBeta = rayRX+10;}
-                                ctx.beginPath();
-                                ctx.font = "20px serif";
-                                ctx.fillStyle = "blue";
-                                ctx.fillText("\u03B1", posAlpha, rayRY-8);
-                                ctx.beginPath();
-                                ctx.font = "20px serif";
-                                ctx.fillStyle = "blue";
-                                ctx.fillText("\u03B2", posBeta, rayRY-8);
 
           //calc angles for mirror ticks
-          ctx.strokeStyle = "black";
-          ctx.fillStyle = "black";
-          ctx.font = "10px serif";
-          ctx.lineWidth = "1";
           if(mirrorRY>mirrorLY){//bent down to right
             var xAng = Math.sin(mirrorAngle);
             var yAng = Math.cos(mirrorAngle);
@@ -1284,7 +1261,7 @@ if(rayRX>=reflRX){posBeta = rayRX+10;}
 
           var lengthMLine = (mirrorRX-mirrorLX)**2 + (mirrorRY-mirrorLY)**2;
           lengthMLine = Math.pow(lengthMLine, 0.5);//actual length of mirror lines
-          var divM = (canvW-edge*2)/lengthMLine;
+          var divM = (canvW-60)/lengthMLine;
           var noOfDivs = lengthMLine/divM/2;//half the number of divs
                         //markings on mirror line
                         ctx.moveTo((mirrorLX+mirrorRX)/2, (mirrorLY+mirrorRY)/2);
@@ -1295,27 +1272,11 @@ if(rayRX>=reflRX){posBeta = rayRX+10;}
                         ctx.stroke();}*/
                         for(e=50; e<lengthMLine/2;e=e+50){
                         ctx.moveTo((mirrorLX+mirrorRX)/2-e*yAng, (mirrorLY+mirrorRY)/2-e*xAng);
-                        ctx.lineTo((mirrorLX+mirrorRX)/2-e*yAng-12*xAng, (mirrorLY+mirrorRY)/2-e*xAng+12*yAng);
+                        ctx.lineTo((mirrorLX+mirrorRX)/2-e*yAng-10*xAng, (mirrorLY+mirrorRY)/2-e*xAng+10*yAng);
                         ctx.stroke();}
                         for(e=50; e<lengthMLine/2;e=e+50){//(e=lengthMLine; e>lengthMLine/2;e=e-50){
                         ctx.moveTo((mirrorLX+mirrorRX)/2+e*yAng, (mirrorLY+mirrorRY)/2+e*xAng);
-                        ctx.lineTo((mirrorLX+mirrorRX)/2+e*yAng-12*xAng, (mirrorLY+mirrorRY)/2+e*xAng+12*yAng);
-                        ctx.stroke();}
-                        for(e=25; e<lengthMLine/2;e=e+25){
-                        ctx.moveTo((mirrorLX+mirrorRX)/2-e*yAng, (mirrorLY+mirrorRY)/2-e*xAng);
-                        ctx.lineTo((mirrorLX+mirrorRX)/2-e*yAng-8*xAng, (mirrorLY+mirrorRY)/2-e*xAng+8*yAng);
-                        ctx.stroke();}
-                        for(e=25; e<lengthMLine/2;e=e+25){//(e=lengthMLine; e>lengthMLine/2;e=e-50){
-                        ctx.moveTo((mirrorLX+mirrorRX)/2+e*yAng, (mirrorLY+mirrorRY)/2+e*xAng);
-                        ctx.lineTo((mirrorLX+mirrorRX)/2+e*yAng-8*xAng, (mirrorLY+mirrorRY)/2+e*xAng+8*yAng);
-                        ctx.stroke();}
-                        for(e=5; e<lengthMLine/2;e=e+5){
-                        ctx.moveTo((mirrorLX+mirrorRX)/2-e*yAng, (mirrorLY+mirrorRY)/2-e*xAng);
-                        ctx.lineTo((mirrorLX+mirrorRX)/2-e*yAng-6*xAng, (mirrorLY+mirrorRY)/2-e*xAng+6*yAng);
-                        ctx.stroke();}
-                        for(e=5; e<lengthMLine/2;e=e+5){//(e=lengthMLine; e>lengthMLine/2;e=e-50){
-                        ctx.moveTo((mirrorLX+mirrorRX)/2+e*yAng, (mirrorLY+mirrorRY)/2+e*xAng);
-                        ctx.lineTo((mirrorLX+mirrorRX)/2+e*yAng-6*xAng, (mirrorLY+mirrorRY)/2+e*xAng+6*yAng);
+                        ctx.lineTo((mirrorLX+mirrorRX)/2+e*yAng-10*xAng, (mirrorLY+mirrorRY)/2+e*xAng+10*yAng);
                         ctx.stroke();}
                         /*for(e=(mirrorLX+mirrorRX)/2; e<mirrorRX+1;e=e+50){
                         ctx.moveTo(e+, (mirrorLY+mirrorRY)/2);
@@ -1333,41 +1294,22 @@ if(rayRX>=reflRX){posBeta = rayRX+10;}
                         //ctx.fillText("-5",(mirrorLX+mirrorRX)/2-250*yAng-3, (mirrorLY+mirrorRY)/2-250*xAng+25);
                         //ctx.fillText("+5",(mirrorLX+mirrorRX)/2+250*yAng-3, (mirrorLY+mirrorRY)/2+250*xAng+25);
 
-
-                        //ctx.setLineDash([5, 5]);/*dashes are 5px and spaces are 3px*/
-                        ctx.beginPath();
-                        ctx.lineWidth = "1";
-                        ctx.strokeStyle = "red";
-                        ctx.moveTo(rayRX, rayRY);
-                        ctx.lineTo(normLX, normLY);
-                        ctx.stroke();
-                        ctx.beginPath();
-                        ctx.lineWidth = "1";
-                        ctx.strokeStyle = "red";
-                        ctx.moveTo(rayRX, rayRY);
-                        ctx.lineTo(normRX, normRY);
-                        ctx.stroke();
-                        //ctx.setLineDash([]);/*stop dashes*/
-
                         if(textFlag){
                           ctx.beginPath();
                           ctx.font = "20px serif";
-                          ctx.fillStyle = "red";
+                          ctx.fillStyle = "black";
                           //ctx.fillText("N", normTX, normTY);
-                          ctx.fillText("M", rayRX-normL*xAng-10, rayRY+(20+normL)*yAng);
+                          ctx.fillText("N", rayRX-normL*xAng-5, rayRY+(20+normL)*yAng);
                           //ctx.fillText("0",(mirrorLX+mirrorRX)/2-3, (mirrorLY+mirrorRY)/2+25);
-                      }
+                          }
 
 
   ctx.closePath;
-  sigFig=3;
-  sigFig2=0;
-  var data1 = distTot/50;
-  var data1s = data1.toFixed(sigFig)+" cm";
-  var data2 = distAM/50;
-  var data2s = data2.toFixed(sigFig)+" cm";
-  var data3 = distBM/50;
-  var data3s = data3.toFixed(sigFig)+" cm";
+
+  var data1s = mirrorAngle.toFixed(2)+" rad";
+  var data2s = rayAngle.toFixed(2)+" rad";
+  var data3 = mirrorAngle*180/Math.PI;
+  var data3s = data3.toFixed(0)+" deg";
   var data4 = rayAngle*180/Math.PI;
   var data4s = data4.toFixed(0)+" deg";
   var data5 = meetAngle*180/Math.PI;
@@ -1382,28 +1324,20 @@ if(rayRX>=reflRX){posBeta = rayRX+10;}
         //document.getElementById("dummy2").innerHTML=" MG="+mirrorGrad+", MC="+mirrorC+", RG="+rayGrad+", RC="+rayC+data8s+", "+data9s+", ";
       //document.getElementById("dummy1").innerHTML="x="+Qx + ", y="+Qy+", "+data1s+", "+data2s+", "+data3s+", "+data4s;
       //alert(""+mirrorAngle+" "+rayAngle+" "+mirrorAngle*180/Math.PI+" "+rayAngle*180/Math.PI+" ");
-      data5 = Math.PI-mirrorAngle;
-      data5 = data5*180/Math.PI;
-      if(data5>90){data5=data5-180;}
+      data3 = Math.PI-mirrorAngle;
+      data3 = data3*180/Math.PI;
+      if(data3>90){data3=data3-180;}
       var data32 = -1*data3;
-      data5s = data5.toFixed(sigFig2)+" deg";
+      data3s = data3.toFixed(0)+" deg";
       var data32s = data32.toFixed(0)+" deg";
-      data6 = Math.abs(angleA*180/Math.PI);
-      if(data5>0){data6=Math.abs(data6-180);}
-      data6s = data6.toFixed(sigFig2)+" deg";
-      data7 = Math.abs(angleB*180/Math.PI);
-      if(data5>0){data7=Math.abs(data7-180);}
-      data7s = data7.toFixed(sigFig2)+" deg";
+      data6 = Math.abs(incAngle*180/Math.PI);
+      if(data3>0){data6=Math.abs(data6-180);}
+      data6s = data6.toFixed(0)+" deg";
 
-if(angleFlag){
-      document.getElementById("dummy1").innerHTML="angle alpha<br>&alpha;="+data6s+"<br><br>angle beta<br>&beta;="+data7s;
-    angleFlag=false;}
-    else{
-      document.getElementById("dummy1").innerHTML="";
-    }
-      document.getElementById("dummy2").innerHTML="total distance<br>from A to B via M<br>= "+data1s;
-      document.getElementById("dummy3").innerHTML="distance from<br>A to M <br>= "+data2s;
-      document.getElementById("dummy4").innerHTML="distance from<br>M to B <br>= "+data3s;
+
+      document.getElementById("dummy2").innerHTML="angle of mirror<br>to the horizontal<br>="+data3s;
+      document.getElementById("dummy1").innerHTML="angle of incidence<br>="+data6s+"<br><br>angle of reflection<br>="+data6s;
+      document.getElementById("dummy3").innerHTML="angle of normal<br>to the vertical<br>="+data32s;
 
 }
 
@@ -1418,19 +1352,19 @@ function plotNewArrow(){
       ctx.beginPath();
       ctx.lineWidth = "4";
       ctx.strokeStyle = "green";
-      ctx.rect(edge, edge, canvW-edge*2, canvH-edge*2);
+      ctx.rect(30, 30, canvW-60, canvH-60);
       ctx.stroke();
 
       ctx.beginPath();
       ctx.lineWidth = "1";
-      ctx.arc(200, edge, 10, 0, 2 * Math.PI);//(x, y, r, start arc, end arc)
+      ctx.arc(200, 30, 10, 0, 2 * Math.PI);//(x, y, r, start arc, end arc)
       ctx.stroke();
       ctx.fillStyle = "blue";
       ctx.fill();
 
       ctx.beginPath();
       ctx.lineWidth = "1";
-      ctx.arc(400, edge, 10, 0, 2 * Math.PI);//(x, y, r, start arc, end arc)
+      ctx.arc(400, 30, 10, 0, 2 * Math.PI);//(x, y, r, start arc, end arc)
       ctx.stroke();
       ctx.fillStyle = "red";
       ctx.fill();
@@ -1509,16 +1443,19 @@ function plotNewArrow(){
 function changeDrag(){
     if(moveMirror){
       moveMirror=false;
-      document.getElementById("dragB").value="LOCKED";
+      moveRay=true;
+      document.getElementById("dragB").value="move ray";
+      document.getElementById("instrucText").innerHTML="move O<br><br>or move N<br>(blue ray)";
     }
     else if(moveRay){
       moveRay=false;
-      moveMirror=true;
-      document.getElementById("dragB").value="move 'mirror'";
+      document.getElementById("dragB").value="LOCKED";
+      document.getElementById("instrucText").innerHTML="press to<br>release";
     }
     else{
-          moveRay=true;
-          document.getElementById("dragB").value="move A or B or P";
+          moveMirror=true;
+          document.getElementById("dragB").value="move mirror";
+          document.getElementById("instrucText").innerHTML="move centre<br>up down<br><br>or move edges<br>to tilt";
         }
 
 }
@@ -1535,47 +1472,3 @@ function changeText(){
     plotNewMoveQ()
   }
 }
-
-function findAngles(){
-    angleFlag = true;
-    plotActualPict();
-}
-
-</script>
-
-  </head>
-  <body style="margin-left: 80px;">
-
-    <p>"Light travels in straight lines".
-    &nbsp;&nbsp;&nbsp;&nbsp;Q: What is a 'straight line'?
-    &nbsp;&nbsp;&nbsp;&nbsp;A: The shortest distance between 2 points.
-    <br><br>Find the shortest distance between A and B (via the mirror)...</p>
-
-<table border="0"><tr>
-  <td><input class="button" id="dragB" type="button" value="move A or B or M" onClick="changeDrag();"></td>
-  <td rowspan="4" class="fig"><canvas id="myCanvas" width="1000" height="1000" style="margin-left: 0px;" style="border:1px solid #ffffff;">
-    </canvas></td>
-    <td>&nbsp;&nbsp;</td>
-      <td>&nbsp;&nbsp;</td>
-
-
-</tr><tr>
-      <td>Measure angles<br><input class="button" id="findAB" type="button" value="click here" onClick="findAngles();"></td>
-      <td>&nbsp;&nbsp;</td>
-        <td> <span id="dummy2"><i></span> </td>
-  </tr>
-  <tr>
-        <td><span id="dummy1"><i></span></td>
-        <td>&nbsp;&nbsp;</td>
-          <td> <span id="dummy3"><i></span> </td>
-    </tr>
-    <tr>
-    <td>  <input type="button" id="saveButton" value="Save image"></p></td>
-    <td>&nbsp;&nbsp;</td>
-    <td><span id="dummy4"></span></td>
-    </tr>
-</table>
-
-
-    </body>
-</html>
