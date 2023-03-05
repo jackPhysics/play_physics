@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <head>
-<title>Blank Canvas</title>
+<title>standing waves on a string</title>
 
 <!--<link rel="stylesheet" href="style.css" type="text/css">-->
 <style>
@@ -59,7 +59,13 @@
 </div></td>
 </tr>
 <tr>
-  <td><input class="button" id="dragB" type="button" value="length = 200cm" onClick="changeDrag();"></td>
+  <td>
+<table>
+  <tr><td colspan=2>
+    <input class="button" id="dragB" type="button" value="length = 100cm" onClick=""></td></tr>
+  <tr><td><input class="button" id="bUp" type="button" value="+5" onClick="changeLenU();"></td>
+    <td><input class="button" id="bDown" type="button" value="-5" onClick="changeLenD();"></td></tr>
+</table></td>
   <td rowspan="4" class="fig"><canvas id="my_Canvas" width="600" height="630" style="position:static;" style="margin-left: -60px;" style="border:1px solid #ffffff;">
     </canvas></td>
     <td>&nbsp;&nbsp;</td>

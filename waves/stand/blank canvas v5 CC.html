@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <head>
-<title>Blank Canvas</title>
+<title>closed-closed standing waves</title>
 
 <!--<link rel="stylesheet" href="style.css" type="text/css">-->
 <style>
@@ -48,18 +48,25 @@
 <table border="1">
   <tr><td colspan="2">
     <p class="left">FREQUENCY (Hz):</p>
-    <p id="dial1">xx</p>
+    <p id="dial1"></p>
     <div class="slidecontainer">
 <input type="range" min="50" max="1050"  step="1" value="500" class="slider" id="myRange1" oninput="changeN1()">
 </div></td>
 <td colspan="2">
-  <p class="left">multiplier:</p><p id="dial2">xx</p>
+  <p class="left">multiplier:</p><p id="dial2"></p>
   <div class="slidecontainer">
 <input type="range" min="1" max="6" step="1" value="3" class="slider" id="myRange2" oninput="changeN2()">
 </div></td>
 </tr>
 <tr>
-  <td><input class="button" id="dragB" type="button" value="length = 200cm" onClick="changeDrag();"></td>
+  <td>
+<table>
+  <tr><td colspan=2>
+    <input class="button" id="dragB" type="button" value="length = 100cm" onClick=""></td></tr>
+  <tr><td><input class="button" id="bUp" type="button" value="+5" onClick="changeLenU();"></td>
+    <td><input class="button" id="bDown" type="button" value="-5" onClick="changeLenD();"></td></tr>
+</table>
+  </td>
   <td rowspan="4" class="fig"><canvas id="my_Canvas" width="600" height="630" style="position:static;" style="margin-left: -60px;" style="border:1px solid #ffffff;">
     </canvas></td>
     <td>&nbsp;&nbsp;</td>

@@ -1,7 +1,7 @@
 
-var realLength = 200;//cm
+var realLength = 100;//cm
 var length = 500;//pixels
-var scale = 500/200;
+var scale = 500/100;
 var frequency = 10;//Hz
 var velocity = 100;//m/s
 var lambda =velocity/frequency*100;//cm
@@ -77,6 +77,8 @@ function plotWave(){
   ctx.fillRect(570, 95, 20, 210);//volume
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(45, 200, 510, 1);
+  ctx.fillStyle = "#ffffff";//length text
+  ctx.fillRect(265, 30, 150, 22);
 
   //length arrow
       ctx.lineWidth = 2;
@@ -97,7 +99,9 @@ function plotWave(){
       ctx.closePath();
       ctx.fillStyle = "#000000";
       ctx.font = "16px serif";
-      ctx.fillText("Length", 270, 45);
+      var lenTxt = "Length = "+realLength+" cm";
+      ctx.fillText(""+lenTxt, 270, 45);
+      //ctx.fillText("Length", 270, 45);
       ctx.fillText("Vol", 568, 320);
   ctx.lineWidth = 3;
   ctx.strokeStyle = "#00ff00";
@@ -252,4 +256,20 @@ function changeLine(n){
   if(n.value=="single"){doubleFlag=false;}
   else{doubleFlag=true;}
   plotWave();
+}
+
+function changeLenD(){
+  realLength =  realLength - 5;
+  if(realLength<5){realLength=200;}
+  document.getElementById("dragB").value="length ="+realLength+"cm";
+  scale = 500/realLength;
+  findFreq();
+}
+
+function changeLenU(){
+  realLength =  realLength + 5;
+  if(realLength>200){realLength=5;}
+  document.getElementById("dragB").value="length ="+realLength+"cm";
+  scale = 500/realLength;
+  findFreq();
 }
