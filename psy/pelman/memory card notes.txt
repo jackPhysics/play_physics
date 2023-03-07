@@ -1,0 +1,35 @@
+ style="margin-left: 0px;" style="border:1px solid #ffffff;"
+
+ onclick="findCard()"
+
+drawImage(image,x,y)
+
+var img = document.getElementById("scream");
+   ctx.drawImage(img, 10, 10);
+
+JavaScript Syntax
+
+Position the image on the canvas:
+JavaScript syntax: 	context.drawImage(img,x,y);
+
+Position the image on the canvas, and specify width and height of the image:
+JavaScript syntax: 	context.drawImage(img,x,y,width,height);
+
+Clip the image and position the clipped part on the canvas:
+JavaScript syntax: 	context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
+Parameter Values
+Parameter 	Description 	Play it
+img 	Specifies the image, canvas, or video element to use 	 
+sx 	Optional. The x coordinate where to start clipping 	
+sy 	Optional. The y coordinate where to start clipping 	
+swidth 	Optional. The width of the clipped image 	
+sheight 	Optional. The height of the clipped image 	
+x 	The x coordinate where to place the image on the canvas 	
+y 	The y coordinate where to place the image on the canvas 	
+width 	Optional. The width of the image to use (stretch or reduce the image) 	
+height 	Optional. The height of the image to use (stretch or reduce the image) 	
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+ctx.rotate(20 * Math.PI / 180);
+ctx.fillRect(50, 20, 100, 50);
