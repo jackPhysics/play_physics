@@ -1,5 +1,5 @@
 
-var canvW=890;//840+50  770;//720+50
+var canvW=770;//840+50  770;//720+50
 var multiplier = (canvW-50)/24;
 var canvH=420;//330+60
 var driverT=1;//seconds
@@ -688,6 +688,21 @@ function plotNewFrame(){
                     ctx.moveTo(maxX, e);
                     ctx.lineTo(maxX+6, e);
                     ctx.stroke();}
+                    //sun position
+                    ctx.beginPath();
+                    ctx.fillStyle="red";
+                    ctx.strokeStyle="red";
+                    ctx.moveTo(minX, sunHigh2);
+                    ctx.lineTo(minX-6, sunHigh2);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(maxX, sunHigh2);
+                    ctx.lineTo(maxX+6, sunHigh2);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.fillStyle="black";
+                    ctx.strokeStyle="black";
 
                     //add numbers to edges
                     ctx.font = "10px Arial";
@@ -728,8 +743,8 @@ function plotNewFrame(){
                     ctx.fillStyle = "yellow";
                     ctx.strokeStyle = "yellow";}
                     else{
-                    ctx.fillStyle = "black";
-                    ctx.strokeStyle = "black";}
+                    ctx.fillStyle = "silver";
+                    ctx.strokeStyle = "silver";}
                     ctx.moveTo((mirrorLX+mirrorRX)/2, (mirrorLY+mirrorRY)/2);
                     ctx.lineTo((mirrorLX+mirrorRX)/2, (mirrorLY+mirrorRY)/2+14);
                     /*for(e=mirrorLX; e<mirrorRX+1;e=e+10){
@@ -745,25 +760,25 @@ function plotNewFrame(){
                     ctx.lineTo(e, (mirrorLY+mirrorRY)/2+10);
                     ctx.stroke();}
                     if(!ns_flip){
-                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
                     ctx.font = "20px Arial";
                     ctx.fillText("S",(mirrorLX+mirrorRX)/2-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("W",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("E",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("E",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("W",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("N",(mirrorLX)-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("N",(mirrorRX)-6, (mirrorLY+mirrorRY)/2+30);}
                     else{
-                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
                     ctx.font = "20px Arial";
                     ctx.fillText("N",(mirrorLX+mirrorRX)/2-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("W",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("E",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("E",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("W",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("S",(mirrorLX)-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("S",(mirrorRX)-6, (mirrorLY+mirrorRY)/2+30);}
 

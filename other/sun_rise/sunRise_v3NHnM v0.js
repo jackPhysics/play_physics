@@ -1,5 +1,5 @@
 
-var canvW=770;//840+50  770;//720+50
+var canvW=890;//840+50  770;//720+50
 var multiplier = (canvW-50)/24;
 var canvH=420;//330+60
 var driverT=1;//seconds
@@ -273,6 +273,8 @@ var sunHigh = canvH/2;
 var sunHigh2 = canvH/2;
 var effectivelatitude = 52;
 var sunPosition = 23.4;
+var moonPosition = 23.4;
+var moonDay = 3.05;//as on june21 2023
 var ns_flip = false;
 var dateYear = 2023;
 var leapYear = false;
@@ -542,14 +544,27 @@ function plotNewFrame(){
     //dateNow = 150;
     //latNow = 52;
     sunPosition = sunPos(dateNow);
+    moonPosition = moonPos(dateNow);
     effectivelatitude = effectLat(latNow,timeNow, sunPosition);
     sunHigh = sunHeight(effectivelatitude, sunPosition);
+    var moonOffset = 24.83*moonDay/29.53;//24.83 = 24h 50m
+    if(moonOffset>=12){moonOffset=moonOffset-24;}
+    var timeNowMoon = timeNow-moonOffset;
+    if(timeNowMoon<0){timeNowMoon=timeNowMoon+24;}
+    else if(timeNowMoon>24){timeNowMoon=timeNowMoon-24;}
+    effectivelatitudeM = effectLatM(latNow,timeNowMoon, sunPosition);
+    moonHigh = moonHeight(effectivelatitudeM, sunPosition);
     if(latNow<sunPosition){ns_flip=true;}
     else{ns_flip=false;}
     //alert("effectivelatitude="+effectivelatitude+"; sunPosition="+sunPosition+"; sunHigh="+sunHigh);
     //document.getElementById("text").innerHTML="height = "+printNumber2(sunHigh)+printNumber2(timeNow)+"";
     var sunHighMod = sunHigh;
     var timeNowMod = timeNow;
+    var moonHighMod = moonHigh;
+    //var moonOffset = 24*moonDay/29.53;
+    //if(moonOffset>=12){moonOffset=moonOffset-24;}
+    //var timeNowMoon = timeNow+moonOffset;
+    //if(timeNowMoon>=24){timeNowMoon=timeNowMoon-12;}
     /*if(sunHigh>90){
       sunHighMod=90-(sunHigh-90);
       timeNowMod=timeNow;
@@ -562,6 +577,8 @@ function plotNewFrame(){
     }*/
     sunHigh2 = minY+290-sunHighMod*3;
     sunWE = minX+multiplier*timeNowMod;
+    moonHigh2 = minY+290-moonHighMod*3;
+    moonWE = minX+multiplier*(timeNowMoon);
 
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -608,6 +625,24 @@ function plotNewFrame(){
     ctx.fillStyle = whatCol;//"yellow";"#FF0000";//
     ctx.ellipse(sunWE, sunHigh2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
     ctx.fill();}
+    //MOON
+    if(moonHigh>-16){
+    ctx.beginPath();
+    ctx.lineWidth = "4";
+    var whatCol = "silver";//sunColor(sunHigh);
+    ctx.fillStyle = whatCol;//"yellow";"#FF0000";//
+    ctx.ellipse(moonWE, moonHigh2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
+    ctx.fill();}
+    //MOON DAY
+    if(moonHigh>-16){
+    ctx.beginPath();
+    //ctx.lineWidth = "4";
+    //var whatCol = "black";//sunColor(sunHigh);
+    ctx.fillStyle = "yellow";//"yellow";"#FF0000";//
+    //ctx.ellipse(moonWE, moonHigh2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);
+    ctx.font = "12px Arial";
+    ctx.fillText(""+moonDay, moonWE+5, moonHigh2);}
+    document.getElementById("text2").innerHTML=""+moonDay;
     // Green rectangle
     var whatLand = landColor(sunHigh);
     ctx.beginPath();
@@ -688,17 +723,6 @@ function plotNewFrame(){
                     ctx.moveTo(maxX, e);
                     ctx.lineTo(maxX+6, e);
                     ctx.stroke();}
-                    //sun position
-                    ctx.beginPath();
-                    ctx.fillStyle="red";
-                    ctx.strokeStyle="red";
-                    ctx.moveTo(minX, sunHigh2);
-                    ctx.lineTo(minX-6, sunHigh2);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(maxX, sunHigh2);
-                    ctx.lineTo(maxX+6, sunHigh2);
-                    ctx.stroke();
 
                     //add numbers to edges
                     ctx.font = "10px Arial";
@@ -756,25 +780,25 @@ function plotNewFrame(){
                     ctx.lineTo(e, (mirrorLY+mirrorRY)/2+10);
                     ctx.stroke();}
                     if(!ns_flip){
-                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
                     ctx.font = "20px Arial";
                     ctx.fillText("S",(mirrorLX+mirrorRX)/2-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("E",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("W",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("W",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("E",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("N",(mirrorLX)-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("N",(mirrorRX)-6, (mirrorLY+mirrorRY)/2+30);}
                     else{
-                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
                     ctx.font = "20px Arial";
                     ctx.fillText("N",(mirrorLX+mirrorRX)/2-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("E",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("W",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("W",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("E",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("S",(mirrorLX)-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("S",(mirrorRX)-6, (mirrorLY+mirrorRY)/2+30);}
 
@@ -1301,8 +1325,29 @@ if(goFlag){
 
 
     function changeT(){
+    var dateText = "January 1, "+dateYear+" 00:00:00 GMT+00:00";//'January 1, 2023 00:00:00 GMT+00:00'
+    var moonT_ms = 1000*60*60*24*29.53;
+    var moonNow_ms = 1000*60*60*24.83*9.76;
+    var moonOff_ms = 1000*60*60*24*7.09;
+    var dozHour_ms = 12*60*60*1000;//12 hours in msec
+    var date0 = new Date(dateText);
+    date0 = date0.getTime();
+    var msInDay = 1000*60*60*24;
       timeNow = parseInt(document.getElementById("myRangeT").value);//valueAsNumber(slider2.value);
       timeNow = timeNow/12;
+      dateNow = parseInt(document.getElementById("myRangeD").value)-5;
+      var timeNow_ms = timeNow*60*60*1000;
+      var nowByCalc = (dateNow-1)*msInDay+date0+timeNow_ms-dozHour_ms;//date now in ms
+      //alert("dateNow="+dateNow+"\nmsInDay="+msInDay+"\ndate0="+date0+"\ntimeNow_ms="+timeNow_ms+"\ndozHour_ms="+dozHour_ms)
+      var moonCalc = nowByCalc;//+moonNow_ms;
+      var moonDummy = Math.floor(nowByCalc/moonT_ms);
+      var moonDay_ms =  moonCalc - moonDummy*moonT_ms-moonOff_ms;
+      if(moonDay_ms<0){moonDay_ms=moonDay_ms+moonT_ms}
+      //alert("timeNow_ms="+timeNow_ms+"\nnowByCalc="+nowByCalc+"\nmoonDummy="+moonDummy+"\nmoonDay_ms="+moonDay_ms)
+      moonDay = moonDay_ms/24/60/60/1000;
+      //alert("moon day1 ="+moonDay);
+      moonDay = Math.round(moonDay*100)/100;
+      //alert("moon day2 ="+moonDay);
       document.getElementById("slideT").innerHTML="time = "+printNumberT(timeNow)+"";
       plotNewFrame();
       //goFlag=false;
@@ -1312,6 +1357,14 @@ if(goFlag){
 
         function changeD(){
         var dateText = "January 1, "+dateYear+" 00:00:00 GMT+00:00";//'January 1, 2023 00:00:00 GMT+00:00'
+        //on Jan 1 2023 moon day is 9.76
+        //Jan 1 2023 seems to be giving 15.85
+        //so need offset of 6.09 (=15.85-9.76)
+        //now giving 10.76 so need an extra offset of 1 so 7.09
+        var moonT_ms = 1000*60*60*24*29.53;
+        var moonNow_ms = 1000*60*60*24.83*9.76;
+        var moonOff_ms = 1000*60*60*24*7.09;//6.09
+        var dozHour_ms = 12*60*60*1000;//12 hours in msec
         var date0 = new Date(dateText);
         date0 = date0.getTime();
         var msInDay = 1000*60*60*24;
@@ -1340,7 +1393,15 @@ if(goFlag){
         else{
           if(dateNow>365){dateNow=365;}
         }
-        var nowByCalc = (dateNow-1)*msInDay+date0;
+        var timeNow_ms = timeNow*60*60*1000;
+        var nowByCalc = (dateNow-1)*msInDay+date0+timeNow_ms-dozHour_ms;//date now in ms
+        var moonCalc = nowByCalc;//+moonNow_ms;
+        var moonDummy = Math.floor(nowByCalc/moonT_ms);
+        var moonDay_ms =  moonCalc - moonDummy*moonT_ms-moonOff_ms;
+        if(moonDay_ms<0){moonDay_ms=moonDay_ms+moonT_ms}
+        moonDay = moonDay_ms/24/60/60/1000;
+        moonDay = Math.round(moonDay*100)/100;
+        //alert("moon day ="+moonDay);
         var nowByCalc2 = new Date(nowByCalc);
         var nowIs = nowByCalc2.toDateString()
           document.getElementById("slideD").innerHTML=""+nowIs+"";
@@ -1545,12 +1606,35 @@ function printNumber2(n){
 function sunPos(d){
   var dt = d;
 
-  var sunP = 23.4*(Math.cos((dt-355)/365.25*2*Math.PI));
+  var sunP = 23.4*(Math.cos((dt-172)/365.25*2*Math.PI));
 
   return sunP;
 }
 
+
+function moonPos(d){
+  var dt = d;
+
+  var moonP = 23.4*(Math.cos((dt-172)/365.25*2*Math.PI));//23.4*(Math.cos((dt-0)/27.3217*2*Math.PI));
+
+  return moonP;
+}
+
 function effectLat(l,t, s){
+  var lat = l;//latNow
+  var tm = t;
+  var sp = s;
+
+  if(lat<sp){
+    lat = sp+(sp-lat);
+  }
+
+  var efLat = (90-lat)*(-Math.cos((tm-12)/24*2*Math.PI))+90;
+
+  return efLat;
+}
+
+function effectLatM(l,t, s){
   var lat = l;//latNow
   var tm = t;
   var sp = s;
@@ -1571,4 +1655,14 @@ function sunHeight(l, s){
   var sunH = 90-(lat-sp);
 
   return sunH;
+}
+
+
+function moonHeight(l, s){
+  var lat = l;//effectivelatitude
+  var sp = s;
+
+  var moonH = 90-(lat-sp);
+
+  return moonH;
 }

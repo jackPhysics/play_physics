@@ -73,7 +73,7 @@ window.onload = function(){
             plotNewFrame();
 
     document.getElementById("myRangeT").value=144;
-    document.getElementById("myRangeD").value=172;
+    document.getElementById("myRangeD").value=177;
     document.getElementById("myRangeL").value=52;
 
     document.getElementById("saveButton").addEventListener("click", function(evt){
@@ -269,6 +269,12 @@ function plotNewFrame(){
       ctx.arc(a1, b1, r2, th3, th4);}
       //ctx.stroke();
       ctx.fill();
+      ctx.beginPath();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = moonNot;
+      ctx.moveTo(p1, q1-2);
+      ctx.lineTo(p1, q1-2*r1+2);
+      ctx.stroke();
       // Centre points
       /*ctx.beginPath();
       ctx.fillStyle = "red";
@@ -618,7 +624,7 @@ function nameOfPhase(d){
     phaseName = "Waxing Crescent";
   }
   else if(day<=8.382647){
-    phaseName = "Waxing Crescent";
+    phaseName = "First Quarter";
   }
   else if(day<=13.765294){
     phaseName = "Waxing Gibbous";
