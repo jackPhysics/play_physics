@@ -1,0 +1,62 @@
+SUN RISE notes:
+
+sunRise_v3NH and sunRise_v3SH
+
+shows sun position in Northern (NH) or southern (SH) hemispheres
+
+sunRise_v3NHnM v2:
+
+shows sun and moon
+- sky is single colour
+- moon has hidden dark side
+- lighted side is always vertical
+
+sunRise_v3NHnM v2b or sunRise_v3NHnM v2black:
+
+shows sun and moon
+- sky is gradient colour
+- moon has black dark side
+- lighted side is always vertical
+
+sunRise_v3NHnM v3:
+
+shows sun and moon
+- sky is single colour
+- moon has hidden dark side
+- lighted side is angled towards the sun
+
+sunRise_v3NHnM v3:
+
+shows sun and moon
+- sky is gradient colour
+- moon has black dark side
+- lighted side is angled towards the sun
+
+sunRise_v3NHnM v2bigmoon:
+
+shows sun and moon and large moon
+- sky is gradient colour
+- moon has black dark side
+- lighted side is vertical
+
+sunRise_v3NHnM v2imgbigmoon:
+
+shows sun and moon and large moon
+- sky is gradient colour
+- moon has black dark side
+- lighted side is vertical
+- image used on big moon (some of the time...)
+
+sunRise_v3NHnM v2angledbigmoon:
+
+shows sun and moon and large moon
+- sky is gradient colour
+- moon has black dark side
+- lighted side is angled towards sun
+
+sunRise_v3NHnM v2notB_angledbigmoon:
+
+shows sun and moon and large moon
+- sky is single colour
+- moon has no dark side
+- lighted side is angled towards sun
