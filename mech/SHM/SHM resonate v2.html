@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+      <style>
+          canvas {
+              border: 0px solid black;
+              font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
+              font-size: 13px;
+              line-height: 1.5;
+              color: #474747;
+          }
+          td {text-align: center;}
+          td.fig {width: 710px;text-align: right;}
+          textarea {width: 4em; height: 1em; resize: none;}
+          .center {margin: auto; width: 80%;}
+          .slidecontainer {
+            width: 100%; /* Width of the outside container */
+          }
+
+          /* The slider itself */
+          .slider {
+            width: 80%; /* Full-width */
+            height: 50px; /* Specified height */
+            background: #ff0000; /* Grey background #d3d3d3*/
+          }
+
+      </style>
+      <script src="events.js">
+      </script>
+
+    <script src="SHM resonate v2.js" type="text/javascript"></script>
+
+  </head>
+  <body style="margin-left: 80px;">
+    <br>
+
+    <p></p>
+
+<table class="bigTable" border="0"><tr>
+  <td>
+    <table border="0"  class="center">
+      <tr  class="center"><td><input class="center" id="stopB" type="button" value="STOP" onClick="stopDriver();"></td></tr>
+      <tr  class="center"><td><input class="center" id="goB" type="button" value="GO" onClick="shakeDriver();"></td></tr>
+        <tr  class="center"><td><input class="center" id="stopB" type="button" value="restart" onClick="changeT(0);"></td></tr>
+    </table>
+    </td>
+  <td rowspan="3" colspan="2" class="fig"><canvas id="myCanvas" width="600" height="630" style="margin-left: -60px;" style="border:1px solid #ffffff;">
+    </canvas></td>
+
+      <td> <span id="dummy1"><i></span> </td>
+
+
+</tr><tr>
+      <td>Change <br>driver period:
+        <table><tr><td><input class="button" id="add10" type="button" value="add 1" onClick="changeT(1);"></td>
+                  <td><input class="button" id="add1" type="button" value="add 0.1" onClick="changeT(0.1);"></td></tr>
+            <tr><td><input class="button" id="sub10" type="button" value="sub 1" onClick="changeT(-1);"></td>
+                <td><input class="button" id="sub1" type="button" value="sub 0.1" onClick="changeT(-0.1);"></td></tr>
+              </table>
+        </td>
+
+        <td> <span id="dummy2"><i></span> </td>
+  </tr><tr>
+    <td> Change damping <br>percentage:
+      <table><tr><td><input class="button" id="damp10" type="button" value="add 1" onClick="changeD(1);"></td>
+                <td><input class="button" id="damp1" type="button" value="add 0.1" onClick="changeD(0.1);"></td></tr>
+          <tr><td><input class="button" id="damp10" type="button" value="sub 1" onClick="changeD(-1);"></td>
+              <td><input class="button" id="damp1" type="button" value="sub 0.1" onClick="changeD(-0.1);"></td></tr>
+            </table></td>
+
+    <td><span id="dummy3"></span></td>
+    </tr>
+    <tr><td>  <input type="button" id="saveButton" value="Save image"></td>
+      <td><span id="dummyM">m = 1</span><div class="slidecontainer">
+<input type="range" min="1" max="100" step="1" value="10" class="slider" id="myRangeM" oninput="changeNM()">
+</div></td>
+      <td><span id="dummyK">k = 1</span><div class="slidecontainer">
+<input type="range" min="1" max="100" step="1" value="1" class="slider" id="myRangeK" oninput="changeNK()">
+</div></td>
+      <td>&nbsp;</td></tr>
+</table>
+<p>The yellow ball depicts the Driving oscillator (which has a constant amplitude of 10mm, but variable period and frequency).
+<br>The large brown ball is the forced oscillator
+ - the sliders control the mass and k-value of the forced oscillator.
+  <br>The blue lines show the furthest displacements of the forced oscillator.
+<br>Alter all the values and try to get RESONANCE!</p>
+
+    </body>
+</html>
