@@ -24,7 +24,7 @@ var mirrorLY = canvH-100;
 var mirrorRX = canvW-25;
 var mirrorRY = canvH-100;
 var objRadA = 10;
-var objRadB = 8;//10*Math.pow(objMassB, 0.2);
+var objRadB = 10;//10*Math.pow(objMassB, 0.2);
 var objRadaA = objRadA;
 var objRadaB = objRadB;
 var objRadaAold = objRadA;
@@ -67,10 +67,9 @@ var sign = 1;
 var d1 = sign*r1*15/8;
 var r2 = Math.pow(r1, 2)+Math.pow(d1, 2);
   r2 = Math.pow(r2, 0.5);
-var moonCol = "silver";//"white";//
+var moonCol = "silver";
 var moonNot = "black";
-if(sign<0){moonNot = "white";//"silver"
-                    }
+if(sign<0){moonNot = "silver"}
 //alert(""+r2);
 var i1 = 0;
 var j1 = 0;
@@ -88,12 +87,6 @@ var arcCW = false;
 var showLand = true;
 var newMFlag = false;
 var moonLatOffset = 0;
-var bigMFlag = true;
-var smallMFlag = false;
-var blackMFlag = true;
-var whiteMFlag = false;
-var whiteMColor = "silver";
-var oneSkyMFlag = false;
 
 window.onload = function(){
     var events = new Events("myCanvas");
@@ -292,7 +285,7 @@ window.onload = function(){
                   ctx.beginPath();
                       ctx.lineWidth = "4";
                       ctx.fillStyle = "yellow";
-                      ctx.ellipse(objPosB, canvH/2, objRadaB-0, objRadbB-0, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
+                      ctx.ellipse(objPosB, canvH/2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
                       ctx.fill();
             plotNewFrame();
 
@@ -349,13 +342,6 @@ window.onload = function(){
 function plotNewFrame(){
     //dateNow = 150;
     //latNow = 52;
-    if(smallMFlag){
-      objRadaB = 4;
-    }
-    else{
-      objRadaB = 8;
-    }
-    objRadbB = objRadaB;
     var moonFlip = false;//if moon goes off edge to other side then Sun-moon direction is wrong
     sunPosition = sunPos(dateNow);
     moonPosition = moonPos(dateNow);
@@ -422,9 +408,7 @@ function plotNewFrame(){
           grd.addColorStop(1, "#0000FF");}
           // Fill with gradient
           ctx.fillStyle = grd;
-    if(oneSkyMFlag){
-    ctx.fillStyle = whatSky;//"blue";
-    }
+    //ctx.fillStyle = whatSky;//"blue";
     ctx.fillRect(xmin, ymin, maxX-25, ymax-70);
     ctx.fill();
     // box rectangle
@@ -442,7 +426,7 @@ function plotNewFrame(){
     ctx.lineWidth = "4";
     var whatCol = sunColor(sunHigh);
     ctx.fillStyle = whatCol;//"yellow";"#FF0000";//
-    ctx.ellipse(sunWE, sunHigh2, objRadaB-0, objRadbB-0, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
+    ctx.ellipse(sunWE, sunHigh2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
     ctx.fill();
     }
     //SMALL MOON
@@ -452,7 +436,7 @@ function plotNewFrame(){
 
       x1 = moonWE;
       y1 = moonHigh2;
-      r1 = objRadaB-0;
+      r1 = objRadaB-2;
 
       //MOON DAY
       ctx.beginPath();
@@ -479,7 +463,7 @@ function plotNewFrame(){
       ctx.fillText(""+namePhase, 2*canvW/3, 1.5*canvH/6);
       if(moonHigh>-1){
       ctx.beginPath();
-      ctx.fillStyle = whiteMColor;//"white";//"silver";
+      ctx.fillStyle = "silver";
       ctx.font = "24px Arial";
       ctx.fillText("moon above horizon", canvW/6, 5*canvH/6);}
       else{
@@ -537,17 +521,11 @@ function plotNewFrame(){
         ctx.beginPath();
         ctx.lineWidth = "4";
         ctx.fillStyle = "black";//"yellow";"#FF0000";//
-        if(blackMFlag){
-          ctx.fillStyle = "black";//sunCol;//whatSky;
-        }
-        else{
-          ctx.fillStyle = whatSky;
-        }
         ctx.arc(x1, y1, r1, 0, 2*Math.PI, arcCW) //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
         ctx.fill();
         ctx.beginPath();
         ctx.lineWidth = "4";
-        var whatCol = whiteMColor;//"white";//"silver";//sunColor(sunHigh);
+        var whatCol = "silver";//sunColor(sunHigh);
         ctx.fillStyle = whatCol;//"yellow";"#FF0000";//
         if(fullFlag){
         ctx.arc(x1, y1, r1, 0, 2*Math.PI, arcCW) //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
@@ -558,25 +536,19 @@ function plotNewFrame(){
         ctx.fill();
         //alert("alpha="+alp1+" beta="+bet1+" th1="+th1+" th2="+th2);
         ctx.beginPath();
-        if(blackMFlag){
-          moonNot = "black";//sunCol;//whatSky;
-        }
-        else{
-          moonNot = whatSky;
-        }
-        //ctx.fillStyle = moonNot;
+        moonNot = "black";//sunCol;//whatSky;
         if(sign<0){moonNot = moonCol}
-        ctx.fillStyle = moonNot;
-        ctx.lineWidth = 1;
-        ctx.arc(a1, b1, r2, th3, th4);//}
-        //ctx.stroke();
-        ctx.fill();
-        ctx.beginPath();
-        ctx.strokeStyle = moonNot;
-        ctx.moveTo(p1, q1);//(p1, q1-2)
-        ctx.lineTo(2*x1-p1, 2*y1-q1);//(p1, q1-2*r1+2);
-        ctx.stroke();
-      }
+     ctx.fillStyle = moonNot;
+     ctx.lineWidth = 1;
+     ctx.arc(a1, b1, r2, th3, th4);}
+     //ctx.stroke();
+     ctx.fill();
+     ctx.beginPath();
+     ctx.lineWidth = 3;
+     ctx.strokeStyle = moonNot;
+     ctx.moveTo(p1, q1);//(p1, q1-2)
+     ctx.lineTo(2*x1-p1, 2*y1-q1);//(p1, q1-2*r1+2);
+     ctx.stroke();
           x1 = old_x1;
           y1 = old_y1;
           r1 = old_r1;
@@ -628,7 +600,6 @@ function plotNewFrame(){
       p1 = x1+r1*Math.cos(thB);//x1;
       q1 = y1+r1*Math.sin(thB);//y1+r1;
       //MOON
-      if(bigMFlag){
       //BIG MOON
       ctx.beginPath();
       ctx.lineWidth = "4";
@@ -661,7 +632,6 @@ function plotNewFrame(){
       ctx.moveTo(p1, q1);//(p1, q1-2)
       ctx.lineTo(2*x1-p1, 2*y1-q1);//(p1, q1-2*r1+2);
       ctx.stroke();
-      }
       // Centre points
       /*ctx.beginPath();
       ctx.fillStyle = "red";
@@ -1241,7 +1211,7 @@ if(goFlag){
                         ctx.beginPath();
                             ctx.lineWidth = "4";
                             ctx.fillStyle = "red";
-                            ctx.ellipse(centreB, canvH/2, objRadaB-0, objRadbB-0, 0, 0, 2 * Math.PI);
+                            ctx.ellipse(centreB, canvH/2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);
                             //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
                             ctx.fill();
                             ctx.beginPath();
@@ -1843,72 +1813,6 @@ function changeLand(){
   else{
     showLand = true;
     document.getElementById("landButton").value="no land";
-  }
-  plotNewFrame();
-}
-
-
-function changeBigM(){
-  if(bigMFlag){
-    bigMFlag = false;
-    document.getElementById("bigMButton").value="big moon";
-  }
-  else{
-    bigMFlag = true;
-    document.getElementById("bigMButton").value="no big moon";
-  }
-  plotNewFrame();
-}
-
-
-function changeSmallM(){
-  if(smallMFlag){
-    smallMFlag = false;
-    document.getElementById("smallMButton").value="true visual angle";
-  }
-  else{
-    smallMFlag = true;
-    document.getElementById("smallMButton").value="false visual angle";
-  }
-  plotNewFrame();
-}
-
-
-function changeBlackM(){
-  if(blackMFlag){
-    blackMFlag = false;
-    document.getElementById("blackMButton").value="show darkside";
-  }
-  else{
-    blackMFlag = true;
-    document.getElementById("blackMButton").value="no darkside";
-  }
-  plotNewFrame();
-}
-
-
-function changeWhiteM(){
-  if(whiteMFlag){
-    whiteMFlag = false;
-    whiteMColor = "silver";
-    document.getElementById("whiteMButton").value="bright moon";
-  }
-  else{
-    whiteMFlag = true;
-    whiteMColor = "white";
-    document.getElementById("whiteMButton").value="silver moon";
-  }
-  plotNewFrame();
-}
-
-function changeSky(){
-  if(oneSkyMFlag){
-    oneSkyMFlag = false;
-    document.getElementById("skyButton").value="blue sky";
-  }
-  else{
-    oneSkyMFlag = true;
-    document.getElementById("skyButton").value="graded sky";
   }
   plotNewFrame();
 }
