@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Sun Rise</title>
+
+      <script src="events.js">
+      </script>
+
+    <script type="text/javascript">
+var latG = 0;
+var longG = 0;
+var ecliptic = 23.44*Math.PI/180;
+
+window.onload = function(){
+tryTrig();
+
+}
+
+function calculate(){
+  var dec = 1*document.getElementById("boxDec").value;
+  var ra = 1*document.getElementById("boxRA").value;
+  dec = dec/180*Math.PI;
+  ra = ra/180*Math.PI;
+  eq2ec(ra, dec);
+}
+
+
+function eq2ec(R, d){
+var rA = R;
+var dec = d;
+var lat = 0;
+var long = 0;
+
+lat = Math.asin(Math.sin(dec)*Math.cos(ecliptic));
+lat = lat - (Math.cos(dec)*Math.sin(ecliptic)*Math.sin(rA))
+
+var num = Math.sin(rA)*Math.cos(ecliptic)+Math.tan(dec)*Math.sin(ecliptic);
+var den = Math.cos(rA);
+
+long = Math.asin(num/den);
+
+ansText = "lat = "+lat+" long = "+long;
+document.getElementById("text").innerHTML = ""+ansText;
+
+}
+
+function tryTrig(){
+  var text2 = "<table>";
+  for(i=0; i<16; i++){
+    var angle = Math.PI/8*i;
+    var degreeA = 22.5*i;
+    text2 = text2+"<tr><td> angle = "+degreeA+"</td>";
+    var sinA = Math.sin(angle);
+    sinA = Math.round(sinA*100)/100;
+    var cosA = Math.cos(angle);
+    cosA = Math.round(cosA*100)/100;
+    var tanA = Math.tan(angle);
+    tanA = Math.round(tanA*100)/100;
+    text2 = text2 +"<td> sin = "+ sinA+ "</td><td> cos = "+cosA + "</td><td> tan = "+tanA +"</td></tr>";
+    }
+  text2 = text2+"</table>"
+document.getElementById("text2").innerHTML = ""+text2;
+
+}
+</script>
+
+</head>
+<body>
+  <!--def equatorial_to_ecliptic(right_ascension, declination):
+ra, dec = hms_to_dd(right_ascension), dms_to_dd(declination)
+
+ec_latitude = np.arcsin(np.sin(dec) * np.cos(_ecliptic)
+ec_latitude = ec_latitude - (np.cos(dec) * np.sin(_ecliptic) * np.sin(ra)))
+
+_num, _den = np.sin(ra) * np.cos(_ecliptic) + np.tan(dec) * np.sin(_ecliptic), np.cos(ra)
+ec_longitude = np.arcsin(_num / _den)
+
+ec_latitude, ec_longitude = np.degrees([ec_latitude, ec_longitude])
+
+return dd_to_dms(ec_latitude), dd_to_dms(ec_longitude)-->
+<p></p>
+
+<p id="text">xx</p>
+
+<p><textarea id="boxDec" style="width: 4em;">dms</textarea> <input type="button" id="stepsButton" value="input Dec"  onClick="calculate()"></p>
+
+<p><textarea id="boxRA" style="width: 4em;">dms</textarea> <input type="button" id="stepsButton" value="input RA"  onClick="calculate()"></p>
+
+<p id="text2">xx</p>
+</body>
+</html>

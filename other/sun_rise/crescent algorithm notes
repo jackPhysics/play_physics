@@ -1,0 +1,9 @@
+Drawing a crescent/gibbous
+
+1) draw a complete circle in background colour
+
+2) draw semi-circle on top in foreground colour on the side that you want crescent/gibbous to start
+
+3) for crescent: draw larger radius arc in BG colour over the top of FG colour semi-circle
+
+4) for gibbous: draw larger radius arc in FG colour over the top of the BG colour semi-circle

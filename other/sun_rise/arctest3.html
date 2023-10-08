@@ -23,13 +23,9 @@ var th2 = 3*Math.PI/2;
 
 var a1 = 0;
 var b1 = 0;
-var sign = -1;
-var d1 = sign*r1*15/8;
+var d1 = r1/2;
 var r2 = Math.pow(r1, 2)+Math.pow(d1, 2);
     r2 = Math.pow(r2, 0.5);
-var moonCol = "blue";
-var moonNot = "white";
-if(sign<0){moonNot = "blue"}
 //alert(""+r2);
 var i1 = 0;
 var j1 = 0;
@@ -46,7 +42,7 @@ var th4 = 0;
 
 
 
-  a1 = x1+d1;
+  a1 = x1+r1/2;
   b1 = y1;
   i1 = a1;
   j1 = y1 + r2;
@@ -54,27 +50,22 @@ var th4 = 0;
   q1 = y1+r1;
   alp1 = Math.atan(r1/d1);//Math.atan(2);//Math.atan(r1/r2);
   bet1 = Math.PI/2 - alp1;
-  th3 = th1 + bet1*sign;
-  th4 = th3 + 2*alp1*sign;
+  th3 = th1 + bet1;
+  th4 = th3 + 2*alp1;
   //alert("alpha="+alp1+" beta="+bet1+" th1="+th1+" th2="+th2);
 
 
   ctx.beginPath();
-  ctx.strokeStyle = moonCol
-  ctx.fillStyle = moonCol;
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 5;
 
   ctx.beginPath();
-  ctx.arc(x1, y1, r1, th1, th2, false);
-  //ctx.stroke();
-  ctx.fill();
+  ctx.arc(x1, y1, r1, th1, th2);
+  ctx.stroke();
 
   ctx.beginPath();
-  ctx.fillStyle = moonNot;
-  ctx.lineWidth = 1;
   ctx.arc(a1, b1, r2, th3, th4);
-  //ctx.stroke();
-  ctx.fill();
+  ctx.stroke();
 
   // Centre points
   ctx.beginPath();

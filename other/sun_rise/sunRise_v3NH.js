@@ -693,13 +693,13 @@ function plotNewFrame(){
                     ctx.fillStyle="red";
                     ctx.strokeStyle="red";
                     ctx.moveTo(minX, sunHigh2);
-                    ctx.lineTo(minX-6, sunHigh2);
+                    ctx.lineTo(minX-12, sunHigh2);
                     ctx.stroke();
                     ctx.beginPath();
                     ctx.moveTo(maxX, sunHigh2);
-                    ctx.lineTo(maxX+6, sunHigh2);
+                    ctx.lineTo(maxX+12, sunHigh2);
                     ctx.stroke();
-                    
+
                     ctx.beginPath();
                     ctx.fillStyle="black";
                     ctx.strokeStyle="black";
@@ -739,9 +739,13 @@ function plotNewFrame(){
                     ridgeCount=ridgeCount-10;}
 
                     //markings on mirror line
-                    if(sunHigh<15&&sunHigh>-15){
+                    if(sunHigh<4&&sunHigh>-18){
                     ctx.fillStyle = "yellow";
                     ctx.strokeStyle = "yellow";}
+                    else if(sunHigh>=4){
+                    ctx.fillStyle = "black";
+                    ctx.strokeStyle = "black";
+                    }
                     else{
                     ctx.fillStyle = "silver";
                     ctx.strokeStyle = "silver";}
@@ -843,7 +847,7 @@ function sunColor(h){//h=sun sunHeight
 function sunColor2(h){//h=sun sunHeight
   var yelNum = h;
   var yelNum = Math.floor(yelNum);
-  if(h<-10){
+  if(h<-12){
   var sunCol = "#000044";}
   else if(h<-6){
   var sunCol = "#0000aa";}
@@ -905,8 +909,8 @@ function skyColor(h){//h=sun sunHeight
   var yelTextX = yelNumX.toString(16);
   var yelTextX2 = yelNumX2.toString(16);
   var skyCol = "#"+yelTextX+yelTextX+yelTextX2+yelTextX2+yelText2+yelText2;}
-  else if(h>-4){
-  yelNum = (h+4);
+  else if(h>-6){
+  yelNum = (h+6);
   var yelNum2 = 2*yelNum;
   yelNum = Math.floor(yelNum);
   yelNum2 = Math.floor(yelNum2);
@@ -932,12 +936,13 @@ function skyColor(h){//h=sun sunHeight
 }
 
 function landColor(h){//h=sun sunHeight
-  var yelNum = h*4;
+  var yelNum = h*4+75;//75 etc alters how quickly ground yellows/darkens
   yelNum = Math.floor(yelNum);
   var yelNum2 = 0;
   if(yelNum<0){yelNum=0}
-  if(yelNum>158){yelNum2=yelNum-158;
-    yelNum=158;}
+  //158
+  if(yelNum>200){yelNum2=yelNum-200;//158
+    yelNum=200;}
   yelNum2 = Math.floor(yelNum2);
   var yelText = yelNum.toString(16);
   var yelText2 = yelNum2.toString(16);

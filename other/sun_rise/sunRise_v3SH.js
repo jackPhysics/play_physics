@@ -443,16 +443,16 @@ window.onload = function(){
                     ctx.moveTo(e, (mirrorLY+mirrorRY)/2);
                     ctx.lineTo(e, (mirrorLY+mirrorRY)/2+10);
                     ctx.stroke();}
-                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
                     ctx.font = "20px Arial";
-                    ctx.fillText("S",(mirrorLX+mirrorRX)/2-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("N",(mirrorLX+mirrorRX)/2-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("W",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("E",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("N",(mirrorLX)-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("N",(mirrorRX)-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("S",(mirrorLX)-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("S",(mirrorRX)-6, (mirrorLY+mirrorRY)/2+30);
                     //for(f=1;f<6;f++){
                     //ctx.fillText(""+f,((mirrorLX+mirrorRX)/2-3)-(f*50), ((mirrorLY+mirrorRY)/2+25));
                     //ctx.fillText(""+f,((mirrorLX+mirrorRX)/2-3)+(f*50), ((mirrorLY+mirrorRY)/2+25));
@@ -681,12 +681,12 @@ function plotNewFrame(){
                     //ctx.lineTo(minX-14, midValY);
                     for(e=minY+20; e<ymax-60;e=e+30){
                     ctx.moveTo(minX, e);
-                    ctx.lineTo(minX-6, e);
+                    ctx.lineTo(minX-12, e);
                     ctx.stroke();}
                     //right ridge
                     for(e=minY+20; e<ymax-60;e=e+30){
                     ctx.moveTo(maxX, e);
-                    ctx.lineTo(maxX+6, e);
+                    ctx.lineTo(maxX+12, e);
                     ctx.stroke();}
                     //sun position
                     ctx.beginPath();
@@ -701,6 +701,8 @@ function plotNewFrame(){
                     ctx.stroke();
 
                     //add numbers to edges
+                    ctx.fillStyle="black";
+                    ctx.strokeStyle="black";
                     ctx.font = "10px Arial";
                     ctx.fillText("12",midValX-6, minY-18);
                     ctx.fillText("12",midValX-3, maxY+25);
@@ -735,9 +737,13 @@ function plotNewFrame(){
                     ridgeCount=ridgeCount-10;}
 
                     //markings on mirror line
-                    if(sunHigh<15&&sunHigh>-15){
+                    if(sunHigh<4&&sunHigh>-18){
                     ctx.fillStyle = "yellow";
                     ctx.strokeStyle = "yellow";}
+                    else if(sunHigh>=4){
+                    ctx.fillStyle = "black";
+                    ctx.strokeStyle = "black";
+                    }
                     else{
                     ctx.fillStyle = "silver";
                     ctx.strokeStyle = "silver";}
@@ -756,17 +762,6 @@ function plotNewFrame(){
                     ctx.lineTo(e, (mirrorLY+mirrorRY)/2+10);
                     ctx.stroke();}
                     if(!ns_flip){
-                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
-                    ctx.font = "20px Arial";
-                    ctx.fillText("S",(mirrorLX+mirrorRX)/2-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("E",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("W",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("N",(mirrorLX)-6, (mirrorLY+mirrorRY)/2+30);
-                    ctx.fillText("N",(mirrorRX)-6, (mirrorLY+mirrorRY)/2+30);}
-                    else{
                     ctx.fillText("NE",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
                     ctx.fillText("NW",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
                     ctx.fillText("SE",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
@@ -777,6 +772,17 @@ function plotNewFrame(){
                     ctx.fillText("W",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("S",(mirrorLX)-6, (mirrorLY+mirrorRY)/2+30);
                     ctx.fillText("S",(mirrorRX)-6, (mirrorLY+mirrorRY)/2+30);}
+                    else{
+                    ctx.fillText("SE",(mirrorLX+mirrorRX)/2-90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("SW",(mirrorLX+mirrorRX)/2+90-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NE",(mirrorLX+mirrorRX)/2-270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.fillText("NW",(mirrorLX+mirrorRX)/2+270-6, (mirrorLY+mirrorRY)/2+25);
+                    ctx.font = "20px Arial";
+                    ctx.fillText("S",(mirrorLX+mirrorRX)/2-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("E",(mirrorLX+mirrorRX)/2-180-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("W",(mirrorLX+mirrorRX)/2+180-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("N",(mirrorLX)-6, (mirrorLY+mirrorRY)/2+30);
+                    ctx.fillText("N",(mirrorRX)-6, (mirrorLY+mirrorRY)/2+30);}
 
                     //for(f=1;f<6;f++){
                     //ctx.fillText(""+f,((mirrorLX+mirrorRX)/2-3)-(f*50), ((mirrorLY+mirrorRY)/2+25));
@@ -928,18 +934,18 @@ function skyColor(h){//h=sun sunHeight
 }
 
 function landColor(h){//h=sun sunHeight
-  var yelNum = h*4;
+  var yelNum = h*4+75;
   yelNum = Math.floor(yelNum);
   var yelNum2 = 0;
   if(yelNum<0){yelNum=0}
-  if(yelNum>158){yelNum2=yelNum-158;
-    yelNum=158;}
+  if(yelNum>200){yelNum2=yelNum-200;//158
+    yelNum=200;}
   yelNum2 = Math.floor(yelNum2);
   var yelText = yelNum.toString(16);
   var yelText2 = yelNum2.toString(16);
   if(yelNum<16){yelText = "0"+yelText;}
   if(yelNum2<16){yelText2 = "0"+yelText2;}
-  var landCol = "#"+yelText2+yelText+"00";
+  var landCol = "#"+yelText2+yelText+"22";
   return landCol;
 }
 

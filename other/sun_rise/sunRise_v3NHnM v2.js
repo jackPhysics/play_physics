@@ -528,19 +528,6 @@ function plotNewFrame(){
       ctx.beginPath();
       moonNot = whatSky;//sunCol;//whatSky;
       if(sign<0){moonNot = moonCol}
-      //else{moonNot = whatSky;}
-      /*if(sign2>0){
-        if(moonNot==moonCol){
-          moonNot=whatSky;
-        }
-        else{moonNot=moonCol}
-      }
-      else{
-        if(moonNot==whatSky){
-        moonNot=moonCol;
-      }
-      else{moonNot=whatSky}
-    }*/
       ctx.fillStyle = moonNot;
       ctx.lineWidth = 1;
       ctx.arc(a1, b1, r2, th3, th4);}
@@ -651,6 +638,8 @@ function plotNewFrame(){
                     ctx.stroke();
 
                     //add numbers to edges
+                    ctx.fillStyle="black";
+                    ctx.strokeStyle="black";
                     ctx.font = "10px Arial";
                     ctx.fillText("12",midValX-6, minY-18);
                     ctx.fillText("12",midValX-3, maxY+25);
@@ -685,9 +674,13 @@ function plotNewFrame(){
                     ridgeCount=ridgeCount-10;}
 
                     //markings on mirror line
-                    if(sunHigh<15&&sunHigh>-15){
+                    if(sunHigh<4&&sunHigh>-18){
                     ctx.fillStyle = "yellow";
                     ctx.strokeStyle = "yellow";}
+                    else if(sunHigh>=4){
+                    ctx.fillStyle = "black";
+                    ctx.strokeStyle = "black";
+                    }
                     else{
                     ctx.fillStyle = "silver";
                     ctx.strokeStyle = "silver";}
@@ -878,7 +871,7 @@ function skyColor(h){//h=sun sunHeight
 }
 
 function landColor(h){//h=sun sunHeight
-  var yelNum = h*4;
+  var yelNum = h*4+75;
   yelNum = Math.floor(yelNum);
   var yelNum2 = 0;
   if(yelNum<0){yelNum=0}

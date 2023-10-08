@@ -24,7 +24,7 @@ var mirrorLY = canvH-100;
 var mirrorRX = canvW-25;
 var mirrorRY = canvH-100;
 var objRadA = 10;
-var objRadB = 10;//10*Math.pow(objMassB, 0.2);
+var objRadB = 8;//10*Math.pow(objMassB, 0.2);
 var objRadaA = objRadA;
 var objRadaB = objRadB;
 var objRadaAold = objRadA;
@@ -33,8 +33,10 @@ var objRadbA = objRadA;
 var objRadbB = objRadB;
 var objPosA = canvW/2;
 var objPosB = canvW/2;
-var timeNow = 12;
-var dateNow = 150;
+var timeNow = 12;//needMin[2]*12 + needMin[3]/5;;
+var dateNow = 170;//Number(needMin[0]-1)*12 + needMin[1];;
+var daysNos = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
+var daysNosL = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366];
 var latNow = 52;
 var sunHigh = canvH/2;
 var sunHigh2 = canvH/2;
@@ -55,18 +57,25 @@ var distOffMoon = 0;
 //ctx.arc(x1, y1, r1, 0, 2 * Math.PI)
 var x1 = canvW/6-10;
 var y1 = canvH/3+10;
-var r1 = 70;
+var r1 = 70;//size of big moon
+var r1M = objRadB;
+var r1Ma = r1M;//small moon
+var r1Mb = r1M;//big moon
 var th1 = Math.PI/2;
 var th2 = 3*Math.PI/2;
+var thA = 0;
+var thB = Math.PI;
+var thC = thB;
 var a1 = 0;
 var b1 = 0;
 var sign = 1;
 var d1 = sign*r1*15/8;
 var r2 = Math.pow(r1, 2)+Math.pow(d1, 2);
   r2 = Math.pow(r2, 0.5);
-var moonCol = "silver";
+var moonCol = "silver";//"white";//
 var moonNot = "black";
-if(sign<0){moonNot = "silver"}
+if(sign<0){moonNot = "white";//"silver"
+                    }
 //alert(""+r2);
 var i1 = 0;
 var j1 = 0;
@@ -81,9 +90,213 @@ var bet1 = 0;
 var th3 = 0;
 var th4 = 0;
 var arcCW = false;
-
+var showLand = true;
+var newMFlag = false;
+var moonLatOffset = 0;
+var bigMFlag = true;
+var smallMFlag = false;
+var blackMFlag = true;
+var whiteMFlag = false;
+var whiteMColor = "silver";
+var oneSkyMFlag = false;
 
 window.onload = function(){
+  var events = new Events("myCanvas");
+  var canvas = events.getCanvas();
+  var context = events.getContext();
+  var events2 = new Events("myCanvas2");
+  var canvas2 = events2.getCanvas();
+  var context2 = events2.getContext();
+  var isMouseDown = false;
+  //var canvasImg = getCanvasImg(canvas);
+  var points = [];
+  //findVector();
+  for(d=0; d<noOfDials;d++){
+    var pos = d+1;
+    if(pos>2){pos=pos-2;}
+    var pos2 = Math.ceil((d+1)/2);
+    dialX[d] = canvW2/3*pos;//canvW/3;
+    dialY[d] = canvH2/3*pos2;
+    delX[d] = 0;
+    delY[d] = 0;
+    needRad[d] = canvW2/(noOfDials)/2;//80;
+    needAng[d] = 0;
+    needX[d] = dialX[d];
+    needY[d] = dialY[d]-needRad[d];
+    needHour[d] = dialMaxs[d];//12;
+    if(isZero[d]==0){needMin[d] = 0;}
+    else{needMin[d]=1;}
+    //alert("isZero")
+    oldNeedHour[d] = dialMaxs[d];//12;
+    if(needMin[d]==0){
+    var dialAng = 2*Math.PI-Math.PI/2;
+    }
+    else if(needMin[d]==1){
+    var dialAng = 2*Math.PI+2*Math.PI/divMin[d]-Math.PI/2;
+    }
+    else{
+      var dummyAng = needMin[d]/divMin[d]-0.25;
+      if(dummyAng<0){dummyAng=1+dummyAng;}
+      var dialAng = 2*Math.PI*dummyAng;
+    }
+    var needOffX = needRad[d]*Math.cos(dialAng);
+    var needOffY = needRad[d]*Math.sin(dialAng);
+    needX[d] = dialX[d]+needOffX;
+    needY[d] = dialY[d]+needOffY;
+    doTimeNow0();
+  }
+
+  var c = document.getElementById("myCanvas2");
+  var ctx = c.getContext("2d");
+  // Green rectangle
+  ctx.beginPath();
+  ctx.lineWidth = "4";
+  ctx.strokeStyle = "green";
+  ctx.rect(30, 20, canvW2-60, canvH2-40);
+  ctx.stroke();
+
+
+  for(d=0; d<noOfDials;d++){
+      //centre dial d
+          ctx.beginPath();
+          var colNowNo = Math.floor(Math.random()*allColLen);
+          dialColNo[d] = colNowNo;
+          dialCol[d] = allCol[dialColNo[d]];
+          ctx.fillStyle = dialCol[d];
+          ctx.arc(dialX[d], dialY[d], needRad[d]+5, 0, 2 * Math.PI);//(x, y, r, start arc, end arc)
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.setLineDash([5, 15]);
+          ctx.fillStyle = "black";
+          ctx.lineWidth = "1";
+          ctx.arc(dialX[d], dialY[d], 3, 0, 2 * Math.PI);//(x, y, r, start arc, end arc)
+          ctx.stroke();
+          ctx.fill();
+
+          ctx.setLineDash([]);
+    //needle 1
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = "black";
+  ctx.moveTo(dialX[d], dialY[d]);
+  ctx.lineTo(needX[d], needY[d]);
+  ctx.stroke();
+  var maxMulti = dialMaxs[d]/divMaj[d];
+  var bigNo = divMaj[d];
+  var bigNo2 = bigNo/2;
+  var bigNo3 = Math.PI/2 - 2*Math.PI/bigNo;
+  var smNo = divMin[d];
+
+for(n=0;n<bigNo;n++){
+var delAng = Math.PI/bigNo2;
+var textX = needRad[d]*Math.cos(delAng*n-bigNo3);// /bigNo3 /2.4/6/3  24/6/12
+textX = dialX[d]+textX;
+var textY = needRad[d]*Math.sin(delAng*n-bigNo3);
+textY = dialY[d]+textY;
+var textText = Math.round(n*maxMulti+maxMulti);
+if(isZero[d]==0){
+  if(textText==smNo){textText=0;}
+  }
+if(d==0&&isText[0]){textText=numbLetters[n];}
+ctx.font = "9px serif";
+ctx.fillText(""+textText, textX-5, textY+3);
+}
+ctx.font = "12px serif";
+ctx.fillText(""+dialName[d]+": "+needMin[d], dialX[d]-15, dialY[d]+needRad[d]+25);
+}
+
+//year text
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.font = "24px serif";
+    ctx.textAlign = "left";
+    ctx.fillText(""+yearNow, 170, 60, 60);
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.font = "24px serif";
+    ctx.textAlign = "center";
+    ctx.strokeText("<", 150, 60, 50);
+    ctx.beginPath();
+    ctx.strokeStyle = "black";
+    ctx.font = "24px serif";
+    ctx.textAlign = "center";
+    ctx.strokeText(">", 250, 60, 50);
+
+document.getElementById("dummy1").innerHTML=""+yearNow+":"+needMin[0]+":"+needMin[1]+":"+needMin[2]+":"+needMin[3];
+
+  document.getElementById("saveButton").addEventListener("click", function(evt){
+      // open new window with saved image so user
+      // can right click and save to their computer
+      window.open(canvas.toDataURL());
+  }, false);
+
+  // initialize drawing params
+  var red = 0;//document.getElementById("red").value;
+  var green = 0;//document.getElementById("green").value;
+  var blue = 0;//document.getElementById("blue").value;
+  var size = 2;//document.getElementById("size").value;
+
+  canvas2.addEventListener("touchmove", function(){
+      var touchPos = events2.getTouchPos();
+
+      if (touchPos !== null) {
+          var touchX = touchPos.x - 20;
+          var touchY = touchPos.y - 50;
+
+          fixVectorT(events2, points);
+          plotVector();
+      }
+  });
+
+  canvas2.addEventListener("mousedown", function(){
+      var drawingPos = events2.getMousePos();
+      newQflag = false;
+      // update drawing params
+      red = 0;//document.getElementById("red").value;
+      green = 0;//document.getElementById("green").value;
+      blue = 0;//document.getElementById("blue").value;
+      size = 2;//document.getElementById("size").value;
+
+      // start drawing path
+      context.strokeStyle = "rgb(" + red + "," + green + "," + blue + ")";
+      context.lineWidth = size;
+      context.lineJoin = "round";
+      context.lineCap = "round";
+      mouseUpFlag = false;
+      moveQ(events2, points);//***
+      isMouseDown = true;
+  }, false);
+
+  canvas2.addEventListener("mouseup", function(){
+      var drawingPos = events2.getMousePos();
+      isMouseDown = false;
+      mouseUpFlag = true;
+            if(Qx>140&&Qx<160&&Qy>40&&Qy<80){yearNow--;}
+            if(Qx>240&&Qx<260&&Qy>40&&Qy<80){yearNow++;}
+      plotNewMoveQ();
+      //canvasImg = getCanvasImg(this);
+  }, false);
+
+  canvas2.addEventListener("mouseout", function(){
+      if (document.createEvent) {
+          var evt = document.createEvent('MouseEvents');
+          evt.initEvent("mouseup", true, false);
+          this.dispatchEvent(evt);
+      }
+      else {
+          this.fireEvent("onmouseup");
+      }
+  }, false);
+
+  events2.setStage(function(){
+      if (isMouseDown) {
+            moveQ(events2, points);
+            plotNewMoveQ();
+      }
+  });
+
+  //alert(""+needMin[0]+needMin[1]+needMin[2]+needMin[3]);
     var events = new Events("myCanvas");
     var canvas = events.getCanvas();
     var context = events.getContext();
@@ -280,12 +493,12 @@ window.onload = function(){
                   ctx.beginPath();
                       ctx.lineWidth = "4";
                       ctx.fillStyle = "yellow";
-                      ctx.ellipse(objPosB, canvH/2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
+                      ctx.ellipse(objPosB, canvH/2, objRadaB-0, objRadbB-0, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
                       ctx.fill();
             plotNewFrame();
 
-    document.getElementById("myRangeT").value=144;
-    document.getElementById("myRangeD").value=177;
+    //document.getElementById("myRangeT").value=144;
+    //document.getElementById("myRangeD").value=177;
     document.getElementById("myRangeL").value=52;
 
     document.getElementById("saveButton").addEventListener("click", function(evt){
@@ -293,50 +506,22 @@ window.onload = function(){
         // can right click and save to their computer
         window.open(canvas.toDataURL());
     }, false);
-
-    canvas.addEventListener("mousedown", function(){
-        var drawingPos = events.getMousePos();
-        //newQflag = false;
-
-        isMouseDown = true;
-    }, false);
-
-   canvas.addEventListener("mouseup", function(){
-        var drawingPos = events.getMousePos();
-        isMouseDown = false;
-        touchFlag = "no";
-
-       if (drawingPos !== null) {
-              //points.push(drawingPos);
-              Qx = drawingPos.x;
-              Qy = drawingPos.y;
-            }
-
-        moveF=true;
-        canvasImg = getCanvasImg(this);
-    }, false);
-
-    canvas.addEventListener("mouseout", function(){
-        if (document.createEvent) {
-            var evt = document.createEvent('MouseEvents');
-            evt.initEvent("mouseup", true, false);
-            this.dispatchEvent(evt);
-        }
-        else {
-            this.fireEvent("onmouseup");
-        }
-    }, false);
-
-    events.setStage(function(){
-        if (isMouseDown) {
-        }
-    });
-    //shakeDriver();
-};
+doTimeNow();
+}
 
 function plotNewFrame(){
     //dateNow = 150;
     //latNow = 52;
+    if(smallMFlag){
+      objRadaB = 4;
+      r1M = r1Ma;
+    }
+    else{
+      objRadaB = 8;
+      r1M = r1Mb;
+    }
+    objRadbB = objRadaB;
+    var moonFlip = false;//if moon goes off edge to other side then Sun-moon direction is wrong
     sunPosition = sunPos(dateNow);
     moonPosition = moonPos(dateNow);
     effectivelatitude = effectLat(latNow,timeNow, sunPosition);
@@ -344,9 +529,10 @@ function plotNewFrame(){
     var moonOffset = 24*moonDay/29.53;//24.83 = 24h 50m 24.83*moonDay/29.53;
     if(moonOffset>=12){moonOffset=moonOffset-24;}
     var timeNowMoon = timeNow-moonOffset;
-    if(timeNowMoon<0){timeNowMoon=timeNowMoon+24;}
-    else if(timeNowMoon>24){timeNowMoon=timeNowMoon-24;}
-    effectivelatitudeM = effectLatM(latNow,timeNowMoon, sunPosition);
+    var timeNowMoonReal = timeNowMoon;
+    if(timeNowMoon<0){timeNowMoon=timeNowMoon+24;}//moonFlip=true;
+    else if(timeNowMoon>24){timeNowMoon=timeNowMoon-24;}//moonFlip=true;
+    effectivelatitudeM = effectLatM(latNow,timeNowMoon, sunPosition)+moonLatOffset;
     moonHigh = moonHeight(effectivelatitudeM, sunPosition);
     if(latNow<sunPosition){ns_flip=true;}
     else{ns_flip=false;}
@@ -373,6 +559,7 @@ function plotNewFrame(){
     sunWE = minX+multiplier*timeNowMod;
     moonHigh2 = minY+290-moonHighMod*3;
     moonWE = minX+multiplier*(timeNowMoon);
+    var moonWEReal = minX+multiplier*(timeNowMoonReal);
 
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -400,7 +587,9 @@ function plotNewFrame(){
           grd.addColorStop(1, "#0000FF");}
           // Fill with gradient
           ctx.fillStyle = grd;
-    //ctx.fillStyle = whatSky;//"blue";
+    if(oneSkyMFlag){
+    ctx.fillStyle = whatSky;//"blue";
+    }
     ctx.fillRect(xmin, ymin, maxX-25, ymax-70);
     ctx.fill();
     // box rectangle
@@ -418,97 +607,200 @@ function plotNewFrame(){
     ctx.lineWidth = "4";
     var whatCol = sunColor(sunHigh);
     ctx.fillStyle = whatCol;//"yellow";"#FF0000";//
-    ctx.ellipse(sunWE, sunHigh2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
-    ctx.fill();}
-    //MOON
-    if(moonHigh>-16){
-    ctx.beginPath();
-    ctx.lineWidth = "4";
-    var whatCol = "silver";//sunColor(sunHigh);
-    ctx.fillStyle = whatCol;//"yellow";"#FF0000";//
-    ctx.ellipse(moonWE, moonHigh2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
-    ctx.fill();}
-    //MOON DAY
-  /*  if(moonHigh>-16){
-    ctx.beginPath();
-    //ctx.lineWidth = "4";
-    //var whatCol = "black";//sunColor(sunHigh);
-    ctx.fillStyle = "yellow";//"yellow";"#FF0000";//
-    //ctx.ellipse(moonWE, moonHigh2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);
-    ctx.font = "12px Arial";
-    ctx.fillText(""+moonDay, moonWE+5, moonHigh2);}
-    document.getElementById("text2").innerHTML=""+moonDay;*/
+    ctx.ellipse(sunWE, sunHigh2, objRadaB-0, objRadbB-0, 0, 0, 2 * Math.PI);                      //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
+    ctx.fill();
+    }
+    //SMALL MOON
+    var old_x1 = x1;
+    var old_y1 = y1;
+    var old_r1 = r1;
 
-    //MOON DAY
-    ctx.beginPath();
-    //ctx.lineWidth = "4";
-    //var whatCol = "black";//sunColor(sunHigh);
-    ctx.fillStyle = "yellow";//"yellow";"#FF0000";//
-    //ctx.ellipse(moonWE, moonHigh2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);
-    ctx.font = "24px Arial";
-    var moonText = moonDayText(moonDay);
-    ctx.fillText("moon day "+moonText, 2*canvW/3, canvH/6);
-    document.getElementById("text2").innerHTML=""+moonDay;
-    var illum = illumination(moonDay);
-    var fullFlag = false;
-    if(illum==100){fullFlag=true;}
-    else{fullFlag=false;}
-    ctx.beginPath();
-    ctx.fillStyle = "white";
-    ctx.font = "24px Arial";
-    ctx.fillText("illumination: "+illum+"%", canvW/6, canvH/6);
-    var namePhase = nameOfPhase(moonDay);
-    ctx.beginPath();
-    ctx.fillStyle = "white";
-    ctx.font = "24px Arial";
-    ctx.fillText(""+namePhase, 2*canvW/3, 5*canvH/6);
-    if(moonHigh>-1){
-    ctx.beginPath();
-    ctx.fillStyle = "silver";
-    ctx.font = "24px Arial";
-    ctx.fillText("moon above horizon", canvW/6, 5*canvH/6);}
-    else{
-    ctx.beginPath();
-    ctx.fillStyle = "red";
-    ctx.font = "24px Arial";
-    ctx.fillText("moon below horizon", canvW/6, 5*canvH/6);}
+      x1 = moonWE;
+      y1 = moonHigh2;
+      r1 = r1M;//objRadaB-0;
 
-      percMoon = illum/100;
-      indexMoon = 1/(1-2*percMoon);
-      distOffMoon = r1/2*(indexMoon-1/indexMoon);
-      if(indexMoon<0){
-        sign = -1;
-        distOffMoon = -1*distOffMoon;
-      }
+      //MOON DAY
+      ctx.beginPath();
+      //ctx.lineWidth = "4";
+      //var whatCol = "black";//sunColor(sunHigh);
+      ctx.fillStyle = "yellow";//"yellow";"#FF0000";//
+      //ctx.ellipse(moonWE, moonHigh2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);
+      ctx.font = "24px Arial";
+      var moonText = moonDayText(moonDay);
+      ctx.fillText("moon day "+moonText, 2*canvW/3, canvH/6);
+      //document.getElementById("text2").innerHTML=""+moonDay;
+      var illum = illumination(moonDay);
+      var fullFlag = false;
+      if(illum==100){fullFlag=true;}
+      else{fullFlag=false;}
+      ctx.beginPath();
+      ctx.fillStyle = "white";
+      ctx.font = "24px Arial";
+      ctx.fillText("illumination: "+illum+"%", canvW/12, canvH/6);
+      var namePhase = nameOfPhase(moonDay);
+      ctx.beginPath();
+      ctx.fillStyle = "white";
+      ctx.font = "24px Arial";
+      ctx.fillText(""+namePhase, 2*canvW/3, 1.5*canvH/6);
+      if(moonHigh>-1){
+      ctx.beginPath();
+      ctx.fillStyle = whiteMColor;//"white";//"silver";
+      ctx.font = "24px Arial";
+      ctx.fillText("moon above horizon", canvW/6, 5*canvH/6);}
       else{
-        sign = 1;
-      }
-      var sign2 = 1;
-      if(moonDay<=15.765294){
-        sign2=-1;
-        arcCW=true;
-      }
-      else{
-        sign2=1;
-        arcCW=false;
-      }
+      ctx.beginPath();
+      ctx.fillStyle = "red";
+      ctx.font = "24px Arial";
+      ctx.fillText("moon below horizon", canvW/20, 3.5*canvH/6);}
+
+      //SMALL MOON
+        percMoon = illum/100;//p
+        indexMoon = 1/(1-2*percMoon);//n
+        distOffMoon = r1/2*(indexMoon-1/indexMoon);//d
+        if(indexMoon<0){
+          sign = -1;
+          distOffMoon = -1*distOffMoon;
+        }
+        else{
+          sign = 1;
+        }
+        var sign2 = 1;
+        if(moonDay>=0&&moonHigh2>sunHigh2){//>=15.765294  &&moonHigh2<sunHigh2
+          sign2=-1;
+          arcCW=true;
+        }
+        else{
+          sign2=1;
+          arcCW=false;
+        }
+        if(moonFlip){
+          sign2=-1*sign2;
+          if(arcCW){arcCW=false;}
+          else{arcCW=true;}
+        }
+        //if(arcCW){sign=-1*sign;}
+        d1 = sign2*sign*distOffMoon;
+        //d1 = sign*r1*15/8;
+        thB = Math.atan((sunWE-moonWEReal)/(moonHigh2-sunHigh2));
+        //thB = Math.atan((sunWE-moonWE)/(sunHigh2-moonHigh2));
+        thA = Math.PI/2 - thB;
+        th1 = thB;
+        th2 = Math.PI + thB;
+        alp1 = Math.atan(r1/d1);//Math.atan(2);//Math.atan(r1/r2);
+        bet1 = Math.PI/2 - alp1;
+        th3 = th1 + bet1*sign*sign2;
+        th4 = th3 + 2*alp1*sign*sign2;
+        r2 = Math.pow(r1, 2)+Math.pow(d1, 2);
+        r2 = Math.pow(r2, 0.5);
+        a1 = x1+d1*Math.cos(thA);
+        b1 = y1-d1*Math.sin(thA);
+        i1 = a1;
+        j1 = y1 + r2;
+        p1 = x1+r1*Math.cos(thB);//x1;
+        q1 = y1+r1*Math.sin(thB);//y1+r1;
+        //MOON
+        ctx.beginPath();
+        ctx.lineWidth = "4";
+        ctx.fillStyle = "black";//"yellow";"#FF0000";//
+        if(blackMFlag){
+          ctx.fillStyle = "black";//sunCol;//whatSky;
+        }
+        else{
+          ctx.fillStyle = whatSky;
+        }
+        ctx.arc(x1, y1, r1, 0, 2*Math.PI, arcCW) //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.lineWidth = "4";
+        var whatCol = whiteMColor;//"white";//"silver";//sunColor(sunHigh);
+        ctx.fillStyle = whatCol;//"yellow";"#FF0000";//
+        if(fullFlag){
+        ctx.arc(x1, y1, r1, 0, 2*Math.PI, arcCW) //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
+        ctx.fill();
+        }
+        else{
+        ctx.arc(x1, y1, r1, th1, th2, arcCW) //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
+        ctx.fill();
+        //alert("alpha="+alp1+" beta="+bet1+" th1="+th1+" th2="+th2);
+        ctx.beginPath();
+        if(blackMFlag){
+          moonNot = "black";//sunCol;//whatSky;
+        }
+        else{
+          moonNot = whatSky;
+        }
+        if(sign<0){moonNot = moonCol}
+        ctx.fillStyle = moonNot;
+        if(newMFlag){
+        ctx.arc(a1, b1, r1, 0, 2*Math.PI, arcCW) //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
+        ctx.fill();
+            }
+        else{
+        if(sign<0){moonNot = moonCol}
+        //ctx.fillStyle = moonNot;
+        ctx.lineWidth = 1;
+        ctx.arc(a1, b1, r2, th3, th4);//}
+        //ctx.stroke();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.strokeStyle = moonNot;
+        ctx.moveTo(p1, q1);//(p1, q1-2)
+        ctx.lineTo(2*x1-p1, 2*y1-q1);//(p1, q1-2*r1+2);
+        ctx.stroke();
+      }}
+          x1 = old_x1;
+          y1 = old_y1;
+          r1 = old_r1;
+          //BIG MOON
+          percMoon = illum/100;//p
+          indexMoon = 1/(1-2*percMoon);//n
+          distOffMoon = r1/2*(indexMoon-1/indexMoon);//d
+          if(indexMoon<0){
+            sign = -1;
+            distOffMoon = -1*distOffMoon;
+          }
+          else{
+            sign = 1;
+          }
+          var sign2 = 1;
+          if(moonDay>=0&&moonHigh2>sunHigh2){//<=15.765294   &&q1>y1
+            sign2=-1;
+            arcCW=true;
+          }
+          else{
+            sign2=1;
+            arcCW=false;
+          }
+          if(moonFlip){
+            sign2=-1*sign2;
+            if(arcCW){arcCW=false;}
+            else{arcCW=true;}
+          }
       //if(arcCW){sign=-1*sign;}
-      d1 = sign2*sign*distOffMoon;
+      d1 = sign2*sign*distOffMoon;//sign2*sign*distOffMoon;
       //d1 = sign*r1*15/8;
-      r2 = Math.pow(r1, 2)+Math.pow(d1, 2);
-      r2 = Math.pow(r2, 0.5);
-      a1 = x1+d1;
-      b1 = y1;
-      i1 = a1;
-      j1 = y1 + r2;
-      p1 = x1;
-      q1 = y1+r1;
+      thB = Math.atan((sunWE-moonWEReal)/(moonHigh2-sunHigh2));
+      thA = Math.PI/2 - thB;
+      //thA = Math.atan((moonHigh2-sunHigh2)/(sunWE-moonWE));//Math.PI/2 - thB;
+      thC = thB;
+      //if(moonHigh2<sunHigh2){thC = Math.PI/2 + thA;}
+      th1 = thB;
+      th2 = Math.PI + thB;
       alp1 = Math.atan(r1/d1);//Math.atan(2);//Math.atan(r1/r2);
       bet1 = Math.PI/2 - alp1;
       th3 = th1 + bet1*sign*sign2;
       th4 = th3 + 2*alp1*sign*sign2;
+      r2 = Math.pow(r1, 2)+Math.pow(d1, 2);
+      r2 = Math.pow(r2, 0.5);
+      a1 = x1+d1*Math.cos(thA);
+      b1 = y1-d1*Math.sin(thA);
+      i1 = a1;
+      j1 = y1 + r2;
+      p1 = x1+r1*Math.cos(thB);//x1;
+      q1 = y1+r1*Math.sin(thB);//y1+r1;
       //MOON
-      //MOON
+      if(bigMFlag){
+      //BIG MOON
       ctx.beginPath();
       ctx.lineWidth = "4";
       ctx.fillStyle = "black";//"yellow";"#FF0000";//
@@ -529,19 +821,6 @@ function plotNewFrame(){
       ctx.beginPath();
       moonNot = "black";
       if(sign<0){moonNot = moonCol}
-      //else{moonNot = whatSky;}
-      /*if(sign2>0){
-        if(moonNot==moonCol){
-          moonNot=whatSky;
-        }
-        else{moonNot=moonCol}
-      }
-      else{
-        if(moonNot==whatSky){
-        moonNot=moonCol;
-      }
-      else{moonNot=whatSky}
-    }*/
       ctx.fillStyle = moonNot;
       ctx.lineWidth = 1;
       ctx.arc(a1, b1, r2, th3, th4);}
@@ -550,9 +829,10 @@ function plotNewFrame(){
       ctx.beginPath();
       ctx.lineWidth = 3;
       ctx.strokeStyle = moonNot;
-      ctx.moveTo(p1, q1-2);
-      ctx.lineTo(p1, q1-2*r1+2);
+      ctx.moveTo(p1, q1);//(p1, q1-2)
+      ctx.lineTo(2*x1-p1, 2*y1-q1);//(p1, q1-2*r1+2);
       ctx.stroke();
+      }
       // Centre points
       /*ctx.beginPath();
       ctx.fillStyle = "red";
@@ -561,19 +841,22 @@ function plotNewFrame(){
       ctx.fill();*/
 
     // Green rectangle
+    if(showLand){
     var whatLand = landColor(sunHigh);
     ctx.beginPath();
     ctx.setLineDash([]);
     ctx.lineWidth = "1";
     ctx.fillStyle = whatLand;
     ctx.fillRect(mirrorLX-6, mirrorLY, maxX-25+12, 70);
-    ctx.fill();
+    ctx.fill();}
     ctx.fillStyle = "black";
+    ctx.strokeStyle = "black";
 
           ctx.lineWidth = "1";
 
 
                     ctx.lineWidth = "1";
+                    ctx.beginPath();
                     //top ridge
                     ctx.moveTo(midValX, minY);
                     ctx.lineTo(midValX, minY-12);
@@ -645,14 +928,28 @@ function plotNewFrame(){
                     ctx.fillStyle="red";
                     ctx.strokeStyle="red";
                     ctx.moveTo(minX, sunHigh2);
-                    ctx.lineTo(minX-6, sunHigh2);
+                    ctx.lineTo(minX-12, sunHigh2);
                     ctx.stroke();
                     ctx.beginPath();
                     ctx.moveTo(maxX, sunHigh2);
-                    ctx.lineTo(maxX+6, sunHigh2);
+                    ctx.lineTo(maxX+12, sunHigh2);
                     ctx.stroke();
+                    //moon position
+                    ctx.beginPath();
+                    ctx.fillStyle="blue";
+                    ctx.strokeStyle="blue";
+                    ctx.moveTo(minX, moonHigh2);
+                    ctx.lineTo(minX-12, moonHigh2);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(maxX, moonHigh2);
+                    ctx.lineTo(maxX+12, moonHigh2);
+                    ctx.stroke();
+                    ctx.fillStyle="black";
+                    ctx.strokeStyle="black";
 
                     //add numbers to edges
+                    ctx.beginPath();
                     ctx.fillStyle="black";
                     ctx.strokeStyle="black";
                     ctx.font = "10px Arial";
@@ -689,9 +986,13 @@ function plotNewFrame(){
                     ridgeCount=ridgeCount-10;}
 
                     //markings on mirror line
-                    if(sunHigh<15&&sunHigh>-15){
+                    if(sunHigh<4&&sunHigh>-18){
                     ctx.fillStyle = "yellow";
                     ctx.strokeStyle = "yellow";}
+                    else if(sunHigh>=4){
+                    ctx.fillStyle = "black";
+                    ctx.strokeStyle = "black";
+                    }
                     else{
                     ctx.fillStyle = "silver";
                     ctx.strokeStyle = "silver";}
@@ -882,7 +1183,7 @@ function skyColor(h){//h=sun sunHeight
 }
 
 function landColor(h){//h=sun sunHeight
-  var yelNum = h*4;
+  var yelNum = h*4+75;
   yelNum = Math.floor(yelNum);
   var yelNum2 = 0;
   if(yelNum<0){yelNum=0}
@@ -1111,7 +1412,7 @@ if(goFlag){
                         ctx.beginPath();
                             ctx.lineWidth = "4";
                             ctx.fillStyle = "red";
-                            ctx.ellipse(centreB, canvH/2, objRadaB-2, objRadbB-2, 0, 0, 2 * Math.PI);
+                            ctx.ellipse(centreB, canvH/2, objRadaB-0, objRadbB-0, 0, 0, 2 * Math.PI);
                             //ctx.arc(objPosB, canvH/2, objRadB, 0, 2 * Math.PI);
                             ctx.fill();
                             ctx.beginPath();
@@ -1266,22 +1567,50 @@ if(goFlag){
         var date0 = new Date(dateText);
         date0 = date0.getTime();
         var msInDay = 1000*60*60*24;
-          timeNow = parseInt(document.getElementById("myRangeT").value);//valueAsNumber(slider2.value);
-          timeNow = timeNow/12;
-          dateNow = parseInt(document.getElementById("myRangeD").value)-5;
-          if(dateNow<1){dateNow=1;}
+          timeNow = needMin[2] + needMin[3]/60;
+          //parseInt(document.getElementById("myRangeT").value);//valueAsNumber(slider2.value);
+          //timeNow = timeNow/12;
+          if(leapYear){
+          dateNow = daysNosL[Number(needMin[0]-1)] + needMin[1];}
+          else{
+          dateNow = daysNos[Number(needMin[0]-1)] + needMin[1];}
+          //parseInt(document.getElementById("myRangeD").value)-5;
+          /*if(dateNow<1){dateNow=1;}
           if(leapYear){
             if(dateNow>366){dateNow=366;}
           }
           else{
             if(dateNow>365){dateNow=365;}
-          }
+          }*/
           var timeNow_ms = timeNow*60*60*1000;
           var nowByCalc = (dateNow-1)*msInDay+date0+timeNow_ms;//-dozHour_ms;//date now in ms
           //alert("dateNow="+dateNow+"\nmsInDay="+msInDay+"\ndate0="+date0+"\ntimeNow_ms="+timeNow_ms+"\ndozHour_ms="+dozHour_ms)
           var moonCalc = nowByCalc-moonZero;//+moonNow_ms;
           //if(moonCalc<0){moonCalc = moonZero-nowByCalc}
           var moonDay_ms = moonCalc%moonT_ms;
+          //calculations to find offset of moon's orbit
+          var moonLatZero = new Date('June 2, 2023 01:32:49 GMT+00:00');
+          moonLatZero = moonLatZero.getTime();
+          var moonLatT_ms = 1000*60*60*24*27.321661;//moon's sidereal period in ms - for latitude
+          var moonLatCalc = nowByCalc-moonLatZero;
+          var moonLatDay_ms = moonLatCalc%moonLatT_ms;
+          moonLatOffset = 5*Math.sin(2*Math.PI*moonLatDay_ms/moonLatT_ms)-0.5;
+          //calculations to find distance of moon's orbit
+          var moonPeriZero = new Date('June 4, 2023 22:29:00 GMT+00:00');
+          moonPeriZero = moonPeriZero.getTime();
+          var moonPeriT_ms = 1000*60*60*24*27.55455;//moon's distance orbital period in ms
+          var moonPeriCalc = nowByCalc-moonPeriZero;
+          var moonPeriDay_ms = Math.abs(moonPeriCalc%moonPeriT_ms);
+          var moonDist = 384400+21100*Math.sin(2*Math.PI*moonPeriDay_ms/moonPeriT_ms);
+          document.getElementById("dummy3").innerHTML="     moon distance = "+printNumber2(moonDist)+" km";
+          r1Ma = 1*Math.cos(2*Math.PI*moonPeriDay_ms/moonPeriT_ms)+3;
+          r1Mb = 2*Math.cos(2*Math.PI*moonPeriDay_ms/moonPeriT_ms)+8;
+          if(smallMFlag){
+            r1M = r1Ma;
+          }
+          else{
+            r1M = r1Mb;}
+          //r1M = moonPeriOffset;
           //var moonDummy = Math.floor(nowByCalc/moonT_ms);
           //var moonDay_ms =  moonCalc - moonDummy*moonT_ms-moonOff_ms;
           if(moonDay_ms<0){moonDay_ms=moonDay_ms+moonT_ms}
@@ -1290,7 +1619,7 @@ if(goFlag){
           //alert("moon day1 ="+moonDay);
           moonDay = Math.round(moonDay*100)/100;
           //alert("moon day2 ="+moonDay);
-          document.getElementById("slideT").innerHTML="time = "+printNumberT(timeNow)+"";
+          //document.getElementById("slideT").innerHTML="time = "+printNumberT(timeNow)+"";
           plotNewFrame();
           //goFlag=false;
           //plotDriver();
@@ -1319,15 +1648,19 @@ if(goFlag){
             date0 = date0.getTime();//date/time in ms since 1st Jan 1970
             //alert(""+date0);
             var msInDay = 1000*60*60*24;
-            dateNow = parseInt(document.getElementById("myRangeD").value)-5;
-            if(dateNow>170&&dateNow<176){yearDown=1;yearUp=1;}
+            if(leapYear){
+            dateNow = daysNosL[Number(needMin[0]-1)] + needMin[1];}
+            else{
+            dateNow = daysNos[Number(needMin[0]-1)] + needMin[1];}
+            //parseInt(document.getElementById("myRangeD").value)-5;
+          /*  if(dateNow>170&&dateNow<176){yearDown=1;yearUp=1;}
             if(dateNow==-4&&yearDown!=2){
               yearDown=2;
               dateYear--;
               if(dateYear%4==0){leapYear=true;}
               else{leapYear=false;}
               dateNow=367;
-              document.getElementById("myRangeD").value=371;
+              //document.getElementById("myRangeD").value=371;
             }
             if(dateNow==370&&yearUp!=2){
               yearUp=2;
@@ -1335,7 +1668,7 @@ if(goFlag){
               if(dateYear%4==0){leapYear=true;}
               else{leapYear=false;}
               dateNow=-1;
-              document.getElementById("myRangeD").value=1;
+              //document.getElementById("myRangeD").value=1;
             }
             if(dateNow<1){dateNow=1;}
             if(leapYear){
@@ -1343,7 +1676,7 @@ if(goFlag){
             }
             else{
               if(dateNow>365){dateNow=365;}
-            }
+            }*/
             var timeNow_ms = timeNow*60*60*1000;
             var nowByCalc = (dateNow-1)*msInDay+date0+timeNow_ms;//-dozHour_ms;//date now in ms
             var moonCalc = nowByCalc-moonZero;//+moonNow_ms;
@@ -1354,25 +1687,38 @@ if(goFlag){
             if(moonDay_ms<0){moonDay_ms=moonDay_ms+moonT_ms}
             moonDay = moonDay_ms/24/60/60/1000;//moonDay_ms/24/60/60/1000;
             moonDay = Math.round(moonDay*100)/100;
+            //calculations to find offset of moon's orbit
+            var moonLatZero = new Date('June 2, 2023 01:32:49 GMT+00:00');
+            moonLatZero = moonLatZero.getTime();
+            var moonLatT_ms = 1000*60*60*24*27.321661;//moon's sidereal period in ms - for latitude
+            var moonLatCalc = nowByCalc-moonLatZero;
+            var moonLatDay_ms = moonLatCalc%moonLatT_ms;
+            moonLatOffset = 5*Math.sin(2*Math.PI*moonLatDay_ms/moonLatT_ms)-0.5;
+            //calculations to find distance of moon's orbit
+            var moonPeriZero = new Date('June 4, 2023 22:29:00 GMT+00:00');
+            moonPeriZero = moonPeriZero.getTime();
+            var moonPeriT_ms = 1000*60*60*24*27.55455;//moon's distance orbital period in ms
+            var moonPeriCalc = nowByCalc-moonPeriZero;
+            var moonPeriDay_ms = moonPeriCalc%moonPeriT_ms;
+            document.getElementById("dummy3").innerHTML=""+moonPeriDay_ms;
+            r1Ma = 1*Math.cos(2*Math.PI*moonPeriDay_ms/moonPeriT_ms)+3;
+            r1Mb = 2*Math.cos(2*Math.PI*moonPeriDay_ms/moonPeriT_ms)+8;
+            if(smallMFlag){
+              r1M = r1Ma;
+            }
+            else{
+              r1M = r1Mb;}
             //alert("dateNow="+dateNow+"\ndate0="+date0+"\nmoonZero="+moonZero
             //+"\ntimeNow_ms="+timeNow_ms+"\nmoonCalc="+moonCalc+"\nmoonDay_ms="+moonDay_ms
             //+"\nnowByCalc="+nowByCalc)
             //alert("moon day ="+moonDay);
             var nowByCalc2 = new Date(nowByCalc);
             var nowIs = nowByCalc2.toDateString()
-              document.getElementById("slideD").innerHTML=""+nowIs+"";
+              //document.getElementById("slideD").innerHTML=""+nowIs+"";
               plotNewFrame();
               //goFlag=false;
               //
             }
-                function changeD_old(){
-          dateNow = parseInt(document.getElementById("myRangeD").value);//valueAsNumber(slider2.value);
-          //timeNow = timeNow/4;
-          document.getElementById("slideD").innerHTML="date = "+dateNow+"";
-          plotNewFrame();
-          //goFlag=false;
-          //plotDriver();
-        }
 
         function changeL(){
           latNow = parseInt(document.getElementById("myRangeL").value);//valueAsNumber(slider2.value);
@@ -1633,7 +1979,7 @@ function nameOfPhase(d){
     phaseName = "Waxing Crescent";
   }
   else if(day<=8.382647){
-    phaseName = "Waxing Crescent";
+    phaseName = "First Quarter";
   }
   else if(day<=13.765294){
     phaseName = "Waxing Gibbous";
@@ -1686,6 +2032,87 @@ function illumination(d){
   var day = d;
   var illum = 50-50*Math.cos(2*Math.PI*day/29.53058770576);
   var illum = Math.round(illum);
-
+  newMFlag = false;
+  if(illum==0){newMFlag=true;}
   return illum;
+}
+
+function changeLand(){
+  if(showLand){
+    showLand = false;
+    document.getElementById("landButton").value="show land";
+  }
+  else{
+    showLand = true;
+    document.getElementById("landButton").value="no land";
+  }
+  plotNewFrame();
+}
+
+
+function changeBigM(){
+  if(bigMFlag){
+    bigMFlag = false;
+    document.getElementById("bigMButton").value="big moon";
+  }
+  else{
+    bigMFlag = true;
+    document.getElementById("bigMButton").value="no big moon";
+  }
+  plotNewFrame();
+}
+
+
+function changeSmallM(){
+  if(smallMFlag){
+    smallMFlag = false;
+    r1M = r1Ma;
+    document.getElementById("smallMButton").value="true visual angle";
+  }
+  else{
+    smallMFlag = true;
+    r1M = r1Mb;
+    document.getElementById("smallMButton").value="false visual angle";
+  }
+  plotNewFrame();
+}
+
+
+function changeBlackM(){
+  if(blackMFlag){
+    blackMFlag = false;
+    document.getElementById("blackMButton").value="show darkside";
+  }
+  else{
+    blackMFlag = true;
+    document.getElementById("blackMButton").value="no darkside";
+  }
+  plotNewFrame();
+}
+
+
+function changeWhiteM(){
+  if(whiteMFlag){
+    whiteMFlag = false;
+    whiteMColor = "silver";
+    document.getElementById("whiteMButton").value="bright moon";
+  }
+  else{
+    whiteMFlag = true;
+    whiteMColor = "white";
+    document.getElementById("whiteMButton").value="silver moon";
+  }
+  plotNewFrame();
+}
+
+function changeSky(){
+  if(oneSkyMFlag){
+    oneSkyMFlag = false;
+    document.getElementById("skyButton").value="blue sky";
+  }
+  else{
+    oneSkyMFlag = true;
+    document.getElementById("skyButton").value="graded sky";
+  }
+  plotNewFrame();
 }

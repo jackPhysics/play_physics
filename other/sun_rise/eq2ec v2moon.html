@@ -1,0 +1,169 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Sun Rise</title>
+
+      <script src="events.js">
+      </script>
+
+    <script type="text/javascript">
+var latG = 0;
+var longG = 0;
+var ecliptic = 23.44*Math.PI/180;
+var dataNew = new Array();
+
+window.onload = function(){
+//tryTrig();
+tryData();
+
+}
+
+function calculate(){
+  var dec = 1*document.getElementById("boxDec").value;
+  var ra = 1*document.getElementById("boxRA").value;
+  dec = dec/180*Math.PI;
+  ra = ra/180*Math.PI;
+  eq2ec(ra, dec);
+}
+
+
+function eq2ec(R, d){
+var rA = R;
+var dec = d;
+var lat = 0;
+var long = 0;
+
+var lat0 = (Math.cos(dec)*Math.sin(ecliptic)*Math.sin(rA))
+lat = Math.asin(Math.sin(dec)*Math.cos(ecliptic) - lat0);
+
+var num = Math.cos(dec)*Math.cos(rA);
+var den = Math.cos(lat);
+
+if(den!=0){
+long = Math.acos(num/den);}
+else{
+  long = 0;
+}
+var latD = lat*180/Math.PI;
+var longD = long*180/Math.PI;
+latD = Math.round(latD*100)/100;
+longD = Math.round(longD*100)/100;
+ansText = "lat = "+latD+" long = "+longD;
+document.getElementById("text").innerHTML = ""+ansText;
+}
+
+function eq2ec2(R, d, i){
+var rA = 1*R;
+var dec = 1*d;
+var lat = 0;
+var long = 0;
+var index = 1*i;
+dec = dec/180*Math.PI;
+rA = rA/180*Math.PI;
+
+var lat0 = (Math.cos(dec)*Math.sin(ecliptic)*Math.sin(rA));
+lat = Math.asin(Math.sin(dec)*Math.cos(ecliptic) - lat0);
+
+var num = Math.cos(dec)*Math.cos(rA);
+var den = Math.cos(lat);
+
+if(den!=0){
+long = Math.acos(num/den);
+if(rA>Math.PI){long=2*Math.PI-long}
+}
+else{
+  long = 0;
+}
+var latD = lat*180/Math.PI;
+var longD = long*180/Math.PI;
+latD = Math.round(latD*100)/100;
+longD = Math.round(longD*100)/100;
+ansText = "lat = "+latD+" long = "+longD;
+dataNew[index] = latD;
+dataNew[index+1] = longD;
+}
+
+function tryTrig(){
+  var text2 = "<table>";
+  for(i=0; i<16; i++){
+    var angle = Math.PI/8*i;
+    var degreeA = 22.5*i;
+    text2 = text2+"<tr><td> angle = "+degreeA+"</td>";
+    var sinA = Math.sin(angle);
+    sinA = Math.round(sinA*100)/100;
+    var cosA = Math.cos(angle);
+    cosA = Math.round(cosA*100)/100;
+    var tanA = Math.tan(angle);
+    tanA = Math.round(tanA*100)/100;
+    text2 = text2 +"<td> sin = "+ sinA+ "</td><td> cos = "+cosA + "</td><td> tan = "+tanA +"</td></tr>";
+    }
+  text2 = text2+"</table>"
+document.getElementById("text2").innerHTML = ""+text2;
+
+}
+
+function tryData(){
+  var data = [168.5125,	8.58305555555556,
+201.454166666667,	-7.50388888888889,
+213.35,	-13.8630555555556,
+226.166666666667,	-18.6805555555556,
+255.204166666667,	-26.7925,
+271.195833333333,	-28.2763888888889,
+287.533333333333,	-27.8863888888889,
+303.5625,	-25.6244444444444,
+346.283333333333,	-10.6477777777778,
+11.1583333333333,	1.79722222222222,
+35.7541666666667,	13.7808333333333,
+75.7041666666667,	24.0652777777778,
+89.7541666666667,	26.7152777777778,
+103.729166666667,	26.7972222222222,
+130.245833333333,	22.8763888888889,
+165.070833333333,	9.86166666666667,
+186.516666666667,	-0.856388888888889,
+208.8875,	-12.1855555555556,
+234.495833333333,	-22.1075
+]
+
+for(i=0;i<data.length;i=i+2){
+  var adata = data[i];
+  var bdata = data[i+1];
+  eq2ec2(adata, bdata, i);
+}
+
+  var text2 = "<table> <tr><td>Results</td></tr>";
+  for(j=0; j<data.length; j=j+2){
+    //text2 = text2 +"<td> RA = "+ data[j]+ "</td><td> dec = "+data[j+1] + ";</td><td> lat = "+ dataNew[j]+ "</td><td> long = "+dataNew[j+1] + "</td></tr>";
+    text2 = text2 +"<td> "+ data[j]+ "</td><td>"+data[j+1] + "</td><td>"+ dataNew[j]+ "</td><td>"+dataNew[j+1] + "</td></tr>";
+      }
+  text2 = text2+"</table>"
+document.getElementById("text2").innerHTML = ""+text2;
+
+
+}
+</script>
+
+</head>
+<body>
+  <!--def equatorial_to_ecliptic(right_ascension, declination):
+ra, dec = hms_to_dd(right_ascension), dms_to_dd(declination)
+
+ec_latitude = np.arcsin(np.sin(dec) * np.cos(_ecliptic)
+ec_latitude = ec_latitude - (np.cos(dec) * np.sin(_ecliptic) * np.sin(ra)))
+
+_num, _den = np.sin(ra) * np.cos(_ecliptic) + np.tan(dec) * np.sin(_ecliptic), np.cos(ra)
+ec_longitude = np.arcsin(_num / _den)
+
+ec_latitude, ec_longitude = np.degrees([ec_latitude, ec_longitude])
+
+return dd_to_dms(ec_latitude), dd_to_dms(ec_longitude)-->
+<p></p>
+
+<p id="text">xx</p>
+
+<p><textarea id="boxDec" style="width: 4em;">dms</textarea> <input type="button" id="stepsButton" value="input Dec"  onClick="calculate()"></p>
+
+<p><textarea id="boxRA" style="width: 4em;">dms</textarea> <input type="button" id="stepsButton" value="input RA"  onClick="calculate()"></p>
+
+<p id="text2">xx</p>
+</body>
+</html>
