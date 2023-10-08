@@ -1,0 +1,124 @@
+<HTML>
+
+<HEAD>
+<TITLE>Rock Paper Scissors</TITLE>
+
+<style>
+      div {
+        text-align: center;
+      }
+    </style>
+
+<SCRIPT>
+<!-- HIDE FROM OTHER BROWSERS
+var count=0;
+var puterNumb=0;
+var youNumb=0;
+var winner=0;
+var youScore=0;
+var puterScore=0;
+
+function chooseR()
+{
+	count++;
+	if(count==1){
+	youNumb=1;
+	puterChoose();
+	document.all.you1.setAttribute("src","rpsImages/yellow.gif");
+	document.all.you2.setAttribute("src","rpsImages/rock.gif");
+	document.all.you3.setAttribute("src","rpsImages/yellow.gif");
+	}
+	else{
+	count=0;
+	document.all.you1.setAttribute("src","rpsImages/rock.gif");
+	document.all.you2.setAttribute("src","rpsImages/paper.gif");
+	document.all.you3.setAttribute("src","rpsImages/scissors.gif");
+	document.all.puter.setAttribute("src","rpsImages/question.gif");
+	document.all.message.innerText="CHOOSE NOW!";
+	}
+}
+function chooseP()
+{
+	count++;
+	if(count==1){
+	youNumb=2;
+	puterChoose();
+	document.all.you1.setAttribute("src","rpsImages/yellow.gif");
+	document.all.you2.setAttribute("src","rpsImages/paper.gif");
+	document.all.you3.setAttribute("src","rpsImages/yellow.gif");
+	}
+	else{
+	count=0;
+	document.all.you1.setAttribute("src","rpsImages/rock.gif");
+	document.all.you2.setAttribute("src","rpsImages/paper.gif");
+	document.all.you3.setAttribute("src","rpsImages/scissors.gif");
+	document.all.puter.setAttribute("src","rpsImages/question.gif");
+	document.all.message.innerText="CHOOSE NOW!";
+	}
+}
+function chooseS()
+{
+	count++;
+	if(count==1){
+	youNumb=3;
+	puterChoose();
+	document.all.you1.setAttribute("src","rpsImages/yellow.gif");
+	document.all.you2.setAttribute("src","rpsImages/scissors.gif");
+	document.all.you3.setAttribute("src","rpsImages/yellow.gif");
+	}
+	else{
+	count=0;
+	document.all.you1.setAttribute("src","rpsImages/rock.gif");
+	document.all.you2.setAttribute("src","rpsImages/paper.gif");
+	document.all.you3.setAttribute("src","rpsImages/scissors.gif");
+	document.all.puter.setAttribute("src","rpsImages/question.gif");
+	document.all.message.innerText="CHOOSE NOW!";
+	}
+}
+function puterChoose()
+{	var n;
+	n=Math.round(Math.random()*3)+1;
+	if(n>3)n=3;
+	puterNumb=n;
+	if(n==3){	
+	document.all.puter.setAttribute("src","rpsImages/scissors.gif");}
+	else if(n==1){	
+	document.all.puter.setAttribute("src","rpsImages/rock.gif");}
+	else{	
+	document.all.puter.setAttribute("src","rpsImages/paper.gif");}
+	winner=0;
+	if(puterNumb==youNumb){document.all.message.innerText="Try Again!";}
+	else if(youNumb==1&puterNumb==3){winner=1;}
+	else if(youNumb==3&puterNumb==1){winner=2;}
+	else if(youNumb>puterNumb){winner=1;}
+	else{winner=2;}
+	if(winner==1){document.all.message.innerText="You Win!";
+	youScore++;
+	document.all.score1.innerText="You ["+youScore+"] :";}
+	if(winner==2){document.all.message.innerText="You Lose!";
+	puterScore++;
+	document.all.score2.innerText="Computer ["+puterScore+"] :";}
+}
+// STOP HIDING FROM OTHER BROWSERS -->
+</SCRIPT>
+
+</HEAD>
+
+<BODY bgcolor="yellow">
+<center>
+<table border="1">
+<tr><td></td><td><h1 id="score2">Computer:</h1></td></tr>
+<tr><td></td><td><img id="puter" align="right" src="rpsImages/question.gif" width="150" height="150"></td></tr>
+<tr><td></td><td><h1 id="score1">You:</h1></td></tr>
+<tr><td><img id="you1" align="right" src="rpsImages/rock.gif" width="150" height="150" onClick="chooseR()"></td>
+<td><div><img id="you2" src="rpsImages/paper.gif" width="150" height="150" onClick="chooseP()"></div></td>
+<td><img id="you3" align="right" src="rpsImages/scissors.gif" width="150" height="150" onClick="chooseS()"></td>
+</tr>
+<tr><td></td><td><h1 id="message">CHOOSE NOW!</h1></td><td></td></tr>
+</table>
+
+
+
+</BODY>
+
+</HTML> 
