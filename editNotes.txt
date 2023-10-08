@@ -1,0 +1,15 @@
+EDITING NOTES:
+
+3rd March:
+
+edited mech/index
+
+edited lightRefl/index
+
+add whole lightRefl folder
+
+waves/index
+
+sound folder
+
+*****angles in refraction sims need sorting...DONE!
