@@ -1,0 +1,244 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+      <style>
+          canvas {
+              border: 0px solid black;
+              font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
+              font-size: 13px;
+              line-height: 1.5;
+              color: #474747;
+          }
+
+          p {
+          font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
+          font-size: 13px;
+          line-height: 1.5;}
+
+          input {
+          font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
+          font-size: 64px;
+          line-height: 1.5;}
+
+
+          p.number {text-align: center; font-size: 64px;}
+          p.results {text-align: center; font-size: 36px;}
+
+          input.textBox {text-align: center; width: 12em; height: 2em; font-size: 48px; visibility: hidden;}
+          input.button {text-align: center; width: 4em; height: 2em; font-size: 48px; color: black}
+
+
+      </style>
+
+    <script type="text/javascript">
+var listOfNumb = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+var alphabetA = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+"k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+"u", "v", "w", "x", "y", "z"];
+var alphabet2A = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+"K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+"U", "V", "W", "X", "Y", "Z"];
+var listOfNumbLen = alphabet2A.length;
+var alphabetLen = alphabetA.length;
+var numbFlag = true;//if true use numbers, if false then use letters
+var bangGo = "";
+var goFlag = true;//if true make numb, if flase input number
+var guessN = "";
+var timeN = 3000;
+var numbLen = 4;
+var numbNow = "";
+var maxLen = 0;
+var minTime = 200000;
+var totLen = 0;
+var totTime = 0;
+var aveLen = 0;
+var aveTime = 0;
+var turns = 0;
+var win = 0;
+var lose = 0;
+    var totalScore = 0;
+    var allScore = 0;
+    var errorPlace = "";
+    var newNumbNow = "";
+    var newguessN = "";
+
+function init(){
+  //object.addEventListener("keypress", handleKeyPress(event));
+  document.getElementById("goB").focus();
+
+  document.getElementById("subBox")
+      .addEventListener("keyup", function(event) {
+        //alert(""+event.keyCode);
+      event.preventDefault();
+      if (event.keyCode === 13) {
+        makeBang();
+          //document.getElementById("id_of_button").click();
+      }
+  });
+
+  //alert("press GO! to start");
+  /*let pressGo = document.getElementById("goB");
+  pressGo.addEventListener("keydown", (event) => {
+    makeBang();
+});*/
+}
+
+function makeNumber(){
+
+      numbNow = "";
+  var chosenN = 0;
+
+  for(i=0;i<numbLen;i++){
+    chooseN = Math.floor(Math.random()*listOfNumbLen);
+    numbNow = numbNow + alphabet2A[chooseN];
+  }
+
+    document.getElementById("number1").innerHTML=""+numbNow;
+    goFlag=false;
+}
+
+function makeBang(){
+	errorPlace="";
+        newNumbNow = "";
+	newguessN = "";
+  if(goFlag){
+    turns++;
+    //totLen = totLen+numbLen;
+    //totTime = totTime+timeN;
+    //aveLen = (totLen/turns).toFixed(2);
+    //aveTime = (totTime/turns).toFixed(0);
+  makeNumber();
+  setTimeout(hideNumber, timeN);
+}
+  else{
+    guessN=document.getElementById("subBox").value;
+    guessNL = guessN.length;
+      var thisAns = guessN;
+      var thisAnsSt = thisAns.split("");
+      var thisAnsL = thisAnsSt.length;
+      var addNumbs = "";
+    for(j=0; j<thisAnsL;j++){
+      if(thisAnsSt[j]!=" "){
+        addNumbs = addNumbs+thisAnsSt[j];
+      }
+    }
+      guessN = addNumbs;
+          var thisScore = findScore(guessN, numbNow);
+    if(guessN==numbNow){
+      if(numbLen>maxLen){
+        maxLen=numbLen;
+      }
+        if(minTime>timeN){
+          minTime=timeN;
+        }
+        totLen = totLen+numbLen;
+        totTime = totTime+timeN;
+        aveLen = (totLen/turns).toFixed(2);
+        aveTime = (totTime/turns).toFixed(0);
+        document.getElementById("number1").innerHTML="correct";
+        win++;
+        document.getElementById("number2").innerHTML="go #"+turns+": "+win+" - "+lose+"<br><br>best length = "+maxLen;//+";  best time = "+minTime+" ms";
+        document.getElementById("number3").innerHTML="ave. length = "+aveLen;//+";  ave. time = "+aveTime+" ms";
+        document.getElementById("subBox").style.value = "????";
+        document.getElementById("subBox").style.visibility = "hidden";
+        document.getElementById("goB").value="GO!";
+        goFlag=true;
+        if(Math.random()<0){
+        timeN = Math.round(Math.round(timeN * 0.8/100)*100);}
+        else{
+        numbLen++;}
+      }
+    else{
+    //totLen = totLen+numbLen;
+    totTime = totTime+timeN;
+    aveLen = (totLen/turns).toFixed(2);
+    aveTime = (totTime/turns).toFixed(0);
+        document.getElementById("number1").innerHTML="WRONG!<br>"+newguessN+" != "+newNumbNow+""+" ("+thisScore+")";// (error:"+errorPlace+")";
+        lose++;
+        document.getElementById("number2").innerHTML="go #"+turns+": "+win+" - "+lose+"<br><br>best length = "+maxLen;//+";  best time = "+minTime+" ms";
+        document.getElementById("number3").innerHTML="ave. length = "+aveLen;//+";  ave. time = "+aveTime+" ms";
+        document.getElementById("subBox").style.value = "????";
+        document.getElementById("subBox").style.visibility = "hidden";
+        document.getElementById("goB").value="GO!";
+        goFlag=true;
+        if(Math.random()<0){
+        timeN = Math.round(Math.round(timeN * 1/100)*100);}
+        else{
+        numbLen--;}
+    }
+  }
+}
+
+    function findScore(a, q){
+      var thisAns = a;
+      var thisAnsSt = thisAns.split("");
+      var thisQue = q;
+      var thisQueSt = thisQue.split("");
+      var thisAnsL = thisAns.length;
+      var thisQueL = thisQue.length;
+      var score = 0;
+      var countThruQ = thisQueL;
+      for(j=0; j<countThruQ; j++){
+        if(thisAnsSt[j]==thisQueSt[j]){
+          score++;
+	newNumbNow = newNumbNow+thisQueSt[j];
+	newguessN = newguessN+thisAnsSt[j];
+        }
+	else{errorPlace=errorPlace+(j+1)+" ";
+		newNumbNow = newNumbNow+"<b style=\"color:green;\">"+thisQueSt[j]+"</b>";
+		newguessN = newguessN+"<b style=\"color:red;\">"+thisAnsSt[j]+"</b>";
+		}
+      }
+      totalScore = totalScore+score;
+      allScore = allScore+countThruQ;
+      var marks = ""+score+"/"+countThruQ;
+      return marks;
+    }
+
+function hideNumber(){
+    document.getElementById("number1").innerHTML="";
+    document.getElementById("subBox").style.visibility = "visible";//"hidden";
+   var blankN = "";
+  /*  for(j=0; j<numbLen;j++){
+      blankN = blankN + "x";//"x";
+    }*/
+    document.getElementById("subBox").value = ""+blankN;
+    document.getElementById("goB").value="input...";
+    document.getElementById("subBox").focus();
+}
+
+function bang(){
+  //bangRing = 0;
+  //bangFlag = false;
+  makeNumber();
+  clearTimeout(bangGo);
+}
+
+</script>
+
+  </head>
+  <body style="margin-left: 80px;" onLoad="init()">
+    <br>
+
+    <p class="number" id="number1">XXXX</p>
+
+    <div style="text-align:center">
+      <input class="textBox" type="text" id="subBox" value="????" name="fname">
+    </div>
+
+    <div style="text-align:center">
+      <input class="button" id="goB" type="button" value="GO!" onClick="makeBang();" onkeypress="handleKeyPress(event);">
+    </div>
+
+  <p class="results" id="number2"></p>
+    <p class="results" id="number3"></p>
+
+
+
+
+
+
+
+
+    </body>
+</html>
