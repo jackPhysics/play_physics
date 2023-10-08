@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>LTM TEST x10</title>
+
+<script type="text/javascript">
+
+var allNumbs = ["01", "02", "03", "04", "05", "06", "07", "08", "09",
+"10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
+"20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
+"30", "31", "32", "33", "34", "35", "36", "37", "38", "39",
+"40", "41", "42", "43", "44", "45", "46", "47", "48", "49",
+"50", "51", "52", "53", "54", "55", "56", "57", "58", "59",
+"60", "61", "62", "63", "64", "65", "66", "67", "68", "69",
+"70", "71", "72", "73", "74", "75", "76", "77", "78", "79",
+"80", "81", "82", "83", "84", "85", "86", "87", "88", "89",
+"90", "91", "92", "93", "94", "95", "96", "97", "98", "99"];
+var allNlen = allNumbs.length;
+
+
+var alphabetA = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+"k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+"u", "v", "w", "x", "y", "z"];
+var alphabet2A = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+"K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+"U", "V", "W", "X", "Y", "Z"];
+
+//PUT ID NUMBER HERE...
+//var IDofQnA = Math.round(Math.random()*100000);
+var seed = 0;//var seed = 62632;//avoid ZERO or multiple of Math.PI()
+var originalSeed = 0;//var originalSeed = seed;
+  //seed = IDofQnA;
+function random() {
+        var x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+        //alert(""+x);
+}
+
+
+function submitRoute(){
+
+  var name4Q="";
+    name4Q=document.getElementById("subBox").value;
+    thisName = name4Q;
+  var textLength=0;
+    textLength=name4Q.length;
+  var nameLetters = name4Q.split("");
+  var nameAsNumb = "";
+  var letterCounter=1;
+
+  for(k=0;k<4;k++){//loop thru the array listing what needs to be searched for
+  letterCounter = 1;
+    for(i=0; i<26;i++){
+      if(nameLetters[k]==alphabetA[i]){
+        nameAsNumb = nameAsNumb + letterCounter;
+        }
+      letterCounter++;
+    }
+    letterCounter = 1;
+      for(i=0; i<26;i++){
+        if(nameLetters[k]==alphabet2A[i]){
+          nameAsNumb = nameAsNumb + letterCounter;
+          }
+        letterCounter++;
+      }
+  }
+  //alert(""+name4Q+" = "+nameAsNumb);
+//document.getElementById("answersID1").innerHTML=""+nameAsNumb;
+seed = parseInt(nameAsNumb);
+originalSeed = seed;
+
+getNumbers();
+}
+
+function getNumbers(){
+var list18 = "Here are your 18 numbers.<br><br>Memorise them TODAY."
++"<br><br>And <u>do not</u> look at the list again"
++" until AFTER you take the test in 3 days."
++"<br><br><br>&nbsp;&nbsp; &nbsp;&nbsp;";
+for(i=0;i<18;i++){
+  var dummy1 = Math.floor(random()*allNlen);
+  list18 = list18 + allNumbs[dummy1]+"&nbsp;&nbsp;";
+  if((i+1)%3==0){
+  list18 = list18 + " &nbsp;&nbsp; &nbsp;&nbsp;";
+  }
+  if((i+1)%6==0){
+  list18 = list18 + "<br><br>&nbsp;&nbsp; &nbsp;&nbsp;";
+  }
+//remove number used
+allNlen--;
+allNumbs[dummy1]=allNumbs[allNlen];
+
+}
+document.getElementById("texthere").innerHTML=""+list18;
+}
+</script>
+
+  </head>
+  <body>
+
+
+<p>Choose yourself any 3 letter 'word' (eg. zoc, asd, Rty, joK etc.)
+  - you will need to remember this 3 letter 'word' as it will generate a unique set
+    of 18 numbers...
+  <br>and so you will need to re-enter the exact same word
+    when you take the LTM test in 3 days time.</p>
+
+<p>Put your 'word' in the box and then press "Submit word" button...</p>
+
+<form>
+ chosen word (3 letters): <input type="text" id="subBox" value="" name="fname">
+ &nbsp;&nbsp; &nbsp;&nbsp;
+ <input class="button" id="subBtn" type="button" value="Submit word" onClick="submitRoute();">
+</form>
+
+<h2 id="texthere"></h2>
+
+
+
+  </body>
+</html>

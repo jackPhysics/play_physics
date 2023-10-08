@@ -1,0 +1,631 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>STM TEST x10</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Javascript Memory simulations">
+    <meta name="keywords" content="HTML, CSS, JavaScript, Physics, simulations, applets, HTML5,
+    psychology, psychology A-level, AQA, psychology AS-level,
+    memory, short term memory, long term memory, working memory, digit span, pelman, pelmanism, ">
+    <meta name="author" content="Jack McArdle">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+          canvas {
+              border: 0px solid black;
+              font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
+              font-size: 13px;
+              line-height: 1.5;
+              color: #474747;
+          }
+
+          p {
+          font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
+          font-size: 13px;
+          line-height: 1.5;}
+          dir {
+          font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
+          font-size: 14px;
+          line-height: 1.5;}
+          span {
+          font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
+          font-size: 36px;
+          line-height: 0.5;}
+          input {
+          font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
+          font-size: 64px;
+          line-height: 1.5;}
+
+          p.number {text-align: center; font-size: 64px;}
+          .results {text-align: center; font-size: 36px;line-height: 0.5;}
+
+          br {line-height: 0.5;}
+
+          input.textBox {text-align: center; width: 12em; height: 2em; font-size: 48px; visibility: hidden;}
+          input.button {text-align: center; width: 4em; height: 2em; font-size: 48px; color: black}
+
+
+      </style>
+
+    <script type="text/javascript">
+var listOfNumb = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+var alphabetA = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+"k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+"u", "v", "w", "x", "y", "z"];
+var alphabet2A = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+"K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+"U", "V", "W", "X", "Y", "Z"];
+var listOfNumbLen = listOfNumb.length;
+var alphabetLen = alphabetA.length;
+var numbFlag = true;//if true use numbers, if false then use letters
+var bangGo = "";
+var goFlag = true;//if true make numb, if flase input number
+var guessN = "";
+var timeN = 750;//start time at 1.5s
+var numbLen = 2;
+var numbNow = "";
+var maxLen = 0;
+var minTime = 200000;
+var totLen = 0;
+var totTime = 0;
+var aveLen = 0;
+var aveTime = 0;
+var turns = 0;
+var win = 0;
+var lose = 0;
+var allScore = 0;
+    var errorPlace = "";
+    var newNumbNow = "";
+    var newguessN = "";
+var stageNo = 0;
+var ltmNoList = ["12", "23", "34", "45", "56", "67", "78", "89"];//should have 18 items
+var ltmNoListLen = ltmNoList.length;
+var ltmNoListLen2 = ltmNoListLen;
+//var ltmNoListLen = 0;//ltmNoList.length;
+//var ltmNoListLen2 = 0;//ltmNoListLen;
+var numbShown = new Array();
+var numbShown2 = new Array();
+var yesFlag = false;
+var judge = "NO";
+var probe="no";
+var nonRand="no";
+var totalCorrect = 0;
+var correct = 0;
+var wrong = 0;
+var noOfGoes = 7;//no of digits to number
+var num2Show = "";
+var oldNumb2Show = "";
+var finalList = new Array();
+var answList = new Array();
+var judgeFlag = false;
+var timesThru = 0;//count how many times number displayed
+var repeatFlag = false;
+var count1=0;
+var count2=0;
+var count3=0;
+var count4=0;
+var finalAns = "";//repeat or no-repeat
+var finalAns2 = "";//correct or wrong
+var numberOfTurns = 10;//how many different numbers are offered
+var turnNumber = -1;
+var eachTurnAns = new Array();
+var totalScore = 0;
+var yourScore = 0;
+var scoreKey = "[2=correct, repeat; 1=correct, no-repeat; -2=wrong, repeat; -1=wrong, no-repeat]";
+
+function init(){
+  //object.addEventListener("keypress", handleKeyPress(event));
+  document.getElementById("goB").focus();
+
+  document.getElementById("subBox")
+      .addEventListener("keyup", function(event) {
+        //alert(""+event.keyCode);
+      event.preventDefault();
+      if (event.keyCode === 13) {
+        setTimeout(doTest, timeN);
+          //document.getElementById("id_of_button").click();
+      }
+  });
+  for(i=0;i<noOfGoes;i++){
+    answList[i]=0;
+  }
+
+}
+
+function letsLoop(){
+  turnNumber++
+  if(turnNumber<numberOfTurns){
+    stageNo = 0;
+    yesFlag = false;
+    judge = "NO";
+    probe="no";
+    nonRand="no";
+    correct = 0;
+    wrong = 0;
+    num2Show = "";
+    oldNumb2Show = "";
+    judgeFlag = false;
+    repeatFlag = false;
+    finalAns = "";//repeat or no-repeat
+    finalAns2 = "";//correct or wrong
+    setTimeout(doTest, 500);
+  }
+  else{//final end
+  setTimeout(doTest7, 500);
+
+  }
+}
+
+
+function doTest(){
+  count1++;
+  stageNo++;
+  timesThru++;
+  nonRand="no";
+  if(stageNo==1){
+    document.getElementById("number1").innerHTML="START turn "+1*(turnNumber+1);
+    document.getElementById("goB").style.visibility = "hidden";
+    timeN = 750;//750;//change time to 0.75s
+  }
+  setTimeout(doTest2, 1500);
+}
+
+function doTest2(){
+  stageNo++;
+  nonRand="no";
+  if(stageNo<noOfGoes+2){
+    do{
+      var no1 = ""+Math.floor(Math.random()*10);
+      num2Show = no1;//+no2;
+      yesFlag=false;
+      document.getElementById("number1").innerHTML=""+num2Show;
+      numbShown[stageNo-2]=num2Show;
+    }while(num2Show==oldNumb2Show);//if number same as previous number then try again
+  oldNumb2Show=num2Show;
+  setTimeout(doTest2, timeN);}
+  else{
+  setTimeout(doTest3, timeN);}
+}
+
+function doTest3(){
+  stageNo=1;
+    document.getElementById("number1").innerHTML="REMEMBER";
+    if(Math.random()<0.4){
+      repeatFlag=true;
+      setTimeout(doTest4a, 1000);//repeat
+    }
+    else{
+      repeatFlag=false;
+      setTimeout(doTest4b, 1000);// no repeat
+    }
+}
+
+
+function doTest4a(){
+  stageNo++;
+  nonRand="no";
+      if(repeatFlag&&stageNo<noOfGoes+2)//
+      {
+      num2Show = numbShown[stageNo-2];
+      //nonRand="yes";
+      document.getElementById("number1").innerHTML=""+num2Show;
+      numbShown2[stageNo-2]=num2Show;
+      //totalCorrect++;
+      //yesFlag = true;
+      answList[stageNo-2]=1;//0-no answer 1-repeat 2-caught repeat 3-wrong repeat
+    setTimeout(doTest4a, timeN);}
+    else{
+    var list1 = "";
+    var list2 = "";
+    var loopLen = numbShown.length;
+    for(k=0;k<loopLen;k++){
+      list1=list1+numbShown[k];
+      list2=list2+numbShown2[k];
+    }
+    if(list1==list2){
+      yesFlag=true;
+      finalAns="repeat";
+    }
+    else{
+      yesFlag=false;
+      finalAns="no-repeat";
+    }
+    setTimeout(doTest5, timeN);}
+}
+
+
+function doTest4b(){
+  stageNo++;
+  nonRand="no";
+      if(stageNo<noOfGoes+2)//
+      {
+        do{
+      var prob2 = 1*(noOfGoes-stageNo+1)/noOfGoes;
+      if(Math.random()<prob2){
+        num2Show = numbShown[stageNo-2];
+      }
+      else{
+      var no1 = ""+Math.floor(Math.random()*10);
+      num2Show = no1;//+no2;
+    }
+      yesFlag=false;
+      document.getElementById("number1").innerHTML=""+num2Show;
+      numbShown2[stageNo-2]=num2Show;
+    }while(num2Show==oldNumb2Show);//if number same as previous number then try again
+    oldNumb2Show=num2Show;
+    setTimeout(doTest4b, timeN);}
+    else{
+    var list1 = "";
+    var list2 = "";
+    var loopLen = numbShown.length;
+    for(l=0;l<loopLen;l++){
+      list1=list1+numbShown[l];
+      list2=list2+numbShown2[l];
+    }
+    if(list1==list2){
+      yesFlag=true;
+      finalAns="repeat";
+    }
+    else{
+      yesFlag=false;
+      finalAns="no-repeat";
+    }
+  setTimeout(doTest5, timeN);}
+}
+
+function doTest5(){
+  count4++;
+    document.getElementById("number1").innerHTML="JUDGE";
+    //document.getElementById("goB").style.visibility = "hidden";
+    document.getElementById("goB2").style.visibility = "visible";
+    if(probe=="yes"&&yesFlag){//find repeat
+      finalAns2="correct";
+      totalCorrect++;
+      eachTurnAns[turnNumber]=2;
+      answList[turnNumber]=2;
+      probe="no";
+      //totalScore = totalScore + 2;
+    }
+    else if(probe=="no"&&!yesFlag){//find no-repeat
+      finalAns2="correct";
+      totalCorrect++;
+      eachTurnAns[turnNumber]=1;
+      answList[turnNumber]=1;
+      probe="no";
+    }
+    else if(probe=="yes"&&!yesFlag){//miss no-repeat
+      finalAns2="wrong";
+      //totalCorrect--;
+      eachTurnAns[turnNumber]=-1;
+      answList[turnNumber]=-1;
+      probe="no";
+    }
+    else{//miss repeat
+      finalAns2="wrong";
+      eachTurnAns[turnNumber]=0;
+      answList[turnNumber]=0;
+    }
+
+    setTimeout(doTest6, 2000);
+}
+
+function doTest6(){
+
+    //clearTimeout();
+    var preTag = "";
+    var postTag = "";
+
+    var numbersDone = ""+preTag+numbShown[0]+postTag;
+    var numbersDone2 = ""+preTag+numbShown2[0]+postTag;
+
+  for(m=1;m<noOfGoes;m++){//-1
+      numbersDone=numbersDone+","+preTag+numbShown[m]+postTag;
+      numbersDone2=numbersDone2+","+preTag+numbShown2[m]+postTag;
+    }
+    var answList2="";
+    for(n=0;n<noOfGoes;n++){
+      answList2=answList2+answList[n];
+    }
+    if(finalAns=="repeat"){
+      totalScore=totalScore+2;
+      if(finalAns2=="correct"){yourScore=yourScore+2;}
+    //else no change to yourScore
+    }
+    else{
+      totalScore=totalScore+1;
+      if(finalAns2=="correct"){yourScore=yourScore+1;}
+      else{yourScore=yourScore-1;}
+    }
+      //document.getElementById("number1").innerHTML="Turn "+1*(turnNumber+1)+":<br><span class=\"results\">"+finalAns+"<br>"+finalAns2+"</span><dir>("+numbersDone+")</dir>"+"<dir>("+numbersDone2+")</dir>";
+      document.getElementById("number1").innerHTML="Turn "+1*(turnNumber+1)+":<br>"+finalAns+"<br>"+finalAns2+"<dir>("+numbersDone+")</dir>"+"<dir>("+numbersDone2+")</dir>";
+      document.getElementById("goB").style.visibility = "visible";
+      document.getElementById("goB").value="GO!";
+      document.getElementById("goB2").style.visibility = "hidden";
+      setTimeout(letsLoop, 5000);
+}
+
+
+function doTest7(){
+
+    clearTimeout();
+    var preTag = "";
+    var postTag = "";
+
+    var numbersDone = ""+preTag+eachTurnAns[0]+postTag;
+    //var numbersDone2 = ""+preTag+eachTurnAns[0]+postTag;
+
+    for(m=1;m<numberOfTurns;m++){//-1
+      numbersDone=numbersDone+","+preTag+eachTurnAns[m]+postTag;
+      //numbersDone2=numbersDone2+","+preTag+eachTurnAns[0]+postTag;
+    }
+    var answList2="";
+    for(n=0;n<numberOfTurns;n++){
+      answList2=answList2+answList[n];
+    }
+    var percScore = Math.round(yourScore/totalScore*100);
+      //document.getElementById("number1").innerHTML="END<br><span class=\"results\">Score: "+totalCorrect+"/"+numberOfTurns+"<br>Score: "+yourScore+"/"+totalScore+" ("+percScore+"%)"+"</span><br><dir>("+numbersDone+")</dir>";
+      document.getElementById("number1").innerHTML="END<br>Score: "+totalCorrect+"/"+numberOfTurns+"<br>Score: "+yourScore+"/"+totalScore+" ("+percScore+"%)"+"<br><dir>("+numbersDone+")<br>"+scoreKey+"</dir>";
+      document.getElementById("goB").style.visibility = "visible";
+      document.getElementById("goB").value="GO!";
+      document.getElementById("goB2").style.visibility = "hidden";
+
+}
+
+
+
+function doTest2x(){
+  stageNo++;
+  nonRand="no";
+  if(stageNo==1){
+    document.getElementById("number1").innerHTML="START";
+    document.getElementById("goB").style.visibility = "hidden";
+  }
+  else if(stageNo>noOfGoes+1&&timesThru==1){//start 2nd time thru
+    timesThru++;
+    stageNo=1;
+    clearTimeout(doTest2);
+    setTimeout(doTest3, timeN);
+
+  }
+  else if(stageNo>noOfGoes+1&&!judgeFlag){
+    judgeFlag=true;
+    clearTimeout(doTest2);
+  setTimeout(doTest4, timeN);
+  }
+  else if(stageNo>noOfGoes+1&&timesThru>1){//end routine
+    clearTimeout();
+    var preTag = "";
+    var postTag = "";
+    if(answList[0]==1){
+      preTag = "<b style=\"color:green;\">";
+      postTag = "</b>";
+    }
+    else if(answList[0]>1){
+      preTag = "<b style=\"color:red;\">";
+      postTag = "</b>";
+    }
+    else{
+      preTag = "";
+      postTag = "";
+    }
+
+    var numbersDone = ""+preTag+numbShown[0]+postTag;
+
+    for(m=1;m<noOfGoes;m++){//-1
+      if(answList[m]==1){//missed repeat
+        preTag = "<b style=\"color:violet;\">";
+        postTag = "</b>";
+      }
+      else if(answList[m]==2){//found repeat
+        preTag = "<b style=\"color:green;\">";
+        postTag = "</b>";
+      }
+      else if(answList[m]==3){//wrong repeat
+        preTag = "<b style=\"color:red;\">";
+        postTag = "</b>";
+      }
+      else{
+        preTag = "";
+        postTag = "";
+      }
+      numbersDone=numbersDone+","+preTag+numbShown[m]+postTag;
+    }
+    var answList2="";
+    for(n=0;n<noOfGoes;n++){
+      answList2=answList2+answList[n];
+    }
+      document.getElementById("number1").innerHTML="END<br>correct = "+correct+"/"+totalCorrect+"<br>wrong = "+wrong+"<dir>("+numbersDone+")</dir>"+"<dir>("+answList2+")</dir>";
+      document.getElementById("goB").style.visibility = "visible";
+      document.getElementById("goB").value="GO!";
+      document.getElementById("goB2").style.visibility = "hidden";
+  }
+  else{
+    do{
+      if(repeatFlag)//
+      {
+      //var chooseNum = Math.floor(Math.random()*ltmNoListLen);
+      num2Show = numbShown[stageNo-2];
+      nonRand="yes";
+      //next routine is so that each number can only be chosen once
+      //ltmNoList[chooseNum]=ltmNoList[ltmNoListLen-1];//remove chosen number from list
+      //ltmNoListLen--;
+      document.getElementById("number1").innerHTML=""+num2Show;
+      //document.getElementById("goB2").style.visibility = "visible";
+      totalCorrect++;
+      yesFlag = true;
+      //numbShown[stageNo-2]=num2Show;
+      answList[stageNo-2]=1;//0-no answer 1-repeat 2-caught repeat 3-wrong repeat
+    }
+    else{
+      var no1 = ""+Math.floor(Math.random()*10);
+      //var no1 = listOfNumb[dummy1];
+      //var no2 = ""+Math.floor(Math.random()*10);
+      //var no3 = Math.floor(Math.random()*100);
+      //var no2 = listOfNumb[dummy1];
+      num2Show = no1;//+no2;
+      yesFlag=false;
+      /*for(j=0;j<ltmNoListLen2;j++){
+        if(""+ltmNoList[j]==num2Show){yesFlag=true;
+        totalCorrect++;
+        answList[stageNo-2]=1;//0-no answer 1-repeat 2-caught repeat 3-wrong repeat
+        }
+      }*/
+      //ltmNoList[ltmNoListLen]=num2Show;
+      //ltmNoListLen++;
+      document.getElementById("number1").innerHTML=""+num2Show;
+      //document.getElementById("goB2").style.visibility = "visible";
+      numbShown[stageNo-2]=num2Show;
+    }
+    //numbShown[stageNo-2]=num2Show;
+  }while(num2Show==oldNumb2Show);//if number same as previous number then try again
+  oldNumb2Show=num2Show;
+  }
+  if(probe=="yes"&&yesFlag){
+    correct++;
+    answList[stageNo-2]=2;
+    probe="no";
+  }
+  setTimeout(doTest2, timeN);
+  //doTest();
+}
+
+
+function makeBang(){
+	errorPlace="";
+  newNumbNow = "";
+	newguessN = "";
+  if(goFlag){
+  turns++;
+    //totLen = totLen+numbLen;
+    //totTime = totTime+timeN;
+    //aveLen = (totLen/turns).toFixed(2);
+    //aveTime = (totTime/turns).toFixed(0);
+  makeNumber();
+  setTimeout(hideNumber, timeN);
+}
+  else{
+    guessN=document.getElementById("subBox").value;
+    guessNL = guessN.length;
+      var thisAns = guessN;
+      var thisAnsSt = thisAns.split("");
+      var thisAnsL = thisAnsSt.length;
+      var addNumbs = "";
+    for(j=0; j<thisAnsL;j++){
+      if(thisAnsSt[j]!=" "){
+        addNumbs = addNumbs+thisAnsSt[j];
+      }
+    }
+      guessN = addNumbs;
+      //alert(""+thisAns+" "+thisAnsL+" "+addNumbs);
+      var thisScore = findScore(guessN, numbNow);
+      var percentScore = (totalScore/allScore*100).toFixed(0);
+    if(guessN==numbNow){
+      if(numbLen>maxLen){
+        maxLen=numbLen;
+      }
+        if(minTime>timeN){
+          minTime=timeN;
+        }
+        totLen = totLen+numbLen;
+        totTime = totTime+timeN;
+        aveLen = (totLen/turns).toFixed(2);
+        aveTime = (totTime/turns).toFixed(0);
+        document.getElementById("number1").innerHTML="correct";
+        win++;
+        document.getElementById("number2").innerHTML="go #"+turns+": "+win+" - "+lose+"<br><br>best length = "+maxLen;//+";  best time = "+minTime+" ms";
+        document.getElementById("number3").innerHTML="score = "+totalScore+"; percentage = "+percentScore+"%; ave. length = "+aveLen;//+";  ave. time = "+aveTime+" ms";
+        document.getElementById("subBox").style.value = "????";
+        document.getElementById("subBox").style.visibility = "hidden";
+        document.getElementById("goB").value="GO!";
+        document.getElementById("goB").focus();
+        goFlag=true;
+        if(Math.random()<0){
+        timeN = Math.round(Math.round(timeN * 0.8/100)*100);}
+        else{
+        numbLen++;}
+      }
+    else{
+    //totLen = totLen+numbLen;
+    totTime = totTime+timeN;
+    aveLen = (totLen/turns).toFixed(2);
+    aveTime = (totTime/turns).toFixed(0);
+        document.getElementById("number1").innerHTML="WRONG!<br>"+newguessN+" != "+newNumbNow+""+" ("+thisScore+")";// (error:"+errorPlace+")";
+        lose++;
+        document.getElementById("number2").innerHTML="go #"+turns+": "+win+" - "+lose+"<br><br>best length = "+maxLen;//+";  best time = "+minTime+" ms";
+        document.getElementById("number3").innerHTML="score = "+totalScore+"; percentage = "+percentScore+"%; ave. length = "+aveLen;//+";  ave. time = "+aveTime+" ms";
+        document.getElementById("subBox").style.value = "????";
+        document.getElementById("subBox").style.visibility = "hidden";
+        document.getElementById("goB").value="GO!";
+        document.getElementById("goB").focus();
+        goFlag=true;
+        if(Math.random()<0){
+        timeN = Math.round(Math.round(timeN * 1/100)*100);}
+        else{
+        numbLen--;}
+    }
+
+  }
+}
+
+function yesButton(){
+  probe="yes";
+  //alert("button pressed");
+  if(probe=="yes"&&yesFlag){
+    finalAns2="correct";
+    totalCorrect++;
+    eachTurnAns[turnNumber]=2;
+    answList[turnNumber]=2;
+    probe="no";
+  }
+  else if(probe=="no"&&!yesFlag){
+    finalAns2="correct";
+    totalCorrect++;
+    eachTurnAns[turnNumber]=1;
+    answList[turnNumber]=1;
+    probe="no";
+  }
+  else if(probe=="yes"&&!yesFlag){//miss no-repeat
+    finalAns2="wrong";
+    //totalCorrect--;
+    eachTurnAns[turnNumber]=-1;
+    answList[turnNumber]=-1;
+    probe="no";
+  }
+  else{
+    finalAns2="wrong";
+    eachTurnAns[turnNumber]=0;
+    answList[turnNumber]=0;
+  }
+  //alert("key pressed "+yesFlag+" "+correct+" "+probe);
+}
+
+
+</script>
+
+  </head>
+  <body style="margin-left: 80px;" onLoad="init()">
+    <br>
+
+    <p class="number" id="number1"></p>
+
+    <div style="text-align:center">
+      <input class="textBox" type="text" id="subBox" value="" name="fname">
+    </div>
+
+    <div style="text-align:center">
+      <input class="button" id="goB" type="button" value="GO!" onClick="letsLoop();" onkeypress="handleKeyPress(event);">
+      <br>
+      <input class="button" id="goB2" type="button" style="visibility:hidden;" value="Repeat?" onClick="yesButton()" onkeypress="yesButton()">
+    </div>
+
+  <p class="results" id="number2"></p>
+    <p class="results" id="number3"></p>
+
+
+
+
+
+
+
+
+    </body>
+</html>
