@@ -1,3 +1,4 @@
+const LAST_BANG = 4;
 
 var canvW = 900;
 var canvH = 550;
@@ -25,7 +26,7 @@ var gorBCol = "SaddleBrown";
 var gorAllColA = ["DarkMagenta", "SaddleBrown",
   "RosyBrown", "Tan", "Wheat", "WhiteSmoke",
   "Thistle", "Teal", "Chocolate", "DarkGoldenRod",
-  "DarkBlue", "DarkGray", "DarlSlateGray", "DeepPink",
+  "DarkGray", "DarkSlateGray", "DeepPink",
   "FireBrick", "GoldenRod", "Indigo", "RoyalBlue"]
 var gorAllColALen = gorAllColA.length;
 var skyCol = "LightSkyBlue";//"SkyBlue"
@@ -826,7 +827,7 @@ function plotActualPict() {
       //clearTimeout(bangGo);
       //endBang();
       bangClock++;
-      if (bangClock > 4) {
+      if (bangClock > LAST_BANG) {
         clearTimeout(bangGo);
         endBang();
       }
@@ -834,7 +835,7 @@ function plotActualPict() {
     if (turnNumb == "A") {
       if (gorBCol == "Red") {
         bangClock++;
-        if (bangClock > 4) {
+        if (bangClock > LAST_BANG) {
           player1Score++;
           //alert("HIT!")
           clearTimeout(bangGo);
@@ -850,7 +851,7 @@ function plotActualPict() {
     else {//if turnNumb=="B"
       if (gorACol == "Red") {
         bangClock++;
-        if (bangClock > 4) {
+        if (bangClock > LAST_BANG) {
           player2Score++;
           //alert("HIT!")
           clearTimeout(bangGo);
@@ -863,7 +864,7 @@ function plotActualPict() {
         setEnd = true;
       }
     }
-    if (bangClock < 3) {
+    if (bangClock <= LAST_BANG) {
       ctx.beginPath();
       ctx.lineWidth = "3";
       ctx.strokeStyle = "Yellow";
@@ -911,7 +912,7 @@ function plotActualPict() {
           ctx.arc(banX, banY, 12, 0, Math.PI * 2);
           ctx.fill();
           bangClock++;
-          if (bangClock > 4) {
+          if (bangClock > LAST_BANG) {
             clearTimeout(bangGo);
             endBang();
           }
