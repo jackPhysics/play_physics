@@ -873,11 +873,13 @@ function plotActualPict() {
       ctx.beginPath();
       ctx.lineWidth = "2";
       ctx.strokeStyle = "Silver";
+      if(speedV<0){
+        ctx.strokeStyle = "Red";}
       ctx.rect(banX, 0, 1, 4);
       ctx.stroke();
       ctx.beginPath();
-      ctx.lineWidth = "2";
-      ctx.strokeStyle = "Silver";
+      //ctx.lineWidth = "2";
+      //ctx.strokeStyle = "Silver";
       ctx.rect(0, banY, 4, 1);
       ctx.stroke();
     }
