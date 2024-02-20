@@ -1153,7 +1153,7 @@ function getCanvasImg(canvas) {
 
 function resetSc() {
   //alert("reset00")
-  document.getElementById("resetB").blur();
+  //document.getElementById("resetB").blur();
   gorACol = colorStoreA[0];
   gorBCol = colorStoreA[1];
   gameNumb++;
