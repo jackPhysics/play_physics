@@ -1,4 +1,4 @@
-const LAST_BANG = 4;
+const LAST_BANG = 3;
 
 var canvW = 900;
 var canvH = 550;
@@ -83,6 +83,7 @@ let dumGorInx = 2;
 let gorAMove = 3;
 let gorBMove = 3;
 let textShots = "";
+let bangRadius = 15;
 
 //no arms
 let gorCoords0 = [7, 0, 7, 5, 1, 5, 1, 8, 6, 8, 6, 11, 5, 12, 
@@ -998,7 +999,7 @@ function plotActualPict() {
     ctx.fillStyle = "#ff0000";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("HIT!", midValX, midValY / 2 - 30);
+    ctx.fillText("HIT!", midValX, midValY / 2 - 30,);
     ctx.fillStyle = "#ffffff";
     ctx.fillText("PRESS 'y' or 'Y' to start next game!", midValX, midValY / 2);
     ctx.fill();
@@ -1010,7 +1011,7 @@ function plotActualPict() {
     ctx.beginPath();
     ctx.lineWidth = "3";
     ctx.fillStyle = "#000077";
-    ctx.arc(blueX, blueY, 12, 0, Math.PI * 2);
+    ctx.arc(blueX, blueY, bangRadius, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -1114,12 +1115,13 @@ function plotActualPict() {
         if (turnNumb == "A") {armDirA="D";}
         else if (turnNumb == "B") {armDirB="D";}
     //check if hits building
-      const pixel = ctx.getImageData(banX, banY, 1, 1);
-      const data = pixel.data;
-      const rgbColor = `rgb(${data[0]} ${data[1]} ${data[2]} / ${data[3] / 255})`;
+      let pixel = ctx.getImageData(banX, banY, 1, 1);
+      let data = pixel.data;
+      let rgbColor = `rgb(${data[0]} ${data[1]} ${data[2]} / ${data[3] / 255})`;
       if (true) {
         var whatHit = "" + data[0] + " " + data[1] + " " + data[2];
-        if (whatHit != "0 0 119") {
+        console.log("banX="+banX+"; banY="+banY+"; whatHit="+whatHit);
+        if (whatHit!="0 0 119"&&whatHit!="0 0 118") {
           //alert(" "+data[0]+" "+data[1]+" "+data[2]);
           boomTrailA[boomTrailLen] = banX;
           boomTrailA[boomTrailLen + 1] = banY;
@@ -1127,7 +1129,7 @@ function plotActualPict() {
           ctx.beginPath();
           ctx.lineWidth = "3";
           ctx.fillStyle = "#000077";
-          ctx.arc(banX, banY, 12, 0, Math.PI * 2);
+          ctx.arc(banX, banY, bangRadius, 0, Math.PI * 2);
           ctx.fill();
           bangClock++;
           if (bangClock > LAST_BANG) {
@@ -1138,6 +1140,12 @@ function plotActualPict() {
         }
       }
     }
+  /*ctx.beginPath();
+  ctx.lineWidth = "1";
+  ctx.strokeStyle = "#ff0000";
+  ctx.arc(banX, banY, 1, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.closePath();*/
   }
 
   document.getElementById("dummy2").innerText=""+textShots;
