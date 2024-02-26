@@ -69,7 +69,7 @@ var gameNumb = 0;
 var setEnd = false;
 var resetDone = false;
 var gravity = 0.2;
-var delGrav = 0.3;
+var delGrav = 0.35;
 var grav0 = 0.05;
 var blueflag = true;
 var boomTrailA = new Array();
@@ -126,6 +126,9 @@ let coordsLen5 = gorCoords5.length;
 let gorCoords = [gorCoords0, gorCoords1, gorCoords2, gorCoords3, gorCoords4, gorCoords5];
 let coordsLen = [coordsLen0, coordsLen1, coordsLen2, coordsLen3, coordsLen4, coordsLen5];
 let gorCoordIndex = 2;
+let delY = 0;
+let delYA = 0;
+let delX = 0;
 
 /*const getColorIndicesForCoord = (x, y, width) => {
   const red = y * (width * 4) + x * 4;
@@ -135,6 +138,7 @@ let gorCoordIndex = 2;
 window.onload = function () {
   bangClock = 0;
   gravity = Math.round((Math.random()*delGrav + grav0)*100)/100;
+  //alert(""+gravity);
   delSV = gravity;
   var dumGorCol = Math.round(Math.random() * gorAllColALen);
   gorACol = gorAllColA[dumGorCol];
@@ -402,7 +406,6 @@ window.onload = function () {
   ctx.fillText("g=" + gravity2, sunX, sunY - 15);//gameNumb
   ctx.fill();}
 
-
   ctx.beginPath();
   ctx.font = "20px Arial";
   ctx.fillStyle = "#ffff00";
@@ -412,7 +415,7 @@ window.onload = function () {
   ctx.fillText("Shots: " + player1Shots, xmin + 15, sunY -15);
   ctx.fillText("Score: " + player1Score, xmin + 15, sunY + 5);
   ctx.fillText("Points: " + playAPts, xmin + 15, sunY + 25);
-  ctx.fillText("Angle = ?", xmin + 15, sunY + 45);
+  ctx.fillText("TAKE SHOT!", xmin + 15, sunY + 45);
   //ctx.fillText("Speed: "+speedNow,xmin+15, sunY+60);
 
   ctx.textAlign = "right";
@@ -430,7 +433,46 @@ window.onload = function () {
 
   canvas.addEventListener("mousedown", function () {
     var drawingPos = events.getMousePos();
-    //newQflag = false;
+    //newQflag = false;i
+    if (drawingPos !== null) {
+      //points.push(drawingPos);
+      Qx = drawingPos.x;
+      Qy = drawingPos.y;
+      //alert(""+Qx+" "+Qy);
+      if(turnNumb=="A"){
+        if(Qy>gorPosA[1]+gorSize/2){angleNow=0;delY=Qy-(gorPosA[1]+gorSize/2);
+            delYA=0;}
+        else{delY=(gorPosA[1]+gorSize/2)-Qy;
+            delYA=(gorPosA[1]+gorSize/2)-Qy;}
+        if(Qx<gorPosA[0]+gorSize/2){angleNow=89;delX=(gorPosA[0]+gorSize/2)-Qx;}
+        else{delX=Qx-(gorPosA[0]+gorSize/2);
+            var angNow = Math.atan2(delYA,delX)*180/Math.PI
+            angleNow = angNow;}
+        var spdNow = delX*delX + delY*delY;
+        spdNow=Math.pow(spdNow, 0.5);
+        speedNow=spdNow/4;
+        if (speedNow < 10) { speedNow = 10; }
+        else if (speedNow > 250) { speedNow = 250; }
+        makeBang();
+      }
+      else if(turnNumb=="B"){
+        if(Qy>gorPosA[3]+gorSize/2){angleNow=0;delY=Qy-(gorPosA[3]+gorSize/2);
+        delYA=0;}
+        else{delY=(gorPosA[3]+gorSize/2)-Qy;
+        delYA=(gorPosA[3]+gorSize/2)-Qy;}
+        if(Qx>gorPosA[2]+gorSize/2){angleNow=89;delX=Qx-(gorPosA[2]+gorSize/2);}
+        else{delX=(gorPosA[2]+gorSize/2)-Qx;
+            var angNow = Math.atan2(delYA,delX)*180/Math.PI+Math.PI;
+            angleNow = angNow;}
+        var spdNow = delX*delX + delY*delY;
+        spdNow=Math.pow(spdNow, 0.5);
+        speedNow=spdNow/4;
+        if (speedNow < 10) { speedNow = 10; }
+        else if (speedNow > 250) { speedNow = 250; }
+        makeBang();
+
+      }
+    }
 
     isMouseDown = true;
   }, false);
@@ -444,6 +486,20 @@ window.onload = function () {
       //points.push(drawingPos);
       Qx = drawingPos.x;
       Qy = drawingPos.y;
+      //alert(""+Qx+" "+Qy);
+      /*if(turnNumb=="A"){
+        if(Qy>gorPosA[1]){angleNow=0;delY=Qy-gorPosA[1];}
+        else{delY=gorPosA[1]-Qy}
+        if(Qx<gorPosA[0]){angleNow=89;delX=gorPosA[0]-Qx;}
+        else{delX=Qx-gorPosA[0];
+            var angNow = atan(delY/delX)*180/Math.PI
+            angleNow = angNow;}
+        var spdNow = delX*delX + delY*delY;
+        spdNow=Math.pow(spdNow, 0.5);
+        speedNow=spdNow/10;
+        makeBang();
+
+      }*/
     }
 
     //moveF=true;
@@ -468,7 +524,7 @@ window.onload = function () {
       }
     }
   });
-
+/*
   document.addEventListener(
     "keydown",
     (event) => {
@@ -536,7 +592,7 @@ window.onload = function () {
     },
     false,
   );
-
+    */
   document.addEventListener(
     "keyup",
     (event) => {
@@ -810,7 +866,8 @@ function plotStartAgain() {
   ctx.strokeStyle = "Black";
   ctx.arc(sunX, sunY + gorSize / 16, gorSize / 8, 0, Math.PI, false);
   ctx.stroke();
-  if(showG){ 
+  
+ if(showG){ 
   ctx.closePath();
   ctx.beginPath();
   //ctx.lineWidth = "2";
@@ -830,7 +887,7 @@ function plotStartAgain() {
   ctx.fillText("Score: " + player1Score, xmin + 15, sunY + 5);
   ctx.fillText("Points: " + playAPts, xmin + 15, sunY + 25);
   if (turnNumb == "A") {
-    ctx.fillText("Angle = ?", xmin + 15, sunY + 45);
+    ctx.fillText("TAKE SHOT!", xmin + 15, sunY + 45);
   }
 
   ctx.textAlign = "right";
@@ -840,7 +897,7 @@ function plotStartAgain() {
   ctx.fillText("Score: " + player2Score, xmax - 15, sunY + 5);
   ctx.fillText("Points: " + playBPts, xmax - 15, sunY + 25);
   if (turnNumb == "B") {
-    ctx.fillText("Angle = ?", xmax - 15, sunY + 45);
+    ctx.fillText("TAKE SHOT!", xmax - 15, sunY + 45);
   }
 }
 
@@ -953,7 +1010,7 @@ function plotActualPict() {
   ctx.strokeStyle = "Black";
   ctx.arc(sunX, sunY + gorSize / 16, gorSize / 8, 0, Math.PI, false);
   ctx.stroke();
-  if(showG){ 
+ if(showG){ 
   ctx.closePath();
   ctx.beginPath();
   //ctx.lineWidth = "2";
@@ -973,7 +1030,7 @@ function plotActualPict() {
   ctx.fillText("Points: " + playAPts, xmin + 15, sunY + 25);
   if (turnNumb == "A") {
     if (turnAng) {
-      ctx.fillText("Angle: " + catchText, xmin + 15, sunY + 45);
+      ctx.fillText("TAKE SHOT!", xmin + 15, sunY + 45);//+ catchText
     }
     else if (turnSpd) {
       ctx.fillText("Angle: " + angleNow, xmin + 15, sunY + 45);
@@ -992,7 +1049,7 @@ function plotActualPict() {
   ctx.fillText("Points: " + playBPts, xmax - 15, sunY + 25);
   if (turnNumb == "B") {
     if (turnAng) {
-      ctx.fillText("Angle: " + catchText, xmax - 15, sunY + 45);
+      ctx.fillText("TAKE SHOT!", xmax - 15, sunY + 45);//+ catchText
     }
     else if (turnSpd) {
       ctx.fillText("Angle: " + angleNow, xmax - 15, sunY + 45);
@@ -1013,7 +1070,7 @@ function plotActualPict() {
     ctx.arc(blueX, blueY, bangRadius, 0, Math.PI * 2);
     ctx.fill();
   }
-
+  
   if (setEnd) {
     ctx.beginPath();
     ctx.font = "40px Arial";
@@ -1022,9 +1079,11 @@ function plotActualPict() {
     ctx.textBaseline = "middle";
     ctx.fillText("HIT!", midValX, midValY / 2 - 30,);
     ctx.fillStyle = "#ffffff";
-    ctx.fillText("PRESS 'y' or 'Y' to start next game!", midValX, midValY / 2);
+    ctx.fillText("PRESS 'new game' button to start next game!", midValX, midValY / 2);
+    ctx.fillText("(PRESS 'F5' to start a new match)", midValX, midValY/2+40);
     ctx.fill();
   }
+
 
   //draw banana
   if (bangFlag) {
@@ -1073,7 +1132,7 @@ function plotActualPict() {
       }
     }
     //check if out of range
-    if (banY < -400 || banX > xmax + 5 || banY > ymax + 5 || banX < -5) {
+    if (banY < -400 || banX > xmax + 15 || banY > ymax + 15 || banX < -15) {
       //clearTimeout(bangGo);
       //endBang();
       //bangClock++;
@@ -1171,6 +1230,7 @@ function getCanvasImg(canvas) {
 }
 
 function resetSc() {
+  setEnd = false;
   //alert("reset00")
   //document.getElementById("resetB").blur();
   gorACol = colorStoreA[0];

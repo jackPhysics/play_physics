@@ -40,6 +40,7 @@ var midValX = (xmin + xmax) / 2;
 var midValY = (ymin + ymax) / 2;
 var Qx = 0;
 var Qy = 0;
+var isMouseDown = false;
 var touchRadius = 20;
 var touchFlag = "no";
 var houseHighA = new Array();
@@ -69,8 +70,8 @@ var gameNumb = 0;
 var setEnd = false;
 var resetDone = false;
 var gravity = 0.2;
-var delGrav = 0.3;
-var grav0 = 0.05;
+var delGrav = 0.467;
+var grav0 = 0.033;
 var blueflag = true;
 var boomTrailA = new Array();
 var boomTrailLen = 0;
@@ -84,6 +85,9 @@ let gorAMove = 3;
 let gorBMove = 3;
 let textShots = "";
 let bangRadius = 15;
+let targetX = 0;
+let targetY = 0;
+let gorScale = 2.4;
 let showG=false;
 
 //no arms
@@ -126,6 +130,9 @@ let coordsLen5 = gorCoords5.length;
 let gorCoords = [gorCoords0, gorCoords1, gorCoords2, gorCoords3, gorCoords4, gorCoords5];
 let coordsLen = [coordsLen0, coordsLen1, coordsLen2, coordsLen3, coordsLen4, coordsLen5];
 let gorCoordIndex = 2;
+let delY = 0;
+let delYA = 0;
+let delX = 0;
 
 /*const getColorIndicesForCoord = (x, y, width) => {
   const red = y * (width * 4) + x * 4;
@@ -393,15 +400,15 @@ window.onload = function () {
   ctx.strokeStyle = "Yellow";
   ctx.fillText("" + gameNumb, sunX, sunY - 15);
   ctx.fill();
-  if(showG){ 
-  ctx.closePath();
-  ctx.beginPath();
-  //ctx.lineWidth = "2";
-  ctx.fillStyle = "Yellow";
-  let gravity2 = gravity/0.2*9.8
-  ctx.fillText("g=" + gravity2, sunX, sunY - 15);//gameNumb
-  ctx.fill();}
 
+  if(showG){ 
+    ctx.closePath();
+    ctx.beginPath();
+    //ctx.lineWidth = "2";
+    ctx.fillStyle = "Yellow";
+    let gravity2 = gravity/0.2*9.8
+    ctx.fillText("g=" + gravity2, sunX, sunY - 15);//gameNumb
+    ctx.fill();}
 
   ctx.beginPath();
   ctx.font = "20px Arial";
@@ -429,8 +436,51 @@ window.onload = function () {
   }, false);
 
   canvas.addEventListener("mousedown", function () {
+    //console.log("mouseDown; isMouseDown="+isMouseDown);
+    isMouseDown=true;
     var drawingPos = events.getMousePos();
-    //newQflag = false;
+    //newQflag = false;i
+    if (drawingPos !== null) {
+      //points.push(drawingPos);
+      Qx = drawingPos.x;
+      Qy = drawingPos.y;
+      console.log("isMouseDown="+isMouseDown+" Qx="+Qx+" Qy="+Qy);
+      //alert(""+Qx+" "+Qy);
+      if(turnNumb=="A"){
+        if(Qy>gorPosA[1]+gorSize/2){angleNow=0;delY=Qy-(gorPosA[1]+gorSize/2);
+            delYA=0;}
+        else{delY=(gorPosA[1]+gorSize/2)-Qy;
+            delYA=(gorPosA[1]+gorSize/2)-Qy;}
+        if(Qx<gorPosA[0]+gorSize/2){angleNow=89;delX=(gorPosA[0]+gorSize/2)-Qx;}
+        else{delX=Qx-(gorPosA[0]+gorSize/2);
+            var angNow = Math.atan2(delYA,delX)*180/Math.PI
+            angleNow = angNow;}
+        var spdNow = delX*delX + delY*delY;
+        spdNow=Math.pow(spdNow, 0.5);
+        speedNow=spdNow/2;
+        if (speedNow < 10) { speedNow = 10; }
+        else if (speedNow > 250) { speedNow = 250; }
+        //makeBang();
+        plotActualPict();
+      }
+      else if(turnNumb=="B"){
+        if(Qy>gorPosA[3]+gorSize/2){angleNow=0;delY=Qy-(gorPosA[3]+gorSize/2);
+        delYA=0;}
+        else{delY=(gorPosA[3]+gorSize/2)-Qy;
+        delYA=(gorPosA[3]+gorSize/2)-Qy;}
+        if(Qx>gorPosA[2]+gorSize/2){angleNow=89;delX=Qx-(gorPosA[2]+gorSize/2);}
+        else{delX=(gorPosA[2]+gorSize/2)-Qx;
+            var angNow = Math.atan2(delYA,delX)*180/Math.PI+Math.PI;
+            angleNow = angNow;}
+        var spdNow = delX*delX + delY*delY;
+        spdNow=Math.pow(spdNow, 0.5);
+        speedNow=spdNow/2;
+        if (speedNow < 10) { speedNow = 10; }
+        else if (speedNow > 250) { speedNow = 250; }
+        //makeBang();
+        plotActualPict();
+      }
+    }
 
     isMouseDown = true;
   }, false);
@@ -444,13 +494,28 @@ window.onload = function () {
       //points.push(drawingPos);
       Qx = drawingPos.x;
       Qy = drawingPos.y;
+      makeBang();
+      //alert(""+Qx+" "+Qy);
+      /*if(turnNumb=="A"){
+        if(Qy>gorPosA[1]){angleNow=0;delY=Qy-gorPosA[1];}
+        else{delY=gorPosA[1]-Qy}
+        if(Qx<gorPosA[0]){angleNow=89;delX=gorPosA[0]-Qx;}
+        else{delX=Qx-gorPosA[0];
+            var angNow = atan2(delY,delX)*180/Math.PI
+            angleNow = angNow;}
+        var spdNow = delX*delX + delY*delY;
+        spdNow=Math.pow(spdNow, 0.5);
+        speedNow=spdNow/10;
+        makeBang();
+
+      }*/
     }
 
     //moveF=true;
     canvasImg = getCanvasImg(this);
   }, false);
 
-  canvas.addEventListener("mouseout", function () {
+  /*canvas.addEventListener("mouseout", function () {
     if (document.createEvent) {
       var evt = document.createEvent('MouseEvents');
       evt.initEvent("mouseup", true, false);
@@ -459,104 +524,69 @@ window.onload = function () {
     else {
       this.fireEvent("onmouseup");
     }
-  }, false);
+  }, false);*/
 
   events.setStage(function () {
     if (isMouseDown) {
       if (true) {
-        //moveQ(events, points);
+         moveQ(events, points);
       }
     }
   });
 
-  document.addEventListener(
-    "keydown",
-    (event) => {
-      const keyName = event.key;
-      //alert(""+keyName);
-      if (setEnd) {
-        if (keyName == "y" || keyName == "Y") {
-          setEnd = false;
-          resetSc();
-        }
-      }
-      if (keyName == "Enter" || keyName == "0" || keyName == "1" || keyName == "2" || keyName == "3" || keyName == "4" || keyName == "5" || keyName == "6" || keyName == "7" || keyName == "8" || keyName == "9") {
-        if (turnAng) {
-          if (catchText == "?") { catchText = ""; }
-          if (keyName != "Enter") {
-            catchText = catchText + keyName;
-            countText++;
-          }
-          if (countText == 2 || (countText > 0 && keyName == "Enter")) {
-            turnAng = false;
-            turnSpd = true;
-            angleNow = 1 * catchText;
-            catchText = "?";
-            countText = "";
-            if (angleNow < 0) { angleNow = 0; }
-            else if (angleNow > 90) { angleNow = 90; }
-            textShots = textShots + " " + angleNow;
-          }
-          plotActualPict();
-        }
-        else if (turnSpd) {
-          if (catchText == "?") { catchText = ""; }
-          if (keyName != "Enter") {
-            catchText = catchText + keyName;
-            countText++;
-          }
-          if (countText == 3 || (countText > 0 && keyName == "Enter")) {
-            turnAng = false;
-            turnSpd = false;
-            speedNow = 1 * catchText;
-            catchText = "";
-            countText = "";
-            if (speedNow < 10) { speedNow = 10; }
-            else if (speedNow > 250) { speedNow = 250; }
-            textShots = textShots + ", " + speedNow+";";
-            makeBang();
-          }
-          plotActualPict();
-        }
-      }
-      //alert(""+keyName);
-
-      if (keyName === "Control") {
-        // do not alert when only Control key is pressed.
-        return;
-      }
-
-      if (event.ctrlKey) {
-        // Even though event.key is not 'Control' (e.g., 'a' is pressed),
-        // event.ctrlKey may be true if Ctrl key is pressed at the same time.
-        //alert(`Combination of ctrlKey + ${keyName}`);
-      } else {
-        //alert(`Key pressed ${keyName}`);
-      }
-    },
-    false,
-  );
-
-  document.addEventListener(
-    "keyup",
-    (event) => {
-      const keyName = event.key;
-
-      // As the user releases the Ctrl key, the key is no longer active,
-      // so event.ctrlKey is false.
-      if (keyName === "Control") {
-        //alert("Control key was released");
-      }
-    },
-    false,
-  );
-
-  //plotActualPict();
-  //makeBang();
 }
+
+function moveQ(events, points){
+    var context = events.getContext();
+    var drawingPos = events.getMousePos();
+    isMouseDown=true;
+    if (drawingPos !== null) {
+        Qx = drawingPos.x;
+        Qy = drawingPos.y;
+        //console.log("isMouseDown="+isMouseDown+" Qx="+Qx+" Qy="+Qy);
+        targetX = Qx;
+        targetY = Qy;
+        //console.log("isMouseDown="+isMouseDown+" targetX="+targetX+" targetY="+targetY);
+    }
+    if(turnNumb=="A"){
+      if(Qy>gorPosA[1]+gorSize/2){angleNow=0;delY=Qy-(gorPosA[1]+gorSize/2);
+          delYA=0;}
+      else{delY=(gorPosA[1]+gorSize/2)-Qy;
+          delYA=(gorPosA[1]+gorSize/2)-Qy;}
+      if(Qx<gorPosA[0]+gorSize/2){angleNow=89;delX=(gorPosA[0]+gorSize/2)-Qx;}
+      else{delX=Qx-(gorPosA[0]+gorSize/2);
+          var angNow = Math.atan2(delYA,delX)*180/Math.PI
+          angleNow = Math.round(angNow);}
+      var spdNow = delX*delX + delY*delY;
+      spdNow=Math.pow(spdNow, 0.5);
+      speedNow=Math.round(spdNow/2);
+      if (speedNow < 10) { speedNow = 10; }
+      else if (speedNow > 250) { speedNow = 250; }
+    }
+    else if(turnNumb=="B"){
+      if(Qy>gorPosA[3]+gorSize/2){angleNow=0;delY=Qy-(gorPosA[3]+gorSize/2);
+      delYA=0;}
+      else{delY=(gorPosA[3]+gorSize/2)-Qy;
+      delYA=(gorPosA[3]+gorSize/2)-Qy;}
+      if(Qx>gorPosA[2]+gorSize/2){angleNow=89;delX=Qx-(gorPosA[2]+gorSize/2);}
+      else{delX=(gorPosA[2]+gorSize/2)-Qx;
+          var angNow = Math.atan2(delYA,delX)*180/Math.PI+Math.PI;
+          angleNow = Math.round(angNow);}
+      var spdNow = delX*delX + delY*delY;
+      spdNow=Math.pow(spdNow, 0.5);
+      speedNow=Math.round(spdNow/2);
+      if (speedNow < 10) { speedNow = 10; }
+      else if (speedNow > 250) { speedNow = 250; }
+    }
+    plotActualPict();
+        //alert("touching");
+}
+
 
 function makeBang() {//throw banana
   if (!bangFlag) {
+
+    textShots = textShots + " " + angleNow+ ", " + speedNow+";";
     if (turnNumb == "A") {
       //gor2gor=(gorPosA[2]-gorPosA[0])*houseW;
       //var dumAng=Math.random()*40+25;
@@ -603,9 +633,13 @@ function endBang() {
   oneFlag = true;
   testCount = 0;
   if (turnNumb == "A") { 
-    turnNumb = "B"; }
+    turnNumb = "B"; 
+    angleNow = "?"; 
+    speedNow = "?";}
   else {
-    turnNumb = "A"; }
+    turnNumb = "A"; 
+    angleNow = "?"; 
+    speedNow = "?"; }
     if (gorBCol == "Red") { 
       //alert("A hits");
       player1Score++;
@@ -638,7 +672,8 @@ function plotStartAgain() {
     For each match the gravity is slightly different,
     but stays the same for the whole match (until you refresh the page)
     Play until a certain number of hits (eg 1, 3, 5, ...)
-    Or to a certain number of shots (eg 10, 12, 15,...) and whoever has the higher number of hits wins
+    Or to a certain number of shots (eg 10, 12, 15,...) 
+    and whoever has the higher number of hits, or points, wins
   */
  /*
   gorAllColA0 = ["DarkMagenta", "SaddleBrown",
@@ -810,14 +845,15 @@ function plotStartAgain() {
   ctx.strokeStyle = "Black";
   ctx.arc(sunX, sunY + gorSize / 16, gorSize / 8, 0, Math.PI, false);
   ctx.stroke();
+  
   if(showG){ 
-  ctx.closePath();
-  ctx.beginPath();
-  //ctx.lineWidth = "2";
-  ctx.fillStyle = "Yellow";
-  let gravity2 = gravity/0.2*9.8
-  ctx.fillText("g=" + gravity2, sunX, sunY - 15);//gameNumb
-  ctx.fill();}
+    ctx.closePath();
+    ctx.beginPath();
+    //ctx.lineWidth = "2";
+    ctx.fillStyle = "Yellow";
+    let gravity2 = gravity/0.2*9.8
+    ctx.fillText("g=" + gravity2, sunX, sunY - 15);//gameNumb
+    ctx.fill();}
 
 
   ctx.beginPath();
@@ -829,7 +865,7 @@ function plotStartAgain() {
   ctx.fillText("Shots: " + player1Shots, xmin + 15, sunY -15);
   ctx.fillText("Score: " + player1Score, xmin + 15, sunY + 5);
   ctx.fillText("Points: " + playAPts, xmin + 15, sunY + 25);
-  if (turnNumb == "A") {
+  if (turnNumb == "A"&&!isMouseDown) {
     ctx.fillText("Angle = ?", xmin + 15, sunY + 45);
   }
 
@@ -839,7 +875,7 @@ function plotStartAgain() {
   ctx.fillText("Shots: " + player2Shots, xmax - 15, sunY - 15);
   ctx.fillText("Score: " + player2Score, xmax - 15, sunY + 5);
   ctx.fillText("Points: " + playBPts, xmax - 15, sunY + 25);
-  if (turnNumb == "B") {
+  if (turnNumb == "B"&&!isMouseDown) {
     ctx.fillText("Angle = ?", xmax - 15, sunY + 45);
   }
 }
@@ -953,6 +989,7 @@ function plotActualPict() {
   ctx.strokeStyle = "Black";
   ctx.arc(sunX, sunY + gorSize / 16, gorSize / 8, 0, Math.PI, false);
   ctx.stroke();
+   
   if(showG){ 
   ctx.closePath();
   ctx.beginPath();
@@ -972,18 +1009,9 @@ function plotActualPict() {
   ctx.fillText("Score: " + player1Score, xmin + 15, sunY + 5);
   ctx.fillText("Points: " + playAPts, xmin + 15, sunY + 25);
   if (turnNumb == "A") {
-    if (turnAng) {
-      ctx.fillText("Angle: " + catchText, xmin + 15, sunY + 45);
-    }
-    else if (turnSpd) {
-      ctx.fillText("Angle: " + angleNow, xmin + 15, sunY + 45);
-      ctx.fillText("Speed: " + catchText, xmin + 15, sunY + 65);
-    }
-    else if (bangFlag) {
       ctx.fillText("Angle: " + angleNow, xmin + 15, sunY + 45);
       ctx.fillText("Speed: " + speedNow, xmin + 15, sunY + 65);
     }
-  }
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
   ctx.fillText("" + player2Name, xmax - 15, sunY - 35);
@@ -991,17 +1019,8 @@ function plotActualPict() {
   ctx.fillText("Score: " + player2Score, xmax - 15, sunY + 5);
   ctx.fillText("Points: " + playBPts, xmax - 15, sunY + 25);
   if (turnNumb == "B") {
-    if (turnAng) {
-      ctx.fillText("Angle: " + catchText, xmax - 15, sunY + 45);
-    }
-    else if (turnSpd) {
-      ctx.fillText("Angle: " + angleNow, xmax - 15, sunY + 45);
-      ctx.fillText("Speed: " + catchText, xmax - 15, sunY + 65);
-    }
-    else if (bangFlag) {
-      ctx.fillText("Angle: " + angleNow, xmax - 15, sunY + 45);
-      ctx.fillText("Speed: " + speedNow, xmax - 15, sunY + 65);
-    }
+    ctx.fillText("Angle: " + angleNow, xmax - 15, sunY + 45);
+    ctx.fillText("Speed: " + speedNow, xmax - 15, sunY + 65);
   }
 
   for (b = 0; b < boomTrailLen + 1; b = b + 2) {
@@ -1022,12 +1041,45 @@ function plotActualPict() {
     ctx.textBaseline = "middle";
     ctx.fillText("HIT!", midValX, midValY / 2 - 30,);
     ctx.fillStyle = "#ffffff";
-    ctx.fillText("PRESS 'y' or 'Y' to start next game!", midValX, midValY / 2);
+    ctx.fillText("PRESS 'new game' button to start next game!", midValX, midValY / 2);
+    ctx.fillText("(PRESS 'F5' to start a new match)", midValX, midValY/2+40);
     ctx.fill();
   }
 
+  if(isMouseDown){
+    //alert("here"+turnNumb);
+    let gorX0=0;
+    let gorY0=0;
+    if(turnNumb=="A"){
+        gorX0=gorPosA[0]+gorSize/2;
+        gorY0=gorPosA[1]+gorSize/2;
+    }
+    else{
+        gorX0=gorPosA[2]+gorSize/2;
+        gorY0=gorPosA[3]+gorSize/2;
+    }
+    ctx.lineWidth="2";
+    ctx.strokeStyle="Lime";
+    ctx.beginPath();
+    ctx.moveTo(gorX0,gorY0);
+    ctx.lineTo(targetX,targetY);
+    ctx.stroke();
+    ctx.closePath();
+    /*if (turnNumb == "A") {
+        ctx.fillText("Angle: " + angleNow, xmin + 15, sunY + 45);
+        ctx.fillText("Speed: " + speedNow, xmin + 15, sunY + 65);
+      }
+    else if (turnNumb == "B"){
+        console.log("turnNumb="+turnNumb+" angleNow="+angleNow+" speedNow="+speedNow);
+        ctx.fillText("Angle: " + angleNow, xmax - 15, sunY + 45);
+        ctx.fillText("Speed: " + speedNow, xmax - 15, sunY + 65);
+      }*/
+  }
+
+
   //draw banana
   if (bangFlag) {
+    isMouseDown=false;
     banX = banX + speedH / 40;//banX++;
     banY = banY - speedV / 40;//banY--;
     speedV = speedV - delSV;
@@ -1073,7 +1125,7 @@ function plotActualPict() {
       }
     }
     //check if out of range
-    if (banY < -400 || banX > xmax + 5 || banY > ymax + 5 || banX < -5) {
+    if (banY < -400 || banX > xmax + 15 || banY > ymax + 15 || banX < -15) {
       //clearTimeout(bangGo);
       //endBang();
       //bangClock++;
@@ -1131,7 +1183,7 @@ function plotActualPict() {
       let rgbColor = `rgb(${data[0]} ${data[1]} ${data[2]} / ${data[3] / 255})`;
       if (true) {
         var whatHit = "" + data[0] + " " + data[1] + " " + data[2];
-        console.log("banX="+banX+"; banY="+banY+"; whatHit="+whatHit);
+        //console.log("banX="+banX+"; banY="+banY+"; whatHit="+whatHit);
         if (whatHit!="0 0 119"&&whatHit!="0 0 118") {
           //alert(" "+data[0]+" "+data[1]+" "+data[2]);
           boomTrailA[boomTrailLen] = banX;
@@ -1171,6 +1223,7 @@ function getCanvasImg(canvas) {
 }
 
 function resetSc() {
+  setEnd = false;
   //alert("reset00")
   //document.getElementById("resetB").blur();
   gorACol = colorStoreA[0];
@@ -1193,7 +1246,7 @@ function drawKong(ctx, gorX, gorY, gorCol, idX){
     gorCoordIndex=idX;
     ctx.fillStyle=gorCol;//"Black";
     ctx.beginPath();
-    let gorScale=2.4;
+        gorScale=2.4;
     let gorX0=gorX+gorCoords[gorCoordIndex][0]*gorScale;
     let gorY0=gorY+gorCoords[gorCoordIndex][1]*gorScale;
     ctx.moveTo(gorX0,gorY0);
@@ -1291,14 +1344,14 @@ function drawArm(ctx, gorX, gorY, gorCol, lorr, dirc){
     ctx.fill();
     ctx.closePath();}
 
-    function displayG(){
-      if(showG){
-        showG=false;
-        document.getElementById("gravB").value = "show g";
-      }
-      else{
-        showG=true;
-        document.getElementById("gravB").value = "hide g";
-      }
-      plotActualPict();
-    }
+function displayG(){
+  if(showG){
+    showG=false;
+    document.getElementById("gravB").value = "show g";
+  }
+  else{
+    showG=true;
+    document.getElementById("gravB").value = "hide g";
+  }
+  plotActualPict();
+}
