@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<HEAD>
+<TITLE>0to6 sided die</TITLE>
+<STYLE type="text/css">
+<!--
+BODY {text-align:center; font-size:30pt};
+
+p {font-size: 24pt;};
+input {font-size:18pt}
+
+-->
+</STYLE>
+
+<script language="Javascript1.2">
+var dieInHand=1;
+
+function rollDie()
+{
+if(dieInHand==1){
+	var noPips=0;
+	noPips=Math.floor(Math.random()*7);
+	document.getElementById("result").textContent = "" + noPips;//"You rolled " + noPips;
+	document.getElementById("rollBtn").setAttribute("value", "pick up d6+");
+	dieInHand=0;
+	}
+else{
+	document.getElementById("result").textContent = "";
+	document.getElementById("rollBtn").setAttribute("value", "Roll d6+");
+	dieInHand=1;}
+}
+
+
+
+</script>
+
+</HEAD>
+<BODY>
+
+<input id="rollBtn" type="button" value="Roll d6" onClick="rollDie()"><br>
+<p id="result"></p>
+
+
+</BODY>
+</HTML>
