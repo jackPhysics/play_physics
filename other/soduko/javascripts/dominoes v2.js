@@ -28,7 +28,7 @@ var colorsDone = [false,false,false,false,false,false,false,false,false,false,fa
       "#e3c57b",  // light brown2
       "#ee5555",  // red2
       "#ff90ff",  // violet2
-      "#582C1D",  // Chocolate Fondant
+      "#a16f3d",  // Chocolate Fondant modified
       "#9DA59D",  // Aqua Gray
       "#B25E2C",  // Caramelized
       "#B3D6DE",   // Moonlight Haze
