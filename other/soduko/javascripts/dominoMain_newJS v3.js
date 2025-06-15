@@ -189,8 +189,12 @@ var pieceTouchedAgain = 1;
 var dominoL = new Array();
 var dominoR = new Array();
 var dumColorReal = 0;
-var colorOfTiles = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#444444", "#ff00ff", "#440044", "#000044", "#440000", "#004400"];
-var colorOfDots =  ["#ffffff", "#000000", "#ffffff", "#000000", "#000000", "#ffffff", "#000000", "#ffffff", "#ffffff", "#ffffff", "#ffffff"];
+var colorOfTiles = ["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff",
+ "#444444", "#ff00ff", "#440044", "#000044", "#440000", "#004400",
+ "#000000", "#ffffff", "#E8B336", "#B3D6DE", "#B25E2C", "#9DA59D", "#582C1D "];
+var colorOfDots =  ["#ffffff", "#000000", "#ffffff", "#000000", "#000000",
+ "#ffffff", "#000000", "#ffffff", "#ffffff", "#ffffff", "#ffffff",
+ "#ffffff", "#000000", "#000000", "#000000", "#000000", "#000000", "#000000"];
 var colorChangers =  ["#444444", "#444444", "#444444", "#444444", "#444444", "#222222", "#444444", "#222222", "#222222", "#222222", "#222222"];
 var transFlag = false;
 
