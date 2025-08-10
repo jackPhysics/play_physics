@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digit Sum Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #digits {
+      font-size: 64px;
+      margin: 20px;
+    }
+    .button-row {
+      margin: 10px 0;
+    }
+    button {
+      width: 60px;
+      height: 60px;
+      font-size: 20px;
+      margin: 5px;
+    }
+    .pressed {
+      background-color: red !important;
+      color: white;
+    }
+    #config {
+      margin-bottom: 20px;
+    }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px 12px;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Digit Sum Game</h1>
+
+  <div id="config">
+    <label for="roundsInput">How many rounds? (5–30): </label>
+    <input type="number" id="roundsInput" min="5" max="30" value="20">
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div id="digits">--</div>
+  <div class="button-row" id="tens-row"></div>
+  <div class="button-row" id="ones-row"></div>
+
+  <div id="results"></div>
+
+  <script>
+    const digitsDiv = document.getElementById('digits');
+    const tensRow = document.getElementById('tens-row');
+    const onesRow = document.getElementById('ones-row');
+    const resultsDiv = document.getElementById('results');
+
+    let correctSum = 0;
+    let startTime = null;
+    let selectedTens = null;
+    let selectedOnes = null;
+    let roundData = [];
+    let roundCount = 0;
+    let maxRounds = 20;
+    let currentDigitCount = 0;
+
+    function getRandomDigits() {
+      const count = Math.floor(Math.random() * 6) + 2; // 2–7 digits
+      let digits = [];
+      for (let i = 0; i < count; i++) {
+        digits.push(Math.floor(Math.random() * 9) + 1); // 1–9
+      }
+      return digits;
+    }
+
+    function displayDigits(digits) {
+      digitsDiv.textContent = digits.join(' ');
+    }
+
+    function resetButtonStyles() {
+      [...tensRow.children, ...onesRow.children].forEach(btn => {
+        btn.classList.remove('pressed');
+      });
+    }
+
+    function startRound() {
+      selectedTens = null;
+      selectedOnes = null;
+      resetButtonStyles();
+      const digits = getRandomDigits();
+      displayDigits(digits);
+      correctSum = digits.reduce((a, b) => a + b, 0);
+      currentDigitCount = digits.length;
+      startTime = performance.now();
+    }
+
+    function recordRound(timeTaken) {
+      roundData.push({ digits: currentDigitCount, time: timeTaken.toFixed(2) });
+    }
+
+    function averageTimesByDigitCount(data) {
+      let grouped = {};
+      for (let i = 2; i <= 7; i++) grouped[i] = [];
+
+      data.forEach(entry => {
+        if (grouped[entry.digits]) {
+          grouped[entry.digits].push(parseFloat(entry.time));
+        }
+      });
+
+      let result = [];
+      for (let i = 2; i <= 7; i++) {
+        const times = grouped[i];
+        if (times.length > 0) {
+          const avg = times.reduce((a, b) => a + b, 0) / times.length;
+          result.push({ digits: i, avgTime: avg.toFixed(2) });
+        }
+      }
+      return result;
+    }
+
+    function generateCSV(data1, data2) {
+      let csv = "Round,Digits,Time (ms)\n";
+      data1.forEach((r, i) => {
+        csv += `${i+1},${r.digits},${r.time}\n`;
+      });
+      csv += "\nDigit Count,Average Time (ms)\n";
+      data2.forEach(r => {
+        csv += `${r.digits},${r.avgTime}\n`;
+      });
+      return csv;
+    }
+
+    function downloadCSV(content, filename) {
+      const blob = new Blob([content], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+
+    function showResults() {
+      digitsDiv.textContent = "Game Over!";
+      tensRow.innerHTML = "";
+      onesRow.innerHTML = "";
+
+      // First table
+      let output = "<h2>Results (Digits vs Time in ms)</h2><table><tr><th>Round</th><th>Digits</th><th>Time (ms)</th></tr>";
+      roundData.forEach((entry, i) => {
+        output += `<tr><td>${i+1}</td><td>${entry.digits}</td><td>${entry.time}</td></tr>`;
+      });
+      output += "</table>";
+
+      // Second table: averages
+      const averages = averageTimesByDigitCount(roundData);
+      output += "<h2>Average Time per Digit Count</h2><table><tr><th>Digits</th><th>Average Time (ms)</th></tr>";
+      averages.forEach(entry => {
+        output += `<tr><td>${entry.digits}</td><td>${entry.avgTime}</td></tr>`;
+      });
+      output += "</table>";
+
+      // Export button
+      output += `<button onclick="exportCSV()">Export Results to CSV</button>`;
+      resultsDiv.innerHTML = output;
+    }
+
+    function exportCSV() {
+      const averages = averageTimesByDigitCount(roundData);
+      const csvContent = generateCSV(roundData, averages);
+      downloadCSV(csvContent, "digit-sum-results.csv");
+    }
+
+    function checkAnswer() {
+      if (selectedTens !== null && selectedOnes !== null) {
+        const total = parseInt(selectedTens) + parseInt(selectedOnes);
+        if (total === correctSum) {
+          const timeTaken = performance.now() - startTime;
+          recordRound(timeTaken);
+          roundCount++;
+          if (roundCount < maxRounds) {
+            setTimeout(startRound, 500);
+          } else {
+            showResults();
+          }
+        } else {
+          // Wrong answer
+          setTimeout(() => {
+            selectedTens = null;
+            selectedOnes = null;
+            resetButtonStyles();
+          }, 300);
+        }
+      }
+    }
+
+    function createButtons() {
+      tensRow.innerHTML = '';
+      onesRow.innerHTML = '';
+
+      // Tens row
+      for (let i = 0; i <= 90; i += 10) {
+        const btn = document.createElement('button');
+        btn.textContent = i.toString().padStart(2, '0');
+        btn.dataset.value = i;
+        btn.addEventListener('click', () => {
+          resetButtonStyles();
+          btn.classList.add('pressed');
+          selectedTens = i;
+          checkAnswer();
+        });
+        tensRow.appendChild(btn);
+      }
+
+      // Ones row
+      for (let i = 0; i <= 9; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.dataset.value = i;
+        btn.addEventListener('click', () => {
+          resetButtonStyles();
+          btn.classList.add('pressed');
+          selectedOnes = i;
+          checkAnswer();
+        });
+        onesRow.appendChild(btn);
+      }
+    }
+
+    function startGame() {
+      const input = document.getElementById('roundsInput');
+      const rounds = parseInt(input.value);
+      if (isNaN(rounds) || rounds < 5 || rounds > 30) {
+        alert("Please enter a number between 5 and 30.");
+        return;
+      }
+
+      roundCount = 0;
+      roundData = [];
+      maxRounds = rounds;
+      resultsDiv.innerHTML = '';
+      createButtons();
+      startRound();
+    }
+
+    // Auto-focus input on load
+    window.onload = () => {
+      document.getElementById("roundsInput").focus();
+    };
+  </script>
+</body>
+</html>
+

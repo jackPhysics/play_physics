@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digit Sum Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #digits {
+      font-size: 64px;
+      margin: 20px;
+    }
+    .button-row {
+      margin: 10px 0;
+    }
+    button {
+      width: 60px;
+      height: 60px;
+      font-size: 20px;
+      margin: 5px;
+    }
+    .pressed {
+      background-color: red !important;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Digit Sum Game</h1>
+  <div id="digits">--</div>
+
+  <div class="button-row" id="tens-row"></div>
+  <div class="button-row" id="ones-row"></div>
+
+  <div id="results"></div>
+
+  <script>
+    const digitsDiv = document.getElementById('digits');
+    const tensRow = document.getElementById('tens-row');
+    const onesRow = document.getElementById('ones-row');
+    const resultsDiv = document.getElementById('results');
+
+    let correctSum = 0;
+    let startTime = null;
+    let selectedTens = null;
+    let selectedOnes = null;
+    let roundData = [];
+    let roundCount = 0;
+    const maxRounds = 5;
+
+    function getRandomDigits() {
+      const count = Math.floor(Math.random() * 4) + 8; // 8-11 digits
+      let digits = [];
+      for (let i = 0; i < count; i++) {
+        digits.push(Math.floor(Math.random() * 9) + 1); // 1–9
+      }
+      return digits;
+    }
+
+    function displayDigits(digits) {
+      digitsDiv.textContent = digits.join(' ');
+    }
+
+    function resetButtonStyles() {
+      [...tensRow.children, ...onesRow.children].forEach(btn => {
+        btn.classList.remove('pressed');
+      });
+    }
+
+    function startRound() {
+      selectedTens = null;
+      selectedOnes = null;
+      resetButtonStyles();
+      const digits = getRandomDigits();
+      displayDigits(digits);
+      correctSum = digits.reduce((a, b) => a + b, 0);
+      startTime = performance.now();
+      currentDigitCount = digits.length;
+    }
+
+    function recordRound(timeTaken) {
+      roundData.push({ digits: currentDigitCount, time: timeTaken.toFixed(2) });
+    }
+
+    function showResults() {
+      digitsDiv.textContent = "Game Over!";
+      tensRow.innerHTML = "";
+      onesRow.innerHTML = "";
+
+      let output = "<h2>Results (Digits vs Time in ms)</h2><table border='1' style='margin:auto'><tr><th>Digits</th><th>Time (ms)</th></tr>";
+      roundData.forEach(entry => {
+        output += `<tr><td>${entry.digits}</td><td>${entry.time}</td></tr>`;
+      });
+      output += "</table>";
+      resultsDiv.innerHTML = output;
+    }
+
+    function checkAnswer() {
+      if (selectedTens !== null && selectedOnes !== null) {
+        const total = parseInt(selectedTens) + parseInt(selectedOnes);
+        if (total === correctSum) {
+          const timeTaken = performance.now() - startTime;
+          recordRound(timeTaken);
+          roundCount++;
+          if (roundCount < maxRounds) {
+            setTimeout(startRound, 500); // Short delay before next round
+          } else {
+            showResults();
+          }
+        } else {
+          // Wrong answer, reset selection
+          setTimeout(() => {
+            selectedTens = null;
+            selectedOnes = null;
+            resetButtonStyles();
+          }, 300);
+        }
+      }
+    }
+
+    function createButtons() {
+      // Tens row
+      for (let i = 0; i <= 90; i += 10) {
+        const btn = document.createElement('button');
+        btn.textContent = i.toString().padStart(2, '0');
+        btn.dataset.value = i;
+        btn.addEventListener('click', () => {
+          resetButtonStyles();
+          btn.classList.add('pressed');
+          selectedTens = i;
+          checkAnswer();
+        });
+        tensRow.appendChild(btn);
+      }
+
+      // Ones row
+      for (let i = 0; i <= 9; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.dataset.value = i;
+        btn.addEventListener('click', () => {
+          resetButtonStyles();
+          btn.classList.add('pressed');
+          selectedOnes = i;
+          checkAnswer();
+        });
+        onesRow.appendChild(btn);
+      }
+    }
+
+    createButtons();
+    startRound();
+  </script>
+</body>
+</html>
