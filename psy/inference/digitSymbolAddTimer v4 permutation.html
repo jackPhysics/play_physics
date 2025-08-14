@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Symbol Match Game (fixed)</title>
+<style>
+  body { font-family: sans-serif; text-align: center; padding: 20px; }
+  #symbols { font-size: 64px; margin: 20px; min-height: 1.4em; }
+  .button-row { margin: 10px 0; }
+  button {
+    width: 120px;
+    height: 60px;
+    font-size: 16px;
+    margin: 5px;
+  }
+  button.pressed {
+    background-color: red !important;
+    color: white;
+  }
+  table { margin: 20px auto; border-collapse: collapse; }
+  th, td { padding: 8px 12px; border: 1px solid #333; }
+</style>
+</head>
+<body>
+
+<h1>Symbol Match Game</h1>
+
+<div id="config">
+  <label for="roundsInput">How many rounds? (5–30): </label>
+  <input type="number" id="roundsInput" min="5" max="30" value="10">
+  <button id="startBtn">Start Game</button>
+</div>
+
+<div id="symbols">--</div>
+<div class="button-row" id="row1"></div>
+<div class="button-row" id="row2"></div>
+
+<div id="results"></div>
+
+<script>
+const SYMBOLS = ["!", "£", "$", "%", "^", "&", "*", "(", "}", "-", "+", "=", "@", "#", "~", "?", "/", "|", "<", ">"];
+let correctString = "";
+let startTime = null;
+let roundData = [];
+let roundCount = 0;
+let maxRounds = 10;
+
+// Heap's algorithm permutations
+function getPermutations(arr) {
+  let results = [];
+  function swap(a, b) { [arr[a], arr[b]] = [arr[b], arr[a]]; }
+  function generate(n) {
+    if (n === 1) {
+      results.push(arr.join(''));
+      return;
+    }
+    generate(n - 1);
+    for (let i = 0; i < n - 1; i++) {
+      swap(n % 2 ? 0 : i, n - 1);
+      generate(n - 1);
+    }
+  }
+  generate(arr.length);
+  return results;
+}
+
+// unique random symbol string (no repeats)
+function getRandomSymbolString(length, excludeSet = new Set()) {
+  let pool = SYMBOLS.filter(s => !excludeSet.has(s));
+  let chosen = [];
+  while (chosen.length < length) {
+    const s = pool[Math.floor(Math.random() * pool.length)];
+    if (!chosen.includes(s)) chosen.push(s);
+  }
+  return chosen.join('');
+}
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function clearRows() {
+  document.getElementById('row1').innerHTML = "";
+  document.getElementById('row2').innerHTML = "";
+}
+
+function startRound() {
+  clearRows();
+  // choose length 2..7
+  const length = Math.floor(Math.random() * 6) + 2;
+  const chosen = getRandomSymbolString(length);
+  correctString = chosen;
+  // show the original combination in big font (***fix***)
+  document.getElementById('symbols').textContent = correctString;
+
+  // perms (exclude original)
+  let perms = getPermutations(chosen.split('')).filter(p => p !== correctString);
+  let options = [correctString];
+
+  if (perms.length >= 9) {
+    options = options.concat(shuffle(perms).slice(0, 9));
+  } else {
+    options = options.concat(shuffle(perms));
+    // fill remaining slots with random combos (allow reuse of all symbols here)
+    while (options.length < 10) {
+      options.push(getRandomSymbolString(length, new Set(chosen.split(''))));
+    }
+  }
+
+  shuffle(options);
+
+  // create buttons in two rows of 5
+  options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = opt;
+    btn.addEventListener('click', () => handleChoice(opt, btn));
+    if (i < 5) document.getElementById('row1').appendChild(btn);
+    else document.getElementById('row2').appendChild(btn);
+  });
+
+  // start timer
+  startTime = performance.now();
+}
+
+function handleChoice(choice, btn) {
+  const timeTaken = performance.now() - startTime;
+  if (choice === correctString) {
+    roundData.push({
+      round: roundCount + 1,
+      string: correctString,
+      length: correctString.length,
+      time: timeTaken.toFixed(2)
+    });
+    roundCount++;
+    // small visual feedback (could be extended)
+    document.getElementById('symbols').textContent = "✓";
+    if (roundCount < maxRounds) {
+      // short pause then next round
+      setTimeout(startRound, 350);
+    } else {
+      setTimeout(showResults, 300);
+    }
+  } else {
+    // mark incorrect and disable to avoid repeated clicks
+    btn.classList.add('pressed');
+    btn.disabled = true;
+  }
+}
+
+function averageTimesByLength(data) {
+  let grouped = {};
+  for (let i = 2; i <= 7; i++) grouped[i] = [];
+  data.forEach(entry => grouped[entry.length].push(parseFloat(entry.time)));
+  let result = [];
+  for (let i = 2; i <= 7; i++) {
+    if (grouped[i].length > 0) {
+      const avg = grouped[i].reduce((a,b) => a+b, 0) / grouped[i].length;
+      result.push({ length: i, avgTime: avg.toFixed(2) });
+    }
+  }
+  return result;
+}
+
+function generateCSV(data1, data2) {
+  let csv = "Round,Length,String,Time (ms)\n";
+  data1.forEach(r => csv += `${r.round},${r.length},"${r.string}",${r.time}\n`);
+  csv += "\nLength,Average Time (ms)\n";
+  data2.forEach(r => csv += `${r.length},${r.avgTime}\n`);
+  return csv;
+}
+
+function downloadCSV(content, filename) {
+  const blob = new Blob([content], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+}
+
+function exportCSV() {
+  const averages = averageTimesByLength(roundData);
+  const csvContent = generateCSV(roundData, averages);
+  downloadCSV(csvContent, "symbol-match-results.csv");
+}
+
+function showResults() {
+  document.getElementById('symbols').textContent = "Game Over!";
+  clearRows();
+
+  let output = "<h2>Results</h2><table><tr><th>Round</th><th>Length</th><th>String</th><th>Time (ms)</th></tr>";
+  roundData.forEach(r => output += `<tr><td>${r.round}</td><td>${r.length}</td><td>${r.string}</td><td>${r.time}</td></tr>`);
+  output += "</table>";
+
+  const averages = averageTimesByLength(roundData);
+  output += "<h2>Average Times</h2><table><tr><th>Length</th><th>Average Time (ms)</th></tr>";
+  averages.forEach(r => output += `<tr><td>${r.length}</td><td>${r.avgTime}</td></tr>`);
+  output += "</table>";
+
+  output += `<button onclick="exportCSV()">Export to CSV</button>`;
+  document.getElementById('results').innerHTML = output;
+}
+
+function startGame() {
+  const input = document.getElementById('roundsInput');
+  const rounds = parseInt(input.value, 10);
+  if (isNaN(rounds) || rounds < 5 || rounds > 30) {
+    alert("Please enter a number between 5 and 30.");
+    return;
+  }
+  maxRounds = rounds;
+  roundData = [];
+  roundCount = 0;
+  document.getElementById('results').innerHTML = "";
+  document.getElementById('symbols').textContent = "--";
+  startRound();
+}
+
+document.getElementById('startBtn').addEventListener('click', startGame);
+window.onload = () => document.getElementById('roundsInput').focus();
+</script>
+</body>
+</html>

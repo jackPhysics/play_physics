@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Symbol Match Game</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align: center; }
+  #symbols { font-size: 64px; margin: 20px; height: 80px; }
+  .button-row { margin: 10px; }
+  button { font-size: 20px; margin: 5px; padding: 10px 15px; min-width: 80px; cursor: pointer; }
+  table { border-collapse: collapse; margin: 20px auto; }
+  th, td { border: 1px solid #ccc; padding: 8px 12px; }
+  th { background-color: #f2f2f2; }
+</style>
+</head>
+<body>
+
+<h1>Symbol Match Game</h1>
+
+<div id="setup">
+  <label for="rounds">Number of rounds (5–30): </label>
+  <input type="number" id="rounds" min="5" max="30" value="10">
+  <button onclick="startGame()">Start Game</button>
+</div>
+
+<div id="game" style="display:none;">
+  <div id="symbols"></div>
+  <div id="row1" class="button-row"></div>
+  <div id="row2" class="button-row"></div>
+</div>
+
+<div id="results" style="display:none;"></div>
+
+<script>
+const SYMBOLS = ["!", "£", "$", "%", "^", "&", "*", "(", "}", "-", "+", "=", "@", "#", "~", "?", "/", "|", "<", ">"];
+let totalRounds = 0;
+let currentRound = 0;
+let correctString = "";
+let startTime = 0;
+let results = [];
+
+function getRandomSymbolString(length) {
+  let available = [...SYMBOLS];
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    let idx = Math.floor(Math.random() * available.length);
+    result += available[idx];
+    available.splice(idx, 1);
+  }
+  return result;
+}
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function clearRows() {
+  document.getElementById('row1').innerHTML = "";
+  document.getElementById('row2').innerHTML = "";
+}
+
+function startGame() {
+  totalRounds = parseInt(document.getElementById('rounds').value);
+  if (isNaN(totalRounds) || totalRounds < 5 || totalRounds > 30) {
+    alert("Please enter a number between 5 and 30.");
+    return;
+  }
+  document.getElementById('setup').style.display = "none";
+  document.getElementById('game').style.display = "block";
+  results = [];
+  currentRound = 0;
+  startRound();
+}
+
+function startRound() {
+  clearRows();
+
+  const length = Math.floor(Math.random() * 5) + 2; // 2–6 symbols
+  const chosen = getRandomSymbolString(length);
+  correctString = chosen;
+
+  document.getElementById('symbols').textContent = correctString;
+  document.getElementById('symbols').style.color = "black";
+
+  let options = [correctString];
+
+  // Four wrong answers with exactly one character changed
+  for (let i = 0; i < 4; i++) {
+    let chars = chosen.split('');
+    let idx = Math.floor(Math.random() * length);
+    let replacement;
+    do {
+      replacement = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+    } while (replacement === chars[idx]);
+    chars[idx] = replacement;
+    const wrongStr = chars.join('');
+    if (!options.includes(wrongStr)) {
+      options.push(wrongStr);
+    } else {
+      i--; // ensure uniqueness
+    }
+  }
+
+  // Fill up to 10 with random combos
+  while (options.length < 10) {
+    const randomStr = getRandomSymbolString(length);
+    if (!options.includes(randomStr)) {
+      options.push(randomStr);
+    }
+  }
+
+  shuffle(options);
+
+  options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = opt;
+    btn.addEventListener('click', () => handleChoice(opt, btn));
+    if (i < 5) document.getElementById('row1').appendChild(btn);
+    else document.getElementById('row2').appendChild(btn);
+  });
+
+  startTime = performance.now();
+}
+
+function handleChoice(selected, btn) {
+  if (selected === correctString) {
+    // Correct: mark green
+    btn.style.backgroundColor = "green";
+    btn.style.color = "white";
+
+    const endTime = performance.now();
+    const elapsed = ((endTime - startTime) / 1000).toFixed(2);
+    results.push({ round: currentRound + 1, length: correctString.length, time: elapsed });
+
+    const symbolsDiv = document.getElementById('symbols');
+    symbolsDiv.textContent = "✓";
+    symbolsDiv.style.color = "green";
+
+    setTimeout(() => {
+      symbolsDiv.style.color = "black";
+      btn.style.backgroundColor = "";
+      btn.style.color = "";
+      currentRound++;
+      if (currentRound < totalRounds) {
+        startRound();
+      } else {
+        showResults();
+      }
+    }, 350);
+  } else {
+    // Wrong: mark red
+    btn.style.backgroundColor = "red";
+    btn.style.color = "white";
+  }
+}
+
+function showResults() {
+  document.getElementById('game').style.display = "none";
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.style.display = "block";
+
+  let html = "<h2>Results</h2><table><tr><th>Round</th><th>Length</th><th>Time (s)</th></tr>";
+  results.forEach(r => {
+    html += `<tr><td>${r.round}</td><td>${r.length}</td><td>${r.time}</td></tr>`;
+  });
+  html += "</table>";
+
+  // Average table
+  let averages = {};
+  results.forEach(r => {
+    if (!averages[r.length]) averages[r.length] = [];
+    averages[r.length].push(parseFloat(r.time));
+  });
+
+  html += "<h2>Average Times by Length</h2><table><tr><th>Length</th><th>Average Time (s)</th></tr>";
+  for (let len = 2; len <= 6; len++) {
+    if (averages[len]) {
+      const avg = (averages[len].reduce((a,b) => a+b, 0) / averages[len].length).toFixed(2);
+      html += `<tr><td>${len}</td><td>${avg}</td></tr>`;
+    }
+  }
+  html += "</table>";
+
+  // CSV export
+  html += `<button onclick="exportCSV()">Export CSV</button>`;
+
+  resultsDiv.innerHTML = html;
+}
+
+function exportCSV() {
+  let csv = "Round,Length,Time(s)\n";
+  results.forEach(r => {
+    csv += `${r.round},${r.length},${r.time}\n`;
+  });
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "results.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
