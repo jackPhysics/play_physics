@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stroop Test (True Version)</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+  }
+  #word {
+    font-size: 72px;
+    margin: 40px;
+    height: 100px;
+  }
+  .color-button {
+    font-size: 48px;
+    color: black;
+    margin: 10px;
+    padding: 20px 40px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  #results table {
+    border-collapse: collapse;
+    margin: 20px auto;
+    color: white;
+  }
+  #results th, #results td {
+    border: 1px solid #666;
+    padding: 8px 12px;
+  }
+  #setup {
+    color: white;
+  }
+</style>
+</head>
+<body>
+
+<h1>Stroop Test (True Version)</h1>
+
+<div id="setup">
+  <label for="turns">How many turns? (5–30): </label>
+  <input type="number" id="turns" min="5" max="30" value="10">
+  <button onclick="startGame()">Start</button>
+</div>
+
+<div id="game" style="display:none;">
+  <div id="word"></div>
+  <div id="buttons"></div>
+</div>
+
+<div id="results" style="display:none;"></div>
+
+<script>
+const COLORS = [
+  { name: "RED", color: "#ff0000" },
+  { name: "ORANGE", color: "#ffaa00" },
+  { name: "YELLOW", color: "#ffff00" },
+  { name: "GREEN", color: "#00ff00" },
+  { name: "CYAN", color: "#00ddff" },
+  { name: "BLUE", color: "#0000ff" },
+  { name: "VIOLET", color: "#ff00ff" }
+];
+
+let totalTurns = 0;
+let currentTurn = 0;
+let lastTime = 0;
+let times = [];
+let lastColorIndex = -1;
+let correctColorName = "";
+
+function startGame() {
+  totalTurns = parseInt(document.getElementById('turns').value);
+  if (isNaN(totalTurns) || totalTurns < 5 || totalTurns > 30) {
+    alert("Please choose between 5 and 30 turns.");
+    return;
+  }
+
+  document.getElementById('setup').style.display = "none";
+  document.getElementById('results').style.display = "none";
+  document.getElementById('game').style.display = "block";
+  times = [];
+  currentTurn = 0;
+  lastColorIndex = -1;
+  lastTime = performance.now();
+  showWord();
+}
+
+function showWord() {
+  // Choose word text randomly
+  const wordIndex = Math.floor(Math.random() * COLORS.length);
+  const wordName = COLORS[wordIndex].name;
+
+  // Choose a color that is NOT the same as the word and NOT the same as the last color
+  let colorIndex;
+  do {
+    colorIndex = Math.floor(Math.random() * COLORS.length);
+  } while (colorIndex === wordIndex || colorIndex === lastColorIndex);
+
+  lastColorIndex = colorIndex;
+  const color = COLORS[colorIndex].color;
+  correctColorName = COLORS[colorIndex].name;
+
+  // Display the word in the chosen color
+  const wordDiv = document.getElementById('word');
+  wordDiv.textContent = wordName;
+  wordDiv.style.color = color;
+
+  // Display the buttons
+  const buttonRow = document.getElementById('buttons');
+  buttonRow.innerHTML = "";
+
+  COLORS.forEach(c => {
+    const btn = document.createElement('button');
+    btn.textContent = c.name;
+    btn.className = "color-button";
+    //btn.style.backgroundColor = c.color;
+    btn.style.backgroundColor = "White";
+    btn.onclick = () => handleChoice(c.name);
+    buttonRow.appendChild(btn);
+  });
+}
+
+function handleChoice(selected) {
+  if (selected === correctColorName) {
+    const now = performance.now();
+    const elapsed = (now - lastTime) / 1000;
+    times.push(elapsed);
+    lastTime = now;
+
+    currentTurn++;
+    if (currentTurn < totalTurns) {
+      showWord();
+    } else {
+      endGame();
+    }
+  }
+}
+
+function endGame() {
+  document.getElementById('game').style.display = "none";
+  const totalTime = times.reduce((a, b) => a + b, 0);
+  const minTime = Math.min(...times);
+  const maxTime = Math.max(...times);
+  const avgTime = totalTime / times.length;
+
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.style.display = "block";
+
+  let html = `<h2>Results</h2>
+    <p>Total time: ${totalTime.toFixed(2)} seconds</p>
+    <p>Average time: ${avgTime.toFixed(2)} seconds</p>
+    <p>Quickest: ${minTime.toFixed(2)} seconds</p>
+    <p>Slowest: ${maxTime.toFixed(2)} seconds</p>
+    <table>
+      <tr><th>Turn</th><th>Time (s)</th></tr>`;
+
+  times.forEach((t, i) => {
+    html += `<tr><td>${i + 1}</td><td>${t.toFixed(2)}</td></tr>`;
+  });
+
+  html += "</table><button onclick='resetGame()'>Play Again</button>";
+  resultsDiv.innerHTML = html;
+}
+
+function resetGame() {
+  document.getElementById('setup').style.display = "block";
+  document.getElementById('results').style.display = "none";
+}
+</script>
+</body>
+</html>
