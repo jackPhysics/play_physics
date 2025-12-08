@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Sun Rise</title>
+
+      <script src="events.js">
+      </script>
+
+    <script type="text/javascript">
+
+    window.onload = function(){
+
+          const canvas = document.getElementById("myCanvas");
+  const ctx = canvas.getContext("2d");
+
+
+  // Arc
+var x1 = 200;
+var y1 = 300;
+var r1 = 50;
+var th1 = Math.PI/2;
+var th2 = 3*Math.PI/2;
+
+var a1 = 0;
+var b1 = 0;
+var d1 = r1/2;
+var r2 = Math.pow(r1, 2)+Math.pow(d1, 2);
+    r2 = Math.pow(r2, 0.5);
+//alert(""+r2);
+var i1 = 0;
+var j1 = 0;
+var p1 = 0;
+var q1 = 0;
+var i2 = 0;
+var j2 = 0;
+var p2 = 0;
+var q2 = 0;
+var alp1 = 0;
+var bet1 = 0;
+var th3 = 0;
+var th4 = 0;
+
+
+
+  a1 = x1+r1/2;
+  b1 = y1;
+  i1 = a1;
+  j1 = y1 + r2;
+  p1 = x1;
+  q1 = y1+r1;
+  alp1 = Math.atan(r1/d1);//Math.atan(2);//Math.atan(r1/r2);
+  bet1 = Math.PI/2 - alp1;
+  th3 = th1 + bet1;
+  th4 = th3 + 2*alp1;
+  //alert("alpha="+alp1+" beta="+bet1+" th1="+th1+" th2="+th2);
+
+
+  ctx.beginPath();
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 5;
+
+  ctx.beginPath();
+  ctx.arc(x1, y1, r1, th1, th2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(a1, b1, r2, th3, th4);
+  ctx.stroke();
+
+  // Centre points
+  ctx.beginPath();
+  ctx.fillStyle = "red";
+  ctx.arc(x1, y1, 2, 0, 2 * Math.PI); // Control point one
+  ctx.arc(a1, b1, 2, 0, 2 * Math.PI); // Control point two
+  ctx.fill();
+    }
+
+
+
+    </script>
+
+  </head>
+  <body>
+
+    <p></p>
+
+  <canvas id="myCanvas" width="600" height="630" style="margin-left: 20px;" style="border:1px solid #ffffff;">
+              </canvas>
+
+
+    </body>
+</html>

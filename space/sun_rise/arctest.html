@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Sun Rise</title>
+
+      <script src="events.js">
+      </script>
+
+    <script type="text/javascript">
+
+    window.onload = function(){
+        /*var events = new Events("myCanvas");
+        var canvas = events.getCanvas();
+        var context = events.getContext();
+        var isMouseDown = false;
+        var canvasImg = getCanvasImg(canvas);
+        var points = [];
+        //etElementById(myCanvas).width=canvW;
+        //getElementById(myCanvas).height=canvH;
+        //findVector();
+
+        var dummyE1 = Math.pow(elasticity,2);
+        var dummyE2 = 1-dummyE1;
+        percComp = Math.pow(dummyE2, 0.5);
+        //alert(""+percComp);
+
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        //ctx.canvas.width = canvW;
+        //ctx.canvas.height = canvH;
+        // blue rectangle
+        ctx.beginPath();
+        //ctx.setLineDash([]);
+        ctx.lineWidth = "1";
+        ctx.fillStyle = "blue";
+        ctx.fillRect(xmin, ymin, maxX-25, ymax-70);
+        ctx.fill();
+          */
+          const canvas = document.getElementById("myCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // Tangential lines
+  /*ctx.beginPath();
+  ctx.strokeStyle = "gray";
+  ctx.moveTo(200, 20);
+  ctx.lineTo(200, 130);
+  ctx.lineTo(50, 20);
+  ctx.stroke();*/
+
+  // Arc
+  ctx.beginPath();
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 5;
+  //ctx.moveTo(201, 20);
+  ctx.arcTo(200, 20, 200, 60, 30);//200, 20, 200, 60, 40
+  //ctx.arcTo(200, 60, 200, 100, 30);
+  //ctx.moveTo(260, 61);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 5;
+  //ctx.moveTo(201, 20);
+  //ctx.arcTo(200, 20, 200, 60, 30);//200, 20, 200, 60, 40
+  ctx.arcTo(200, 90, 200, 20, 30);
+  //ctx.moveTo(260, 61);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 5;
+  //ctx.moveTo(201, 20);
+  //ctx.arcTo(200, 20, 200, 60, 30);//200, 20, 200, 60, 40
+  ctx.arcTo(200, 20, 200, 60, 80);
+  //ctx.moveTo(260, 61);
+  ctx.stroke();
+
+  // Start point
+  /*ctx.beginPath();
+  ctx.fillStyle = "blue";
+  ctx.arc(200, 20, 5, 0, 2 * Math.PI);
+  ctx.fill();*/
+
+  // Control points
+  /*ctx.beginPath();
+  ctx.fillStyle = "red";
+  ctx.arc(200, 20, 5, 0, 2 * Math.PI); // Control point one
+  ctx.arc(160, 60, 5, 0, 2 * Math.PI); // Control point two
+  ctx.fill();*/
+
+  ctx.beginPath();
+  ctx.arc(100, 200, 40, 0, Math.PI);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(100, 170, 50, 0.23*Math.PI, 0.77*Math.PI);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(300, 200, 40, 0, Math.PI);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(300, 180, 44.72, 0, Math.PI);
+  ctx.stroke();
+
+
+    }
+
+
+
+    </script>
+
+  </head>
+  <body>
+
+    <p></p>
+
+  <canvas id="myCanvas" width="600" height="630" style="margin-left: 20px;" style="border:1px solid #ffffff;">
+              </canvas>
+
+
+    </body>
+</html>
