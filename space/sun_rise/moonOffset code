@@ -1,0 +1,15 @@
+86
+var moonLatOffset = 0;
+
+
+354
+    effectivelatitudeM = effectLatM(latNow,timeNowMoon, sunPosition)+moonLatOffset;
+
+1313
+          //calculations to find offset of moon's orbit
+          var moonLatZero = new Date('June 2, 2023 01:32:49 GMT+00:00');
+          moonLatZero = moonLatZero.getTime();
+          var moonLatT_ms = 1000*60*60*24*27.321661;//moon's sidereal period in ms - for latitude
+          var moonLatCalc = nowByCalc-moonLatZero;
+          var moonLatDay_ms = moonLatCalc%moonLatT_ms;
+          moonLatOffset = 5*Math.sin(2*Math.PI*moonLatDay_ms/moonLatT_ms)-0.5;

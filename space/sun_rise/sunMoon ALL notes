@@ -1,0 +1,78 @@
+in HTML file:
+<td class="">
+<input type="button" id="bigMButton" value="Big moon" onClick="changeBigM();">
+      <p id="text"></p><p id="text2"></p> 
+<input type="button" id="smallMButton" value="small moon" onClick="changeSmallM();">
+<input type="button" id="blackMButton" value="black moon" onClick="changeBlackM();">
+<p id="text"></p><p id="text3"></p>
+<input type="button" id="skyButton" value="graded sky" onClick="changeSky();">
+<input type="button" id="landButton" value="no land" onClick="changeLand();">
+<p id="text"></p><p id="text4"></p>
+<input type="button" id="saveButton" value="Save image">
+</td>
+
+at start:
+var bigMFlag = true;
+var smallMFlag = true;
+var blackMFlag = true;
+var oneSkyMFlag = false;
+
+415:
+    if(oneSkyMFlag){
+    ctx.fillStyle = whatSky;//"blue";
+    }
+    
+at end:
+
+
+function changeBigM(){
+  if(bigMFlag){
+    bigMFlag = false;
+    document.getElementById("bigMButton").value="big moon";
+  }
+  else{
+    bigMFlag = true;
+    document.getElementById("bigMButton").value="no big moon";
+  }
+  plotNewFrame();
+}
+
+
+function changeSmallM(){
+  if(smallMFlag){
+    smallMFlag = false;
+    document.getElementById("smallMButton").value="true VA";
+  }
+  else{
+    smallMFlag = true;
+    document.getElementById("smallMButton").value="false VA";
+  }
+  plotNewFrame();
+}
+
+
+function blackMSky(){
+  if(blackMFlag){
+    blackMFlag = false;
+    document.getElementById("blackMButton").value="black dark side";
+  }
+  else{
+    blackMFlag = true;
+    document.getElementById("blackMButton").value="no dark side";
+  }
+  plotNewFrame();
+}
+
+function changeSky(){
+  if(oneSkyMFlag){
+    oneSkyMFlag = false;
+    document.getElementById("skyButton").value="one sky";
+  }
+  else{
+    oneSkyMFlag = true;
+    document.getElementById("skyButton").value="graded sky";
+  }
+  plotNewFrame();
+}
+
+
