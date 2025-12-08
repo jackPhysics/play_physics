@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hex Colour Square</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #controls { margin-top: 10px; }
+    input[type=text] { width: 60px; font-family: monospace; text-align: center; }
+    label { margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <canvas id="colorCanvas" width="400" height="300"></canvas>
+
+  <div id="controls">
+    <p id="colorCode"></p>
+    <label>wavelength: <input type="text" id="hexR" maxlength="3" value="555"> nm</label>
+  </div>
+
+
+  <script>
+    (function () {
+	
+      const canvas = document.getElementById('colorCanvas');
+      const ctx = canvas.getContext('2d');
+      //const inputs = ['hexR'].map(id => document.getElementById(id));
+      var wavelength = 555;
+      var redN = 0;
+      var greenN = 0;
+      var blueN = 0;
+	  
+	canvas.addEventListener("mousemove", function(event) {
+    const rect = canvas.getBoundingClientRect(); // get canvas position
+    const x = event.clientX - rect.left; // mouse X relative to canvas
+    //console.log("Mouse X:", x);
+	var waveShow = Math.floor(750-x);
+	var colorShow = calculateColor(waveShow);
+	document.getElementById('colorCode').innerHTML=""+waveShow+" nm = "+colorShow.toUpperCase();
+  });
+  
+      function calculateColor(n){
+	//find RED
+	wavelength = n;
+	//console.log("1w="+wavelength);
+	if(wavelength<440){
+	 var w = wavelength;
+		redN = Math.round(-0.086456*w*w + 69.359*w - 13778);
+	}
+	else if(wavelength<510){
+		redN = 0;
+	}
+	else if(wavelength<580){
+	 var w = wavelength;
+		redN = Math.round(-0.014573*w*w + 19.398*w - 6094);
+	}
+	else if(wavelength<644){
+		redN = 255;
+	}
+	else{
+	 var w = wavelength;
+		redN = Math.floor(-0.00064*w*w - 0.0192*w + 532.93);
+	}
+	if(redN<0){redN=0;}
+	if(redN>255){redN=255;}
+	//console.log("colorR="+redN);
+
+       //find BLUE
+	//wavelength = +document.getElementById('hexR').value;
+	if(wavelength<420){
+	 var w = wavelength;
+		blueN = Math.round(-0.01251*w*w + 13.945*w - 3395.4);
+	}
+	else if(wavelength<490){
+		blueN = 255;
+	}
+	else if(wavelength<510){
+	 var w = wavelength;
+		blueN = Math.round(-0.19713*w*w + 184.56*w - 42848);
+	}
+	else{
+	 var w = wavelength;
+		blueN = 0;
+	}
+	if(blueN<0){blueN=0;}
+	if(blueN>255){blueN=255;}
+	//console.log("colorB="+blueN);
+	
+	//find GREEN
+	//wavelength = +document.getElementById('hexR').value;
+	if(wavelength<440){
+	 var w = wavelength;
+		greenN = 0;
+	}
+	else if(wavelength<490){
+	 var w = wavelength;
+		greenN = Math.round(-0.02964*w*w + 32.513*w - 8560.1);
+	//console.log("w="+wavelength+" colorG="+greenN);
+	}
+	else if(wavelength<580){
+	 var w = wavelength;
+		greenN = 255;
+	}
+	else{
+	 var w = wavelength;
+		greenN = Math.round(-0.01697*w*w + 17.015*w - 3905.1);
+	}
+	if(greenN<0){greenN=0;}
+	if(greenN>255){greenN=255;}
+	//console.log("colorG="+greenN);
+	
+	var redHex = redN.toString(16);
+	if(redHex.length<2){redHex = "0"+redHex;}
+	var greenHex = greenN.toString(16);
+	if(greenHex.length<2){greenHex = "0"+greenHex;}
+	var blueHex = blueN.toString(16);
+	if(blueHex.length<2){blueHex = "0"+blueHex;}
+	var newColorH = '#' + redHex + greenHex + blueHex;
+	
+	return newColorH;
+	}
+  
+	for(i=0;i<400;i++){
+		var lambdaNow = 750-i;
+		var colorNow = calculateColor(lambdaNow);
+		//console.log("lambdaNow="+lambdaNow+" colorNow="+colorNow);
+		ctx.beginPath();
+		ctx.lineWidth = 1;
+		ctx.fillStyle = colorNow;
+		ctx.fillRect(i, 0, 1, 300);
+		ctx.closePath();
+	}
+		
+	})();	
+  </script>
+</body>
+</html>

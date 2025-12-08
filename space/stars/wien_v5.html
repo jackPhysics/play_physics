@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hex Colour Square</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #controls { margin-top: 10px; }
+    input[type=text] { width: 60px; font-family: monospace; text-align: center; }
+    label { margin-right: 10px; }
+
+    #floatingBox {
+      position: absolute;
+      background: #fefefe;
+      border: 1px solid #aaa;
+      padding: 5px 10px;
+      border-radius: 5px;
+      pointer-events: none; /* So it doesn't interfere with mouse events */
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+      display: none; /* Initially hidden */
+    }
+  </style>
+</head>
+<body>
+  <p>Peak frequency/wavelength:</p>
+  <canvas id="colorCanvas" width="1000" height="420"></canvas>
+  <p>Star colour:</p>
+
+  <p  id="colorCode" style="width: 300px; margin: 0 auto; text-align: center;">
+  <br><br></p>
+
+  <table style="background: #fefefe; width:420px; height:210px; margin: 0 auto;">
+  <tr><td>
+  <div  id="colorWindow" style="background: #fefefe; width:200px; height:200px; margin: 0 auto;">&nbsp;</div></td>
+  <td>
+  <div  id="tempWindow" style="background: #fefefe; width:200px; height:200px; margin: 0 auto;">&nbsp;</div></td>
+  </tr>
+  </table>
+
+  <p  id="colorHot" style="width: 500px; margin: 0 auto; text-align: center;">
+  <p  id="colorHot2" style="width: 500px; margin: 0 auto; text-align: center;">
+  <br><br></p>
+
+	<div id="floatingBox"></div>
+
+
+  </div>
+
+
+  <script>
+    (function () {
+
+      const canvas = document.getElementById('colorCanvas');
+      const ctx = canvas.getContext('2d');
+
+      //const inputs = ['hexR'].map(id => document.getElementById(id));
+      var wavelength = 555;
+      var redN = 0;
+      var greenN = 0;
+      var blueN = 0;
+	  var waveShow = 0;
+	  var colorShow = 0;
+	  var tempShow = 0;
+	  var freqNow = 0;
+	  var freqDown = 0;
+    var starClassTempsA = [38000, 35600, 33200, 29700, 25600, 22300, 19000, 17200, 15400, 14100, 13000,
+       11800, 10700, 9480, 9145,8810, 8593, 8377, 8160, 7930, 7627, 7323, 7020, 6885, 6750, 6677, 6603,
+        6530, 6385, 6240, 6137, 6033, 5930, 5880, 5830, 5785, 5680, 5620, 5525, 5430, 5335, 5240, 5125,
+         5010, 4785, 4560, 4340, 4190, 4040, 3960, 3880, 3800, 3680, 3530, 3380, 3180, 3030, 2850];
+    var starClassTempsLen = starClassTempsA.length;
+    var starLettersA = ["O","B","A","F","G","K","M"];
+
+
+	canvas.addEventListener("mousemove", function(event) {
+    const rect = canvas.getBoundingClientRect(); // get canvas position
+    const x = event.clientX - rect.left; // mouse X relative to canvas
+    var hexFlag = true;
+    const y = event.clientY - rect.top; // mouse X relative to canvas
+    if(y>210){hexFlag=false;}
+    //console.log("Mouse X:", x);
+	 freqNow = 8.33e13*x/66.7+8.33e13;
+	 freqDown = Math.round(freqNow/1e12);//freq in THz
+	 waveShow = Math.round(3e8/freqNow*1000000000);//Math.round((3300-x*3)*10)/10;
+	 colorShow = calculateColor(waveShow);
+	 tempShow = Math.round(2.898e6/waveShow);
+   var classShow = findClass(tempShow);
+	document.getElementById('colorCode').innerHTML="LEFT BOX: f= "+freqDown+" THz; &lambda;= "+""+waveShow+" nm; T = "+tempShow+" K; class "+classShow+" (hex: "+colorShow.toUpperCase()+")";
+	if(hexFlag){document.getElementById('floatingBox').innerHTML="f= "+freqDown+" THz; &lambda;= "+""+waveShow+" nm; T = "+tempShow+" K; class "+classShow+" (hex: "+colorShow.toUpperCase()+")";}
+	else{document.getElementById('floatingBox').innerHTML="f= "+freqDown+" THz; &lambda;= "+""+waveShow+" nm; T = "+tempShow+" K; class "+classShow+"";}
+	document.getElementById('colorWindow').style.background=""+colorShow;
+	document.getElementById('tempWindow').style.background=""+"#ff0000";
+	calcTcolors(tempShow);
+  });
+
+  const box = document.getElementById("floatingBox");
+
+  document.addEventListener("mousemove", (e) => {
+    const offsetX = +50;  // left of the cursor
+    const offsetY = 20;    // below the cursor
+
+    box.style.left = `${e.pageX + offsetX}px`;
+    box.style.top = `${e.pageY + offsetY}px`;
+    box.style.display = "block";  // show the box
+  });
+
+  function findClass(t){
+    var tempOfStar = t;
+    var countClass = 6;
+    for(s=0;s<starClassTempsLen;s++){
+      if(tempOfStar>starClassTempsA[s]){//found class as number
+        break;
+      }
+      else{countClass++}
+    }
+    //countClass now holds the class as a number between 6 and 64
+    var topClass = Math.floor(countClass/10);
+    var subClass = countClass%10;
+    var finalClass = ""+starLettersA[topClass]+subClass;
+    return finalClass;
+  }
+
+      function calculateColor(n){
+	//find RED
+	wavelength = n;
+	//console.log("1w="+wavelength);
+	if(wavelength<440){
+	 var w = wavelength;
+		redN = Math.round(-0.086456*w*w + 69.359*w - 13778);
+	}
+	else if(wavelength<510){
+		redN = 0;
+	}
+	else if(wavelength<580){
+	 var w = wavelength;
+		redN = Math.round(-0.014573*w*w + 19.398*w - 6094);
+	}
+	else if(wavelength<644){
+		redN = 255;
+	}
+	else{
+	 var w = wavelength;
+		redN = Math.floor(-0.00064*w*w - 0.0192*w + 532.93);
+	}
+	if(redN<0){redN=0;}
+	if(redN>255){redN=255;}
+	//console.log("colorR="+redN);
+
+       //find BLUE
+	//wavelength = +document.getElementById('hexR').value;
+	if(wavelength<420){
+	 var w = wavelength;
+		blueN = Math.round(-0.01251*w*w + 13.945*w - 3395.4);
+	}
+	else if(wavelength<490){
+		blueN = 255;
+	}
+	else if(wavelength<510){
+	 var w = wavelength;
+		blueN = Math.round(-0.19713*w*w + 184.56*w - 42848);
+	}
+	else{
+	 var w = wavelength;
+		blueN = 0;
+	}
+	if(blueN<0){blueN=0;}
+	if(blueN>255){blueN=255;}
+	//console.log("colorB="+blueN);
+
+	//find GREEN
+	//wavelength = +document.getElementById('hexR').value;
+	if(wavelength<440){
+	 var w = wavelength;
+		greenN = 0;
+	}
+	else if(wavelength<490){
+	 var w = wavelength;
+		greenN = Math.round(-0.02964*w*w + 32.513*w - 8560.1);
+	//console.log("w="+wavelength+" colorG="+greenN);
+	}
+	else if(wavelength<580){
+	 var w = wavelength;
+		greenN = 255;
+	}
+	else{
+	 var w = wavelength;
+		greenN = Math.round(-0.01697*w*w + 17.015*w - 3905.1);
+	}
+	if(greenN<0){greenN=0;}
+	if(greenN>255){greenN=255;}
+	//console.log("colorG="+greenN);
+
+	var redHex = redN.toString(16);
+	if(redHex.length<2){redHex = "0"+redHex;}
+	var greenHex = greenN.toString(16);
+	if(greenHex.length<2){greenHex = "0"+greenHex;}
+	var blueHex = blueN.toString(16);
+	if(blueHex.length<2){blueHex = "0"+blueHex;}
+	var newColorH = '#' + redHex + greenHex + blueHex;
+
+	return newColorH;
+	}
+
+	function calcTcolors(m){
+		var tempHere = m;
+		var fnt1R = 1.1934e29/Math.pow(642,5);//397.8/Math.pow(642,5);
+		var fnt1G = 1.1934e29/Math.pow(510,5);//397.8/Math.pow(510,5);
+		var fnt1B = 1.1934e29/Math.pow(440,5);//397.8/Math.pow(440,5);
+		var fnt2R = 14.4130435e6/642/tempHere;
+			fnt2R = Math.exp(fnt2R)-1;
+			fnt2R = 1/fnt2R;
+		var fnt3R = fnt1R*fnt2R;
+		var fnt2G = 14.4130435e6/510/tempHere;
+			fnt2G = Math.exp(fnt2G)-1;
+			fnt2G = 1/fnt2G;
+		var fnt3G = fnt1G*fnt2G;
+		var fnt2B = 14.4130435e6/440/tempHere;
+			fnt2B = Math.exp(fnt2B)-1;
+			fnt2B = 1/fnt2B;
+		var fnt3B = fnt1B*fnt2B;
+
+		var totalAll = fnt3R+fnt3G+fnt3B;
+		var pcR = fnt3R/totalAll;
+		var pcG = fnt3G/totalAll;
+		var pcB = fnt3B/totalAll;
+		var hTR = 0;
+		var hTG = 0;
+		var hTB = 0;
+		//straight hexa
+		  hTR = Math.round(255*pcR);
+			hTR = hTR.toString(16);
+		if(hTR.length<2){hTR = "0"+hTR;}
+		  hTG = Math.round(255*pcG);
+			hTG = hTG.toString(16);
+		if(hTG.length<2){hTG = "0"+hTG;}
+		  hTB = Math.round(255*pcB);
+			hTB = hTB.toString(16);
+		if(hTB.length<2){hTB = "0"+hTB;}
+		var newTcolor = "#"+hTR+hTG+hTB;
+		//relative hexa
+		if(pcR>pcG){
+		if(pcR>pcB){//red is largest
+			  hTR = 255;
+			  hTG = Math.round(pcG/pcR*255);
+			  hTB = Math.round(pcB/pcR*255);}
+		else{//blue is largest
+			  hTB = 255;
+			  hTG = Math.round(pcG/pcB*255);
+			  hTR = Math.round(pcR/pcB*255);}
+			}
+		else if(pcG>pcB){//green is largest
+			  hTG = 255;
+			  hTB = Math.round(pcB/pcG*255);
+			  hTR = Math.round(pcR/pcG*255);}
+		else{//blue is largest
+			  hTB = 255;
+			  hTG = Math.round(pcG/pcB*255);
+			  hTR = Math.round(pcR/pcB*255);}
+		hTR = hTR.toString(16);
+		if(hTR.length<2){hTR = "0"+hTR;}
+		hTG = hTG.toString(16);
+		if(hTG.length<2){hTG = "0"+hTG;}
+		hTB = hTB.toString(16);
+		if(hTB.length<2){hTB = "0"+hTB;}
+		var newTcolor = "#"+hTR+hTG+hTB;
+		document.getElementById('tempWindow').style.background=""+newTcolor;
+		document.getElementById('colorHot').innerHTML="RIGHT BOX: red="+Math.round(pcR*100)+" % green="+Math.round(pcG*100)+" % blue="+Math.round(pcB*100)+" %";
+		document.getElementById('colorHot2').innerHTML="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hex = "+newTcolor;
+		return newTcolor;
+	}
+
+	for(i=0;i<1000;i++){
+		freqNow = 8.33e13*i/66.7+8.33e13;
+		var lambdaNow = Math.round(3e8/freqNow*1000000000);
+		//var lambdaNow = 3300-i*3;
+		var colorNow = calculateColor(lambdaNow);
+		//console.log("lambdaNow="+lambdaNow+" colorNow="+colorNow);
+		ctx.beginPath();
+		ctx.lineWidth = 1;
+		ctx.fillStyle = colorNow;
+		ctx.fillRect(i, 0, 1, 200);
+		ctx.closePath();
+		tempShow = Math.round(2.898e6/lambdaNow);
+		var colorNowT = calcTcolors(tempShow);
+		ctx.beginPath();
+		ctx.lineWidth = 1;
+		ctx.fillStyle = colorNowT;
+		ctx.fillRect(i, 220, 1, 200);
+		ctx.closePath();
+	}
+
+
+	})();
+  </script>
+</body>
+</html>
