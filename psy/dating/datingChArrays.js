@@ -1,11 +1,15 @@
 var healthChArr0 = ["Cheerful", "Warm-hearted", "Kind",  "Easy-going",  "Emotionally intelligent",
- "Optimistic",  "Grounded", "Healthy", "Never ill", "Fit",  "Energetic",  "Athletic", "Active","Strong", "Stamina", "Sporty",
+ "Optimistic",  "Grounded", "Healthy", "Never ill", "Fit",  "Energetic",  "Athletic", "Active",
+ "Strong", "Stamina", "Sporty",
  "Physically flexible",
-"Lean", "Well-rested", "High-energy", "Outdoorsy", "Health-conscious", "Physical", "Great diet", "Resilient", "Fast runner",
+"Lean", "Well-rested", "High-energy", "Outdoorsy", "Health-conscious", "Physical",
+"Great diet", "Resilient", "Fast runner",
 "Psychologically healthy",
 "Well", "Emotional stability", "Good stress management", "Cognitive health", "Great genes", "Fertile",
 "Want lots of kids", "Home-maker",
-"Beautiful", "Glamourous", "Hot", "Desirable", "Good figure", "Great figure", "Bright eyed"];
+"Beautiful", "Glamourous", "Hot", "Desirable", "Good figure", "Great figure",
+"Bright eyed", "Dancer", "Slim",
+ "Thin", "Muscular", "Ripped", "Keep-fit fanatic"];
 
 var successChArr0 = ["Ambitious", "Driven", "Financially secure", "Well-travelled", "Confident", "Independent",
 "Leader", "Established", "Stable", "Professionally accomplished", "Successful", "Well-educated", "High status",
@@ -35,7 +39,10 @@ var namesGirls0 = [  "Anna", "Sofia", "Elena",  "Clara",  "Isabelle",  "Lucia", 
   "Noor",  "Aisha",  "Mariam",  "Zahra",  "Aria",  "Nova",  "Luna",  "Skye",  "Harper",
   "Priya",  "Ananya",  "Kavya",  "Saira",  "Meera", "Dorsa", "Marta", "Saina", "Jane",
    "Katy", "Jo", "Sara", "Maeve", "Ai" , "Kim", "Jovanna", "Paula", "Pilar",
- "Francoise", "Aideen", "Ewa", "Wanda", "Eve", "Xolana", "Ashanti", "Enola", "India", "Asia", "Europa"];
+ "Francoise", "Aideen", "Ewa", "Wanda", "Eve", "Xolana", "Ashanti", "Enola", "India", "Asia", "Europa",
+  "Mandy", "Bee", "Belle", "Caitlin", "Dee", "Estelle", "Fiona", "Gertrude", "Hannah",
+  "Isobel", "Janine", "Kim", "Linda", "Michel", "Nina", "Olivia", "Pip", "Queenie", "Rhonda",
+  "Sue", "Titania", "Ulrika", "Val", "Wendy", "Yvonne", "Zoe"];
 
 var namesBoys0 = [
   "Alexander",  "Thomas",  "Lucas",  "Matteo", "Julian",  "Sebastian",  "Daniel",  "Oliver",  "Victor",

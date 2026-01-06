@@ -18,7 +18,7 @@
       ctx.save();
       ctx.setTransform(1,0,0,1,0,0);
       ctx.clearRect(0,0,W,H);
-      ctx.fillStyle = "#add8e6"; //"#fff";
+      ctx.fillStyle = "#ff69b4"; //"#fff";
       ctx.fillRect(0,0,W,H);
       ctx.restore();
     }
@@ -299,7 +299,7 @@
     // --------- NEW: hair as a separate face-like shape ----------
     function drawHairShape(ctx, cx, cy, w, h) {
       // 70% of the time only
-      if (!chance(0.85)) return;
+      if (!chance(1)) return;
 
       const hairType = pick([
         "circle", "oval",
@@ -349,9 +349,10 @@
       ]);
 
       // 1) draw hair SHAPE first
-      var hairShift = Math.round(Math.random()*60)+0;
-      var hairSize = Math.random()*0.5+1;
-      drawHairShape(ctx, cx, cy-hairShift, headW, headH*hairSize);
+      var hairShift = Math.round(Math.random()*80)+20;
+      var hairSize = Math.random()*1+1;
+      var hairSizeW = Math.random()*3+1;
+      drawHairShape(ctx, cx, cy-hairShift, headW*hairSizeW, headH*hairSize);
 
                   // fill hair mask
                   var hairCol1 = Math.floor(Math.random()*colorHairLen);
@@ -445,7 +446,7 @@ function init(){
 
 function regen(n) {
       var numberOfFace = n;
-      var name0 = findGName();
+      var name0 = findBName();
       var introText = ""+(1*turnsDone+1)+": Help "+name0+" choose the best life-mate out of these 3 possible matches"+
       "\n(ignore the faces or names, choose according to the characteristic):"
      document.getElementById('instructions').innerText=""+introText;
@@ -454,13 +455,13 @@ function regen(n) {
 
 
     //choose namea
-    var name1 = findBName();
+    var name1 = findGName();
     let dumFont=36;
     ctx.font = "bold "+dumFont+"px Arial";
     //ctx.font = ""+dumFont+"px Arial";
     //ctx.font = "italic "+dumFont+"px Arial";
 	  //ctx.font = "30px Arial";
-	  ctx.fillStyle = "Red";
+	  ctx.fillStyle = "Blue";
 	  ctx.textAlign = "center";
 	  ctx.textBaseline = "top";
 	  ctx.fillText(""+name1, 200,20);
