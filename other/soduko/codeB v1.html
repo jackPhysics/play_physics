@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Code Breaker</title>
+  <STYLE type="text/css">
+<!--
+body {background-color:green; color:black}
+canvas.piece  {position:absolute; left:20px; top:20px; width:150px; height:150px; border-radius:50%; border-style:solid; border-width:4px; border-color:gray}
+canvas.pieceS  {position:absolute; left:20px; top:20px; width:150px; height:150px; border-style:solid; border-width:4px; border-color:gray}
+img.touched  {position:absolute; left:50px; top:50px; width:150px; height:150px; border-style:solid; border-width:4px; border-color:yellow}
+
+img.back {left:0px; top:0px; margin-left:0px; margin-top:0px;}
+canvas.back {left:0px; top:0px; margin-left:0px; margin-top:0px;}
+canvas.center {left:0px; top:0px; margin-left:0px; margin-top:0px;  border: 2px solid black;  display: block;  margin: 20px auto;}
+table.mover {position:absolute; z-index:-2; border: 2px solid #000000; color:black; font-size:12pt; font-weight: bold;  background-color:rgba(00, 255, 255, 0.7);; border-style:outset; border-width:2px;  width:100px; height:100px}
+td.button {border: 2px solid #000000; border-style: outset; text-align:center;}
+td.button6 {border: 2px solid #000000; border-style: outset; text-align:center; font-size:16pt; background-color:ivory;width:90%}
+td.button4 {text-align:left; font-size:16pt; color:white}
+td.button5 {border: 2px solid #000000; border-style: outset; text-align:center; font-size:8pt; background-color:beige;}
+table {margin-left:100px;margin-right:100px;margin-top:100px; width:80%}
+
+b.old {width:200px; margin-right:200px; border-width:5px; border-style:outset;}
+b {display:block; font-size:14pt; text-align:center; width:4cm}
+
+a {display:block; width:200px; margin-right:20px; border-width:4px; border-style:outset; background-color:cyan; color:black; text-align:center}
+a.aiw {background-color:ivory}
+a.mca {background-color:blue}
+a.neut {background-color:pink; color:black}
+.axi {background-color:pink; color:black;}
+.alli {background-color:cyan; color:black;}
+.neut {background-color:yellow; color:gray;}
+
+button {border: 10px solid #000000; width: 200px;height:60px;border-style: outset; text-align:center; font-size:20pt; background-color:silver;}
+input {border: 6px solid #000000; border-style: outset; text-align:center; font-size:20pt; background-color:red; color:white}
+
+/* Style The Dropdown Button */
+.dropbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+  background-color: #3e8e41;
+}
+-->
+</STYLE>
+
+</head>
+<body id="backdrop" leftmargin="0" topmargin="0" onLoad="init()" ondrop="drop(event)" ondragover="allowDrop(event)">
+
+<table id="introTable"></tr>
+<tr><td class="button4" colspan="4">The current game is:<td></tr>
+<tr><td class="button6" id="game2play" colspan="4">6 colours,&nbsp;&nbsp; 4 code slots,&nbsp;&nbsp; no repeats,&nbsp;&nbsp; no empty slots<td></tr>
+<tr><td class="button4" id="warning" colspan="4">&nbsp;<td></tr>
+<tr><td class="button4" colspan="4">&nbsp;<td></tr>
+<tr><td class="button4" colspan="4">use buttons below to change the game...<td></tr>
+<td>
+  <div class="dropdown"> <button class="colorbtn">No of colours</button>
+  <div id="colorMenu" class="dropdown-content">
+  </div> </div></td>
+  <td>
+    <div class="dropdown"> <button class="columnbtn">No of spaces</button>
+    <div id="columnMenu" class="dropdown-content">
+    </div> </div></td>
+    <td>
+      <div class="dropdown"> <button class="repeatbtn">repeats?</button>
+      <div id="repeatMenu" class="dropdown-content">
+      </div> </div> </td>
+    <td>
+      <div class="dropdown"> <button class="blankbtn">blanks?</button>
+      <div id="blankMenu" class="dropdown-content">
+      </div> </div> </td>
+</tr>
+<tr><td class="button4" colspan="4">&nbsp;<td></tr>
+<tr><td class="button4" colspan="4">&nbsp;<td></tr>
+<tr><td class="button4" colspan="4">When ready to play press...<td></tr>
+<tr><td>&nbsp;</td><td colspan='2'><input type=button value="start game..." onClick="init1()"></td><td>&nbsp;</td></table>
+
+<canvas  class="back" id="board" width="1218" height="1200"></canvas>
+
+<script language="Javascript"></script>
+<script src="javascripts/events.js" type="text/javascript"></script>
+<script src="javascripts/aa_hopperHTMLcode vcodeB.js" type="text/javascript"></script>
+<script src="javascripts/codeB armyLists.js"></script>
+<script src="javascripts/Kr allUnits list.js"></script>
+<script src="javascripts/codeB v2.js" type="text/javascript"></script>
+<script src="javascripts/draw board codeB.js"></script>
+<script src="javascripts/codeB_units_newJS.js"></script>
+<script src="javascripts/printUnit codeB.js"></script>
+<script src="javascripts/Krieg v12_windows code.js" type="text/javascript"></script>
+<script src="javascripts/Krieg vP10 cookie scripts.js" type="text/javascript"></script>
+<script src="javascripts/Krieg vP12_changeFunctions.js" type="text/javascript"></script>
+<script src="javascripts/Krieg v6_changeUnits.js" type="text/javascript"></script>
+<script src="javascripts/codeBMain_newJS v4.js"></script>
+
+
+<span  id="hopperHTML"></span>
+<span  id="table1HTML"></span>
+<span  id="table2HTML"></span>
+<br><br><br><br><br><br><br><br><br>
+</body>
+</html>
