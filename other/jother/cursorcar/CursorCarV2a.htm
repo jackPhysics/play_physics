@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<META NAME="GENERATOR" Content="Microsoft Visual Studio 6.0">
+<title>Cursor Car</title>
+</HEAD>
+<BODY bgcolor=black text=white>
+
+<center>
+<P><big><em>If car stalls, eg it doesn't respond to the keys, try clicking in the middle to restart the engine.</em></big></P>
+
+
+<table>
+<tr>
+<td valign=top>
+<p>You have three modes to choose from: <font color=yellow><b>acceleration</b></font>, <font color=yellow><b>speed</b></font> or <font color=yellow><b>distance</b></font>. </p>
+
+<p>The mode tells you what changes when you press the forward (or reverse cursor key). <br>For example if you are in <font color=yellow><b>distance</b></font> mode then pressing the forward key changes the <u>distance</u> of the car - it moves! Letting go of the key stops changing the distance - it stops! <br>
+
+If you are in <font color=yellow><b>speed</b></font> mode then pressing the forward key changes the <u>speed</u> of the car. The speed then changes the <u>distance</u> (because that is what 'speed' is - 'change of distance'). And when you stop pressing the key the speed stops changing - this <b><u>does not mean</u></b> the speed goes to zero! The speed stays constant, it does not change! - try it out to see.<br>
+
+If you are in <font color=yellow><b>acceleration</b></font> mode then pressing the forward key changes the <u>acceleration</u> of the car. The acceleration then continuously changes the <u>speed</u> (because that is what 'acceleration' is - 'change of speed'). It's like having the gas pedal stuck down! Oops! Try it out.<br>
+</p> 
+</td>
+<td>
+<!-- Insert HTML here -->
+	<applet
+		code=CursorCar.class
+		archive=CursorCarV2.jar
+		name=CursorCar
+		width=600
+		height=520 >
+		<param name=label value="This string was passed from the HTML host.">
+		<param name=background value="008080">
+		<param name=foreground value="FFFFFF">
+	</applet>
+</td>
+<td><p>The LEFT and RIGHT cursor keys are used for steering</p>
+
+<p>You can quickly change between <font color=yellow><b>acceleration</b></font>, <font color=yellow><b>speed</b></font> and <font color=yellow><b>distance</b></font> by using the <b>A</b>, <b>S</b> and <b>D</b> keys on the keyboard (note that when you do the acceleration and velocity of the car are reset to 0).
+&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+</tr>
+</table>
+</center>
+
+</BODY>
+</HTML>
