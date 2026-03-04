@@ -189,8 +189,8 @@ var printArmiesFlag = false;
 var pieceTouchedAgain = 0;
 var codeArray = new Array();
 var finderArray = new Array();
-var colorsArray = ["-","red", "blue", "green", "yellow", "violet", "orange", "turquoise", "brown", "indigo", "pink", "silver", "dgreen", "dred", "dblue"];
-var colorsArrayRepeat = ["-","red", "blue", "green", "yellow", "violet", "orange", "turquoise", "brown", "indigo", "pink", "silver", "dgreen", "dred", "dblue"];
+var colorsArray = ["-","red", "blue", "green", "yellow", "orchid", "orange", "turquoise", "brown", "indigo", "pink", "silver","yellowGreen","tan","navy","olive","mediumSlateBlue", "beige"];
+var colorsArrayRepeat = ["-","red", "blue", "green", "yellow", "orchid", "orange", "turquoise", "brown", "indigo", "pink", "silver", "yellowGreen","tan","navy","olive","mediumSlateBlue", "beige"];
 var noRepeatsFlag = true;
 var repeatsText = "no repeats";
 var emptySlotFlag = false;
@@ -237,13 +237,13 @@ for(c=0;c<noOfColumns;c++){
 function fillMenus(){
 
       var m1 = document.getElementById('colorMenu');
-      for(b=2;b<15;b++){
+      for(b=2;b<19;b++){
       //document.getElementById('armyMenu').insertAdjacentHTML='<a class="save" href="javascript:changeRedArmy2("'+a+'")">"Army #"'+a+'</a>';
       m1.innerHTML += '<a class="aiw" href="javascript:changecolorNo('+b+')">'+b+' colours </a>';
       }
 
       var m2 = document.getElementById('columnMenu');
-      for(a=2;a<8;a++){
+      for(a=2;a<11;a++){
       m2.innerHTML += '<a class="aiw" href="javascript:changecodeNo('+a+')">'+a+' code slots </a>';
       }
 
@@ -269,7 +269,9 @@ checkColorNumbers(0);
 function changecodeNo(m){
 noOfColumns = m;
 gridSizeX = noOfColumns;
+gridSizeY = noOfColumns+6;
 canvasSizeX = gridSizeX * cellSize;
+canvasSizeY = gridSizeY * cellSize;
 var gameText = document.getElementById('game2play');
 gameText.innerHTML = ''+maxColors+' colours, '+noOfColumns+' code slots, '+repeatsText+' , '+emptyText+' slots';
 checkColorNumbers(1);
@@ -307,7 +309,9 @@ function checkColorNumbers(p){
   gameText.innerHTML = 'if \"no repeats\" then number of colours cannot be less than number of slots!';
   if(p==0){noOfColumns = maxColorsDum;
   gridSizeX = noOfColumns;
-  canvasSizeX = gridSizeX * cellSize;}
+  gridSizeY = noOfColumns+6;
+  canvasSizeX = gridSizeX * cellSize;
+  canvasSizeY = gridSizeY * cellSize;}
   else{maxColors = noOfColumns;}
   var gameText = document.getElementById('game2play');
   gameText.innerHTML = ''+maxColors+' colours, '+noOfColumns+' code slots, '+repeatsText+' , '+emptyText+' slots';
@@ -704,12 +708,12 @@ var nextColor =0;
     var randShift1 = Math.round(Math.random()*3);
     var randShift2 = Math.round(Math.random()*3);
     if(Math.random()<0.5){
-  imageArray[k].style.left=(120-maxColors*30*0.2857) + Math.floor(k/20)*pieceSize*1.5+20+randShift1+"px";//*2 +40
-  piecesLeft[k] = Math.round((120-maxColors*30*0.2857) + Math.floor(k/20)*pieceSize*1.5+20+randShift1);
+  imageArray[k].style.left=(150-maxColors*30*0.2857) + Math.floor(k/20)*pieceSize*1.5+20+randShift1+"px";//*2 +40
+  piecesLeft[k] = Math.round((150-maxColors*30*0.2857) + Math.floor(k/20)*pieceSize*1.5+20+randShift1);
   }
     else{
-  imageArray[k].style.left=(120-maxColors*30*0.2857) +Math.floor(k/20)*pieceSize*1.5+20-randShift1+"px";
-  piecesLeft[k] = Math.round((120-maxColors*30*0.2857) +Math.floor(k/20)*pieceSize*1.5+20-randShift1);}
+  imageArray[k].style.left=(150-maxColors*30*0.2857) +Math.floor(k/20)*pieceSize*1.5+20-randShift1+"px";
+  piecesLeft[k] = Math.round((150-maxColors*30*0.2857) +Math.floor(k/20)*pieceSize*1.5+20-randShift1);}
     if(Math.random()<0.5){
   imageArray[k].style.top=(k-Math.floor(k/20)*20)*pieceSize*0+10+randShift2+"px";
   piecesTop[k] = Math.round((k-Math.floor(k/20)*20)*pieceSize*0+10+randShift2);

@@ -8,10 +8,10 @@ var maxColors = 6;
 var maxColorsRepeat = 6;//really means no repeat
 
 let gridSizeX = noOfColumns;//4;
-const gridSizeY = 12;
+let gridSizeY = 10;//12;
 const cellSize = 80; // Doubled from 50 to 100
 let canvasSizeX = gridSizeX * cellSize;
-const canvasSizeY = gridSizeY * cellSize;
+let canvasSizeY = gridSizeY * cellSize;
 
 // Sudoku board
 let board = Array.from({ length: 9 }, () => Array(9).fill(0));
@@ -34,11 +34,12 @@ var letArray = ["A","B","C","D","E","F","G","H","I","J"];
 
 function fillCanvas(){
   //down the top side
-  ctx.width = 1218;
-  ctx.height = 1200;
+  ctx.width = 2000;//1218;
+  ctx.height = 2000;//1200;
   ctx.beginPath();
   ctx.fillStyle = "Black";
-  ctx.fillRect(0,0,1218,2000);//1080
+  //ctx.fillRect(0,0,1218,2000);//1080
+  ctx.fillRect(0,0,2000,2000);//1080
   ctx.closePath();
 
   var changeA = ["#010100","#010100","#010100","#010000", "#000100","#010000", "#000100","#010000", "#000100","#010000", "#000100","#010000", "#000100","#010100", "#010101"];
@@ -54,7 +55,7 @@ function fillCanvas(){
       colorNow = shiftColor(colorNowH, randColChange2, dirColor);
       colorNowH = colorNow;
       colorNow = "#"+colorNow;
-        var texWd_x = 0 +Math.round(Math.random()*(1218));//1080
+        var texWd_x = 0 +Math.round(Math.random()*(2000));//1080
         var texWd_y = 0 +Math.round(Math.random()*(2000));
         //var texWd_x = xPos - hexD/2 +5 +Math.round(Math.random()*(hexD*2-10));
         //var texWd_y = yPos +5 +Math.round(Math.random()*(hexLong*2-10));
@@ -146,7 +147,7 @@ function drawGrid() {
 
 for (let i = 0; i <= gridSizeY; i++) {
     ctx.beginPath();
-    ctx.lineWidth = (i < 1 || i > 11) ? 4 : 1;//(i < 2 || i > 6) ? 4 : 1;
+    ctx.lineWidth = (i < 1 || i > +gridSizeY+1) ? 4 : 1;//(i < 2 || i > 6) ? 4 : 1;
     ctx.moveTo(0+leftMargin, i * cellSize+topMargin);
     ctx.lineTo(canvasSizeX+leftMargin, i * cellSize+topMargin);
     ctx.stroke();
@@ -179,7 +180,9 @@ function drawScore() {
         ctx.fillStyle = "Black";
         ctx.fillText(""+codeArray, leftMargin,  (turnNumbRow)*cellSize+205, noOfColumns*80);
         ctx.closePath();
-      alert("CODE CRACKED!\n"+codeArray);
+        if(turnNumbRow>gridSizeY){alert("Out of turns!\n"+codeArray);}
+        else{
+        alert("CODE CRACKED!\n"+codeArray);}
       }
   }
 
@@ -219,11 +222,16 @@ function drawScore() {
           ctx.textBaseline = "centre";
           ctx.lineWidth = "4";
           for(w=0;w<noOfColumns;w++){
+          var greyLoc = (+turnNumbRow-1)+w;
           if(finderArray[w]!="-"){
           ctx.fillStyle = ""+finderArray[w];
           ctx.fillRect(w * cellSize+leftMargin+10, (turnNumbRow)*cellSize+205-35, 60, 60);}
           else{
-          ctx.fillStyle = "#666666";
+          if(greyLoc%2!=0){//odd square - light
+            ctx.fillStyle = "#999999";
+          }
+          else{
+          ctx.fillStyle = "#666666";}
           ctx.fillRect(w * cellSize+leftMargin+10, (turnNumbRow)*cellSize+205-35, 60, 60);
             }
           }
@@ -248,7 +256,7 @@ function drawCoords() {
     ctx.closePath();
   }
 
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < gridSizeY; i++) {
       ctx.beginPath();
       ctx.font = "bold 36px Arial";
       ctx.fillStyle = "Yellow";

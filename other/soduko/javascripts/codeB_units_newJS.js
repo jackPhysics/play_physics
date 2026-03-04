@@ -42,8 +42,8 @@ var deadPosB_delX = (238*1.8)*4;
 var deadPosB_Y0 = (canvH0-294+238*0.2)*4;
 var deadPosB_delY = (276*0.7)*4;
 
-var swidth=3654;//3240;//3240; //width of biggest board
-var sheight=3600; //height of biggest board
+var swidth=3*2000;//3654;//3240;//3240; //width of biggest board
+var sheight=3*2000; //height of biggest board
 var placePieceShift=400;//the right shift to the random placement of pieces
 
 //var imgStart=10; //index number of first piece, add this to the piece number given on status bar
