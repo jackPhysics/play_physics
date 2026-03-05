@@ -17,6 +17,7 @@ table.mover {position:absolute; z-index:-2; border: 2px solid #000000; color:bla
 td.button {border: 2px solid #000000; border-style: outset; text-align:center;}
 td.button6 {border: 2px solid #000000; border-style: outset; text-align:center; font-size:16pt; background-color:ivory;width:90%}
 td.button4 {text-align:left; font-size:16pt; color:white}
+td.button3 {text-align:left; font-size:18pt; color:yellow}
 td.button5 {border: 2px solid #000000; border-style: outset; text-align:center; font-size:8pt; background-color:beige;}
 table {margin-left:100px;margin-right:100px;margin-top:50px; width:80%}
 
@@ -88,7 +89,7 @@ input {border: 6px solid #000000; border-style: outset; text-align:center; font-
 <table id="introTable"></tr>
 <tr><td class="button4" colspan="4">The current game is:<td></tr>
 <tr><td class="button6" id="game2play" colspan="4">6 colours,&nbsp;&nbsp; 4 code slots,&nbsp;&nbsp; no repeats,&nbsp;&nbsp; no empty slots<td></tr>
-<tr><td class="button4" id="warning" colspan="4">&nbsp;<td></tr>
+<tr><td class="button3" id="warning" colspan="4">&nbsp;<td></tr>
 <tr><td class="button4" colspan="4">use buttons below to change the game...<td></tr>
 <td>
   <div class="dropdown"> <button class="colorbtn">No of colours</button>
@@ -109,10 +110,12 @@ input {border: 6px solid #000000; border-style: outset; text-align:center; font-
 </tr>
 <tr><td class="button4" colspan="4">&nbsp;<td></tr>
 <tr><td class="button4" colspan="4">&nbsp;<td></tr>
-<tr><td class="button4" colspan="4">When ready to play press...<td></tr>
-<tr><td>&nbsp;</td><td colspan='2'><input type=button value="start game..." onClick="init1()"></td><td>&nbsp;</td></table>
+<tr><td class="button4" colspan="4">&nbsp;<td></tr>
+<tr><td class="button4" colspan="4">&nbsp;<td></tr>
+<tr><td class="button4" colspan="1">&nbsp;<td><td class="button4" colspan="2">When ready to play press...<td></tr>
+<tr><td  colspan='3'>&nbsp;</td><td colspan='2'><input type=button value="start game..." onClick="init1()"></td><td>&nbsp;</td></table>
 
-<canvas  class="back" id="board" width="1218" height="1200"></canvas>
+<canvas  class="back" id="board" width="2000" height="2000"></canvas>
 
 <script language="Javascript"></script>
 <script src="javascripts/events.js" type="text/javascript"></script>
