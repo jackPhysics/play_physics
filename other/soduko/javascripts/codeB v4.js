@@ -170,10 +170,17 @@ function drawScore() {
         ctx.fillStyle = "Yellow";
         ctx.textAlign = "left";
         ctx.textBaseline = "centre";
-        ctx.lineWidth = "4";
+        ctx.lineWidth = "3";
         for(w=0;w<noOfColumns;w++){
-        ctx.fillStyle = ""+codeArray[w];
-        ctx.fillRect(w * cellSize+leftMargin+10, (turnNumbRow-1)*cellSize+205-35, 60, 60)
+          if(codeArray[w]=="-"){
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(w * cellSize+leftMargin+10, (turnNumbRow-1)*cellSize+205-35, 60, 60);
+            //ctx.stroke();
+          }
+          else{
+            ctx.fillStyle = ""+codeArray[w];
+            ctx.fillRect(w * cellSize+leftMargin+10, (turnNumbRow-1)*cellSize+205-35, 60, 60);
+          }
         }
         ctx.fillStyle = "Yellow";
         ctx.fillRect(leftMargin, (turnNumbRow)*cellSize+205-40, noOfColumns*80, 80)
@@ -205,8 +212,15 @@ function drawScore() {
           ctx.textBaseline = "centre";
           ctx.lineWidth = "4";
           for(w=0;w<noOfColumns;w++){
-          ctx.fillStyle = ""+codeArray[w];
-          ctx.fillRect(w * cellSize+leftMargin+10, (turnNumbRow)*cellSize+205-35, 60, 60)
+            if(codeArray[w]=="-"){
+              ctx.strokeStyle = "black";
+              ctx.strokeRect(w * cellSize+leftMargin+10, (turnNumbRow-1)*cellSize+205-35, 60, 60);
+              //ctx.stroke();
+            }
+            else{
+              ctx.fillStyle = ""+codeArray[w];
+              ctx.fillRect(w * cellSize+leftMargin+10, (turnNumbRow-1)*cellSize+205-35, 60, 60);
+            }
           }
           ctx.fillStyle = "Yellow";
           ctx.fillRect(leftMargin, (turnNumbRow+1)*cellSize+205-40, noOfColumns*80, 80)

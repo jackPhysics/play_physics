@@ -327,16 +327,16 @@ function hideCode(){
   if(emptySlotFlag){
     startSlot = 0;
   }
-if(!noRepeatsFlag){
+if(!noRepeatsFlag){//repeats
   for(c=0;c<noOfColumns;c++){
     var dumColChosen = Math.floor(Math.random()*maxColors)+startSlot;
     codeArray[c] = colorsArray[dumColChosen];
 }}
-else{
+else{//no repeats
   for(c=0;c<noOfColumns;c++){
     var dumColChosen = Math.floor(Math.random()*maxColorsRepeat)+startSlot;
     codeArray[c] = colorsArrayRepeat[dumColChosen];
-    colorsArrayRepeat[dumColChosen] = colorsArrayRepeat[maxColorsRepeat+(startSlot-1)];
+    colorsArrayRepeat[dumColChosen] = colorsArrayRepeat[maxColorsRepeat+(startSlot*1)];
     maxColorsRepeat--;
 }}
 //console.log("code="+codeArray);
@@ -376,6 +376,7 @@ function checkCode(){
   if(blackPegs==noOfColumns){winFlag=true;}
   //console.log("B:"+blackPegs+" W:"+whitePegs);
   turnNumbRow++;
+  if(turnNumbRow>gridSizeY){winFlag=true;}
   for(c=0;c<noOfColumns;c++){
     finderArray[c] = "-";
   }
