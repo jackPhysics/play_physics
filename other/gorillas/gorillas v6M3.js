@@ -1,4 +1,4 @@
-const LAST_BANG = 3;
+const LAST_BANG = 2;
 
 var canvW = 900;
 var canvH = 550;
@@ -91,39 +91,39 @@ let gorScale = 2.4;
 let showG=false;
 
 //no arms
-let gorCoords0 = [7, 0, 7, 5, 1, 5, 1, 8, 6, 8, 6, 11, 5, 12, 
-    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18, 
+let gorCoords0 = [7, 0, 7, 5, 1, 5, 1, 8, 6, 8, 6, 11, 5, 12,
+    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18,
     11, 19, 14, 19, 14, 12, 13, 11, 13, 8, 18, 8,
     18, 5, 12, 5, 12, 0];
 let coordsLen0 = gorCoords0.length;
 //L up, no R
-let gorCoords1 = [7, 0, 7, 5, 3, 5, 3, 0, 1, 0, 1, 8, 6, 8, 6, 11, 5, 12, 
-    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18, 
+let gorCoords1 = [7, 0, 7, 5, 3, 5, 3, 0, 1, 0, 1, 8, 6, 8, 6, 11, 5, 12,
+    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18,
     11, 19, 14, 19, 14, 12, 13, 11, 13, 8, 18, 8,
     18, 5, 12, 5, 12, 0];
 let coordsLen1 = gorCoords1.length;
 //L up, R down
-let gorCoords2 = [7, 0, 7, 5, 3, 5, 3, 0, 1, 0, 1, 8, 6, 8, 6, 11, 5, 12, 
-    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18, 
+let gorCoords2 = [7, 0, 7, 5, 3, 5, 3, 0, 1, 0, 1, 8, 6, 8, 6, 11, 5, 12,
+    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18,
     11, 19, 14, 19, 14, 12, 13, 11, 13, 8, 16, 8, 16, 14, 18, 14,
     18, 5, 12, 5, 12, 0];
 let coordsLen2 = gorCoords2.length;
 //L down, R down
-let gorCoords3 = [7, 0, 7, 5, 1, 5, 1, 14, 3, 14, 3, 8,  6, 8, 6, 11, 5, 12, 
-    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18, 
+let gorCoords3 = [7, 0, 7, 5, 1, 5, 1, 14, 3, 14, 3, 8,  6, 8, 6, 11, 5, 12,
+    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18,
     11, 19, 14, 19, 14, 12, 13, 11, 13, 8, 16, 8, 16, 14, 18, 14,
     18, 5, 12, 5, 12, 0];
 let coordsLen3 = gorCoords3.length;
 //L down, R up
-let gorCoords4 = [7, 0, 7, 5, 1, 5, 1, 14, 3, 14, 3, 8,  6, 8, 6, 11, 5, 12, 
-    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18, 
-    11, 19, 14, 19, 14, 12, 13, 11, 13, 8, 
+let gorCoords4 = [7, 0, 7, 5, 1, 5, 1, 14, 3, 14, 3, 8,  6, 8, 6, 11, 5, 12,
+    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18,
+    11, 19, 14, 19, 14, 12, 13, 11, 13, 8,
     18, 8, 18, 0,  16, 0, 16, 5, 12, 5, 12, 0];
 let coordsLen4 = gorCoords4.length;
 //L up, R up
-let gorCoords5 = [7, 0, 7, 5, 3, 5, 3, 0, 1, 0, 1, 8, 6, 8, 6, 11, 5, 12, 
-    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18, 
-    11, 19, 14, 19, 14, 12, 13, 11, 13, 8, 
+let gorCoords5 = [7, 0, 7, 5, 3, 5, 3, 0, 1, 0, 1, 8, 6, 8, 6, 11, 5, 12,
+    5, 19, 8, 19, 7, 18, 7, 15, 12, 15, 12, 18,
+    11, 19, 14, 19, 14, 12, 13, 11, 13, 8,
     18, 8, 18, 0,  16, 0, 16, 5, 12, 5, 12, 0];
 let coordsLen5 = gorCoords5.length;
 
@@ -281,7 +281,7 @@ window.onload = function () {
   ctx.lineTo(gorX0,gorY0);
   ctx.stroke();
   ctx.closePath();
-  
+
   //brow
   ctx.beginPath();
   gorScale=2.4;
@@ -401,13 +401,13 @@ window.onload = function () {
   ctx.fillText("" + gameNumb, sunX, sunY - 15);
   ctx.fill();
 
-  if(showG){ 
+  if(showG){
     ctx.closePath();
     ctx.beginPath();
     //ctx.lineWidth = "2";
     ctx.fillStyle = "Yellow";
     let gravity2 = gravity/0.2*9.8
-    ctx.fillText("g=" + gravity2, sunX, sunY - 15);//gameNumb
+    ctx.fillText("g=" + gravity2, sunX- 15, sunY - 15);//gameNumb
     ctx.fill();}
 
   ctx.beginPath();
@@ -632,25 +632,31 @@ function endBang() {
   startScalar = false;
   oneFlag = true;
   testCount = 0;
-  if (turnNumb == "A") { 
-    turnNumb = "B"; 
-    angleNow = "?"; 
+  if (turnNumb == "A") {
+    turnNumb = "B";
+    angleNow = "?";
     speedNow = "?";}
   else {
-    turnNumb = "A"; 
-    angleNow = "?"; 
+    turnNumb = "A";
+    angleNow = "?";
     speedNow = "?"; }
-    if (gorBCol == "Red") { 
+    if (gorBCol == "Red") {
       //alert("A hits");
       player1Score++;
       playAPts=playAPts+shotSinceA;
       shotSinceA=0;
+      shotSinceB=0;
+      player1Shots=0;
+      player2Shots=0;
       }
-    else if(gorACol == "Red"){ 
+    else if(gorACol == "Red"){
       //alert("B hits");
       player2Score++;
       playBPts=playBPts+shotSinceB;
+      shotSinceA=0;
       shotSinceB=0;
+      player1Shots=0;
+      player2Shots=0;
       }
   catchText = "?";
   turnAng = true;
@@ -672,7 +678,7 @@ function plotStartAgain() {
     For each match the gravity is slightly different,
     but stays the same for the whole match (until you refresh the page)
     Play until a certain number of hits (eg 1, 3, 5, ...)
-    Or to a certain number of shots (eg 10, 12, 15,...) 
+    Or to a certain number of shots (eg 10, 12, 15,...)
     and whoever has the higher number of hits, or points, wins
   */
  /*
@@ -845,14 +851,14 @@ function plotStartAgain() {
   ctx.strokeStyle = "Black";
   ctx.arc(sunX, sunY + gorSize / 16, gorSize / 8, 0, Math.PI, false);
   ctx.stroke();
-  
-  if(showG){ 
+
+  if(showG){
     ctx.closePath();
     ctx.beginPath();
     //ctx.lineWidth = "2";
     ctx.fillStyle = "Yellow";
     let gravity2 = gravity/0.2*9.8
-    ctx.fillText("g=" + gravity2, sunX, sunY - 15);//gameNumb
+    ctx.fillText("g=" + gravity2, sunX- 15, sunY - 15);//gameNumb
     ctx.fill();}
 
 
@@ -989,14 +995,14 @@ function plotActualPict() {
   ctx.strokeStyle = "Black";
   ctx.arc(sunX, sunY + gorSize / 16, gorSize / 8, 0, Math.PI, false);
   ctx.stroke();
-   
-  if(showG){ 
+
+  if(showG){
   ctx.closePath();
   ctx.beginPath();
   //ctx.lineWidth = "2";
   ctx.fillStyle = "Yellow";
   let gravity2 = gravity/0.2*9.8
-  ctx.fillText("g=" + gravity2, sunX, sunY - 15);//gameNumb
+  ctx.fillText("g=" + gravity2, sunX- 15, sunY - 15);//gameNumb
   ctx.fill();}
 
   ctx.beginPath();
@@ -1125,7 +1131,7 @@ function plotActualPict() {
       }
     }
     //check if out of range
-    if (banY < -400 || banX > xmax + 15 || banY > ymax + 15 || banX < -15) {
+    if (banY < -1000 || banX > xmax + 15 || banY > ymax + 15 || banX < -15) {
       //clearTimeout(bangGo);
       //endBang();
       //bangClock++;
@@ -1260,7 +1266,7 @@ function drawKong(ctx, gorX, gorY, gorCol, idX){
     ctx.lineTo(gorX0,gorY0);
     ctx.fill();
     ctx.closePath();
-  
+
     ctx.strokeStyle="Black";
     ctx.lineWidth = "1";
     ctx.beginPath();
@@ -1278,7 +1284,7 @@ function drawKong(ctx, gorX, gorY, gorCol, idX){
     ctx.lineTo(gorX0,gorY0);
     ctx.stroke();
     ctx.closePath();
-    
+
     //brow
     ctx.beginPath();
     gorScale=2.4;

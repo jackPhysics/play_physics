@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+  <head><title>Gorillas! Touch control 2</title>
+      <style>
+          canvas {
+              border: 1px solid black;
+              font-family: "Helvetica Neue", "Arial", "Lucida Grande", "Lucida Sans Unicode", "Microsoft YaHei", sans-serif;
+              font-size: 13px;
+              line-height: 1.5;
+              color: #474747;
+          }
+          body{background-color: #005500; color: #ffff00}
+          td {text-align: left;}
+          td.fig {width: 710px;text-align: right;}
+          textarea {width: 4em; height: 1em; resize: none;}
+      </style>
+      <script src="events.js" type="text/javascript"> </script>
+      <script src="gorillas v6TM3.js" type="text/javascript"> </script>
+
+      </head>
+      <body style="margin-left: 20px;">
+        <br>
+
+        <p></p>
+
+    <table border="1">
+      <tr>
+      <td class="fig"><canvas id="myCanvas" width="600" height="630" style="margin-left: 0px;" style="border:1px solid #ffffff;">
+      </canvas></td></tr>
+        <tr>  <td><input type="button" id="saveButton" value="Save image">
+            &nbsp;
+           <input class="button" id="resetB" type="button" value="new game" onClick="resetSc();">
+           &nbsp;
+           <input class="button" id="gravB" type="button" value="show g" onClick="displayG();"></td>
+    </tr>
+    <tr><td>  <span id="dummy2"><i></span></td></tr>
+        </table>
+
+
+        </body>
+    </html>
