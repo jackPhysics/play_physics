@@ -549,7 +549,9 @@ function plotNewFrame(){
     var timeNowMoonReal = timeNowMoon;
     if(timeNowMoon<0){timeNowMoon=timeNowMoon+24;}//moonFlip=true;
     else if(timeNowMoon>24){timeNowMoon=timeNowMoon-24;}//moonFlip=true;
-    effectivelatitudeM = effectLatM(latNow,timeNowMoon, sunPosition)+moonLatOffset;
+    //effectivelatitudeM = effectLatM(latNow,timeNow, sunPosition);//+moonLatOffset;
+    effectivelatitudeM = effectLatM(latNow,timeNowMoon, sunPosition);//+moonLatOffset;
+    //moonHigh = moonHeight(effectivelatitudeM, moonPosition);//sunPosition
     moonHigh = moonHeight(effectivelatitudeM, moonPosition);//sunPosition
     if(latNow<sunPosition){ns_flip=true;}
     else{ns_flip=false;}
@@ -1675,10 +1677,23 @@ if(goFlag){
           if(moonDay_ms<0){moonDay_ms=moonDay_ms+moonT_ms}
           //console.log("timeNow_ms="+timeNow_ms+"\nnowByCalc="+nowByCalc+"\nmoonDummy="+moonDummy+"\nmoonDay_ms="+moonDay_ms)
           moonDay = moonDay_ms/24/60/60/1000;
-          console.log("moonDay="+moonDay);
+          //console.log("moonDay="+moonDay);
           //alert("moon day1 ="+moonDay);
           moonDay = Math.round(moonDay*100)/100;
-          console.log("moonDay="+moonDay);
+          //console.log("moonDay="+moonDay);
+
+    let moon = moonDataUTC(yearNow, needMin[0], needMin[1], needMin[2], needMin[3]);
+
+    console.log("Lunar day:", moon.lunarDay);
+
+    console.log("Latitude:", moon.latitude, moon.latitudeDirection);
+
+    console.log("Distance:", moon.distanceKm, "km");
+
+moonDay = Math.round(moon.lunarDay*100)/100;
+//console.log("moonDay="+moonDay);
+moonDist = moon.distanceKm;
+moonLatOffset = moon.latitude;
           //alert("moon day2 ="+moonDay);
           //document.getElementById("slideT").innerHTML="time = "+printNumberT(timeNow)+"";
           plotNewFrame();
@@ -1982,7 +1997,7 @@ function moonPos(d){
 
   dt = dt + 10.25;
   if(dt>365.25){dt=dt-365.26;}
-  var moonP = 23.4*(Math.cos((dt-182,625)/365.25*2*Math.PI));//23.4*(Math.cos((dt-0)/27.3217*2*Math.PI));
+  var moonP = 23.4*(Math.cos((dt-182.625)/365.25*2*Math.PI));//23.4*(Math.cos((dt-0)/27.3217*2*Math.PI));
 
   return moonP;
 }
@@ -2010,7 +2025,7 @@ function effectLatM(l,t, s){
     lat = sp+(sp-lat);
   }
 
-  var efLat = (90-lat)*(-Math.cos((tm-12)/24*2*Math.PI))+90;
+  var efLat = (90-(lat+moonLatOffset))*(-Math.cos((tm-12)/24*2*Math.PI))+90;
 
   return efLat;
 }

@@ -1608,6 +1608,135 @@ if(goFlag){
     }
 
 
+    function lunarDayUTC(year, month, day, hour = 0, minute = 0) {
+
+    // --------------------------------------------------
+    // Convert Gregorian UTC date/time to Julian Date
+    // --------------------------------------------------
+
+    let Y = year;
+    let M = month;
+
+    let d =
+        day +
+        hour / 24 +
+        minute / 1440;
+
+    if (M <= 2) {
+        Y -= 1;
+        M += 12;
+    }
+
+    const A = Math.floor(Y / 100);
+    const B = 2 - A + Math.floor(A / 4);
+
+    const JD =
+        Math.floor(365.25 * (Y + 4716)) +
+        Math.floor(30.6001 * (M + 1)) +
+        d + B - 1524.5;
+
+
+    // --------------------------------------------------
+    // Approximate Delta-T: TT - UTC, in seconds
+    // Suitable for 2005-2050
+    // --------------------------------------------------
+
+    const tYear = year - 2000;
+
+    const deltaT =
+        62.92 +
+        0.32217 * tYear +
+        0.005589 * tYear * tYear;
+
+    // Convert entered UTC Julian Date approximately to TT
+    const D = JD + deltaT / 86400;
+
+
+    // --------------------------------------------------
+    // Nearest-hour new-moon formula
+    // --------------------------------------------------
+
+    function newMoon(k) {
+
+        const T = k / 1236.85;
+
+        const mean =
+            2451550.09766 +
+            29.530588861 * k +
+            0.00015437 * T * T -
+            0.000000150 * T * T * T +
+            0.00000000073 * T * T * T * T;
+
+        const E =
+            1 -
+            0.002516 * T -
+            0.0000074 * T * T;
+
+        const M =
+            2.5534 +
+            29.10535670 * k -
+            0.0000014 * T * T -
+            0.00000011 * T * T * T;
+
+        const Mp =
+            201.5643 +
+            385.81693528 * k +
+            0.0107582 * T * T +
+            0.00001238 * T * T * T -
+            0.000000058 * T * T * T * T;
+
+        const radians = degrees =>
+            degrees * Math.PI / 180;
+
+        const correction =
+            -0.40720 * Math.sin(radians(Mp)) +
+             0.17241 * E * Math.sin(radians(M)) +
+             0.01608 * Math.sin(radians(2 * Mp));
+
+        return mean + correction;
+    }
+
+
+    // --------------------------------------------------
+    // Estimate which lunation we are in
+    // --------------------------------------------------
+
+    let k = Math.floor(
+        (D - 2451550.09766) / 29.530588861
+    );
+
+
+    // Correct k if the approximation picked
+    // the wrong neighbouring lunation
+    while (newMoon(k) > D) {
+        k--;
+    }
+
+    while (newMoon(k + 1) <= D) {
+        k++;
+    }
+
+
+    // --------------------------------------------------
+    // Lunar day
+    // --------------------------------------------------
+
+    const previousNewMoon = newMoon(k);
+    const nextNewMoon = newMoon(k + 1);
+
+    const lunarDay = D - previousNewMoon;
+    const lunationLength = nextNewMoon - previousNewMoon;
+
+
+    return {
+        lunarDay: lunarDay,
+        lunationLength: lunationLength,
+        fraction: lunarDay / lunationLength,
+        lunationNumber: k
+    };
+}
+
+
         function changeT(){
         var dateText = "January 1, "+dateYear+" 00:00:00 GMT+00:00";//'January 1, 2023 00:00:00 GMT+00:00'
         var moonZero = new Date('September 11, 2026 03:26:45 GMT+00:00');//September 11, 2026, at 03:26:45 UTC    'January 11, 2024 11:57:00 GMT+00:00'
@@ -1679,6 +1808,15 @@ if(goFlag){
           //alert("moon day1 ="+moonDay);
           moonDay = Math.round(moonDay*100)/100;
           console.log("moonDay="+moonDay);
+
+let moon = lunarDayUTC(yearNow, needMin[0], needMin[1], needMin[2], needMin[3]);
+
+console.log("lunar day = "+moon.lunarDay);
+console.log("lunation length = "+moon.lunationLength);
+
+moonDay = Math.round(moon.lunarDay*100)/100;
+console.log("moonDay="+moonDay);
+
           //alert("moon day2 ="+moonDay);
           //document.getElementById("slideT").innerHTML="time = "+printNumberT(timeNow)+"";
           plotNewFrame();
